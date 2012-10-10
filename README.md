@@ -1,5 +1,7 @@
 # GitHooks #
 
+In my [blog](http://mnaoumov.wordpress.com/2012/10/10/useful-git-hooks/) I provide more background for these hooks
+
 Different useful hooks for git repositories
 
 To use this hooks to your repository you should put all files in **tools\GitHooks** folder
@@ -17,7 +19,7 @@ To test it use
     git reset --hard test_merge_pull_change
     git pull
 
-Now post-merge hook should help you to do rebase
+Now **post-merge** hook should help you to do rebase
 
 To reset branch to the initial state use the following commands. Last command is required only if you selected **Yes, permanently** in the hooks dialog
 
@@ -33,7 +35,7 @@ To test it use
     git reset --hard test_merge_pull_conflict_change
     git pull
 
-Now post-merge hook should help you to do rebase
+Now **post-commit** hook should help you to do rebase
 
 To reset branch to the initial state use the following commands. Last command is required only if you selected **Yes, permanently** in the hooks dialog
 
