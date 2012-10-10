@@ -17,7 +17,7 @@ function Make-ParentCommit
     "Parent commit change" | Out-File ParentCommitChange.txt -Encoding Ascii
     git add ParentCommitChange.txt
     $prefix = if ($UseAdhPrefix) { "ADH "} else { "" }
-    git commit -m $prefix + "Parent commit change" --quiet
+    git commit -m ($prefix + "Parent commit change") --quiet
 }
 
 Write-Output "Installing git hooks"
