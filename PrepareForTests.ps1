@@ -11,8 +11,8 @@ function Commit-File
 {
     param
     (
-        [string] $FileContent
-        [string] $FileName
+        [string] $FileContent,
+        [string] $FileName,
         [string] $CommitMessage
     )
 
