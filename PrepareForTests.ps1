@@ -80,5 +80,12 @@ git config branch.test_merge_pull_conflict.rebase false
 Write-Output "Creating branch test_merge_pull_conflict_backup"
 git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet | Out-Null
 
+Write-Output "Creating branch TFS1234"
+git checkout master -B TFS1234 --quiet | Out-Null
+
+Write-Output "Creating branch non_TFS_branch"
+git checkout master -B non_TFS_branch --quiet | Out-Null
+
+
 Write-Output "Checkout master branch"
 git checkout master --quiet
