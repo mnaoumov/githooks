@@ -7,14 +7,27 @@ param
 
 $ErrorActionPreference = "Stop";
 
-function Make-ParentCommit
+function Commit-File
 {
-    "Parent commit" | Out-File ParentCommit.txt -Encoding Ascii
-    git add ParentCommit.txt
+    param
+    (
+        [string] $FileContent
+        [string] $FileName
+        [string] $CommitMessage
+    )
+
+    $FileContent | Out-File $FileName -Encoding Ascii
+    git add $FileName
     $currentBranchName = git name-rev --name-only HEAD
     $prefix = if ($currentBranchName -like "TFS*") { "" } else { "ADH" }
-    git commit -m ($prefix + "Parent commit") --quiet
+    git commit -m ($prefix + $CommitMessage) --quiet
 }
+
+function Make-ParentCommit
+{
+    Commit-File -FileContent "Parent commit" -FileName "ParentCommit.txt" -CommitMessage "Parent commit"
+}
+
 
 Write-Output "Installing git hooks"
 Tools\GitHooks\Install-GitHooks.ps1
