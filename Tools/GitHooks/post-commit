@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# An example hook script that is called after a successful
+# commit is made.
+
+PsCommand=".\\tools\\GitHooks\\post-commit.ps1"
+powershell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$PsCommand"
+exit
