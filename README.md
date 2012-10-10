@@ -24,3 +24,19 @@ To reset branch to the initial state use the following commands. Last command is
     git checkout test_merge_pull
     git reset --hard origin/test_merge_pull
     git config branch.test_merge_pull.rebase false
+
+**post-commit** - executed after conflict merge. Hook handles the situation when you have pull merge with conflict and helps to use pull rebase instead.
+
+To test it use
+
+    git checkout test_merge_pull_conflict
+    git reset --hard test_merge_pull_conflict_change
+    git pull
+
+Now post-merge hook should help you to do rebase
+
+To reset branch to the initial state use the following commands. Last command is required only if you selected **Yes, permanently** in the hooks dialog
+
+    git checkout test_merge_pull_conflict
+    git reset --hard origin/test_merge_pull_conflict
+    git config branch.test_merge_pull_conflict.rebase false
