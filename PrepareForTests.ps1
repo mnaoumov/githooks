@@ -20,12 +20,16 @@ function Commit-File
     git add $FileName
     $currentBranchName = git name-rev --name-only HEAD
     $prefix = if ($currentBranchName -like "TFS*") { "" } else { "ADH " }
+    if ($CommitMessage -eq $null)
+    {
+        $CommitMessage = $FileContent
+    }
     git commit -m ($prefix + $CommitMessage) --quiet
 }
 
 function Make-ParentCommit
 {
-    Commit-File -FileContent "Parent commit" -FileName "ParentCommit.txt" -CommitMessage "Parent commit"
+    Commit-File -FileContent "Parent commit" -FileName "ParentCommit.txt"
 }
 
 
@@ -60,17 +64,13 @@ git checkout master -B test_merge_pull --quiet | Out-Null
 
 Make-ParentCommit
 
-"Commit which will cause pull merge" | Out-File CommitWhichWilCausePullMerge.txt -Encoding Ascii
-git add CommitWhichWilCausePullMerge.txt
-git commit -m "ADH Commit which will cause pull merge" --quiet
+Commit-File -FileContent "Commit which will cause pull merge" -FileName CommitWhichWilCausePullMerge.txt
 
 git push local test_merge_pull --set-upstream --quiet | Out-Null
 
 git reset --hard HEAD~1 --quiet
 
-"Another commit which will cause pull merge" | Out-File AnotherCommitWhichWilCausePullMerge.txt -Encoding Ascii
-git add AnotherCommitWhichWilCausePullMerge.txt
-git commit -m "ADH Another commit which will cause pull merge" --quiet
+Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt
 
 git config branch.test_merge_pull.rebase false
 
@@ -82,17 +82,13 @@ git checkout master -B test_merge_pull_conflict --quiet | Out-Null
 
 Make-ParentCommit
 
-"Commit which will cause pull merge conflict" | Out-File CommitWhichWilCausePullMergeConflict.txt -Encoding Ascii
-git add CommitWhichWilCausePullMergeConflict.txt
-git commit -m "ADH Commit which will cause pull merge conflict" --quiet
+Commit-File -FileContent "Commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt
 
 git push local test_merge_pull_conflict --set-upstream --quiet | Out-Null
 
 git reset --hard HEAD~1 --quiet
 
-"Another commit which will cause pull merge conflict" | Out-File CommitWhichWilCausePullMergeConflict.txt -Encoding Ascii
-git add CommitWhichWilCausePullMergeConflict.txt
-git commit -m "ADH Another commit which will cause pull merge conflict" --quiet
+Commit-File -FileContent "Another commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt
 
 git config branch.test_merge_pull_conflict.rebase false
 
