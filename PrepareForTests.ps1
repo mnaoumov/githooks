@@ -9,14 +9,10 @@ $ErrorActionPreference = "Stop";
 
 function Make-ParentCommit
 {
-    param
-    (
-        [bool] $UseAdhPrefix = $true
-    )
-
     "Parent commit" | Out-File ParentCommit.txt -Encoding Ascii
     git add ParentCommit.txt
-    $prefix = if ($UseAdhPrefix) { "ADH "} else { "" }
+    $currentBranchName = git name-rev --name-only HEAD
+    $prefix = if ($$currentBranchName -like "TFS*") { "" } else { "ADH" }
     git commit -m ($prefix + "Parent commit") --quiet
 }
 
@@ -93,7 +89,7 @@ git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet
 Write-Output "Creating branch TFS1234"
 git checkout master -B TFS1234 --quiet | Out-Null
 
-Make-ParentCommit -UseAdhPrefix $false
+Make-ParentCommit
 
 Write-Output "Creating branch non_TFS_branch"
 git checkout master -B non_TFS_branch --quiet | Out-Null
