@@ -170,8 +170,7 @@ $result = Show-Dialog
 
 if ($result.Cancel)
 {
-    Write-Error "Error: commit message missing TFS work item id"
-    Write-Error "Error: it should appear at the start of your commit message, like: TFS1234 Add more awesome"
+    Write-Warning "Commit message missing TFS WorkItem ID.`nIt should appear at the start of your commit message, like: TFS1234 Add more awesome"
     ExitWithCode 1
 }
 elseif ($result.AdHoc)
