@@ -15,3 +15,5 @@ if (-not (Test-Path $gitHooksFolder)) {
 Get-ChildItem -Path $scriptFolder | `
     Where-Object -Filter { $_.Extension -eq "" } | `
     Copy-Item -Destination $gitHooksFolder
+
+Write-Host "Git hooks installed"
