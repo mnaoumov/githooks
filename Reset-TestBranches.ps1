@@ -53,5 +53,29 @@ git config branch.test_merge_pull.rebase false
 Write-Output "Creating branch test_merge_pull_backup"
 git checkout test_merge_pull -B test_merge_pull_backup --quiet | Out-Null
 
+Write-Output "Preparing branch test_merge_pull_conflict"
+git checkout master -B test_merge_pull_conflict --quiet | Out-Null
+
+"Parent commit change" | Out-File ParentCommitChange.txt -Encoding Ascii
+git add ParentCommitChange.txt
+git commit -m "Parent commit change" --quiet
+
+"Commit which will cause pull merge conflict" | Out-File CommitWhichWilCausePullMergeConflict.txt -Encoding Ascii
+git add CommitWhichWilCausePullMergeConflict.txt
+git commit -m "Commit which will cause pull merge conflict" --quiet
+
+git push local test_merge_pull_conflict --set-upstream --quiet | Out-Null
+
+git reset --hard HEAD~1 --quiet
+
+"Another commit which will cause pull merge conflict" | Out-File CommitWhichWilCausePullMergeConflict.txt -Encoding Ascii
+git add CommitWhichWilCausePullMergeConflict.txt
+git commit -m "Another commit which will cause pull merge conflict" --quiet
+
+git config branch.test_merge_pull_conflict.rebase false
+
+Write-Output "Creating branch test_merge_pull_conflict_backup"
+git checkout test_merge_pull -B test_merge_pull_conflict_backup --quiet | Out-Null
+
 Write-Output "Checkout master branch"
 git checkout master --quiet
