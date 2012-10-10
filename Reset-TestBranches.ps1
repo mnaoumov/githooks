@@ -75,7 +75,7 @@ git commit -m "Another commit which will cause pull merge conflict" --quiet
 git config branch.test_merge_pull_conflict.rebase false
 
 Write-Output "Creating branch test_merge_pull_conflict_backup"
-git checkout test_merge_pull -B test_merge_pull_conflict_backup --quiet | Out-Null
+git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet | Out-Null
 
 Write-Output "Checkout master branch"
 git checkout master --quiet
