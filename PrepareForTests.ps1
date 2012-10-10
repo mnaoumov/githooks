@@ -1,16 +1,23 @@
 #requires -version 2.0
 
 [CmdletBinding()]
-param (
+param
+(
 )
 
 $ErrorActionPreference = "Stop";
 
 function Make-ParentCommit
 {
+    param
+    (
+        [bool] $UseAdhPrefix = $true
+    )
+
     "Parent commit change" | Out-File ParentCommitChange.txt -Encoding Ascii
     git add ParentCommitChange.txt
-    git commit -m "ADH Parent commit change" --quiet
+    $prefix = if ($UseAdhPrefix) { "ADH "} else { "" }
+    git commit -m $prefix + "Parent commit change" --quiet
 }
 
 Write-Output "Installing git hooks"
@@ -86,7 +93,7 @@ git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet
 Write-Output "Creating branch TFS1234"
 git checkout master -B TFS1234 --quiet | Out-Null
 
-Make-ParentCommit
+Make-ParentCommit -UseAdhPrefix $false
 
 Write-Output "Creating branch non_TFS_branch"
 git checkout master -B non_TFS_branch --quiet | Out-Null
