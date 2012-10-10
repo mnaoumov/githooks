@@ -19,7 +19,7 @@ function Commit-File
     $FileContent | Out-File $FileName -Encoding Ascii
     git add $FileName
     $currentBranchName = git name-rev --name-only HEAD
-    $prefix = if ($currentBranchName -like "TFS*") { "" } else { "ADH" }
+    $prefix = if ($currentBranchName -like "TFS*") { "" } else { "ADH " }
     git commit -m ($prefix + $CommitMessage) --quiet
 }
 
