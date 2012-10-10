@@ -12,7 +12,7 @@ function Make-ParentCommit
     "Parent commit" | Out-File ParentCommit.txt -Encoding Ascii
     git add ParentCommit.txt
     $currentBranchName = git name-rev --name-only HEAD
-    $prefix = if ($$currentBranchName -like "TFS*") { "" } else { "ADH" }
+    $prefix = if ($currentBranchName -like "TFS*") { "" } else { "ADH" }
     git commit -m ($prefix + "Parent commit") --quiet
 }
 
