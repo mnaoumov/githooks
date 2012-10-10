@@ -36,7 +36,7 @@ Add-Type -AssemblyName PresentationFramework
 $xaml = [xml] @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow"
+        Title="Merge pull warning"
         Height="110"
         Width="450"
         ResizeMode="NoResize">
