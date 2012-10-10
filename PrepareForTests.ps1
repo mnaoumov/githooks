@@ -12,19 +12,15 @@ function Commit-File
     param
     (
         [string] $FileContent,
-        [string] $FileName,
-        [string] $CommitMessage
+        [string] $FileName
     )
 
     $FileContent | Out-File $FileName -Encoding Ascii
     git add $FileName
     $currentBranchName = git name-rev --name-only HEAD
     $prefix = if ($currentBranchName -like "TFS*") { "" } else { "ADH " }
-    if ($CommitMessage -eq $null)
-    {
-        $CommitMessage = $FileContent
-    }
-    git commit -m ($prefix + $CommitMessage) --quiet
+
+    git commit -m ($prefix + $FileContent) --quiet
 }
 
 function Make-ParentCommit
