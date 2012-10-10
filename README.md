@@ -8,6 +8,7 @@ To use this hooks to your repository you should put all files in **tools\GitHook
 
 **tools\GitHooks\Install-GitHooks.ps1** - installs all hooks in your repository
 
+**PrepareForTests.ps1** - prepares local repository for test for the usecases described below
 
 ## Available hooks: ##
 

@@ -6,6 +6,9 @@ param (
 
 $ErrorActionPreference = "Stop";
 
+Write-Output "Installing git hooks"
+Tools\GitHooks\Install-GitHooks.ps1
+
 $localGitRepoPath = "C:\Temp\LocalGitRepo"
 
 if (Test-Path $localGitRepoPath)
