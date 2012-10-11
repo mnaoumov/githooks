@@ -31,7 +31,7 @@ To test it use
 
 Commit. Hook dialog will appear.
 
-![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
+![Provide TFS WorkItem ID dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
 **post-merge** - executed after non-conflict merge. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
 
