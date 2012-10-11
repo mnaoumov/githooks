@@ -106,5 +106,21 @@ Prepare-Branch test_merge_pull_conflict_backup -Actions `
 Prepare-Branch non_TFS_branch -Actions `
     { git checkout master -B non_TFS_branch --quiet | Out-Null }
 
+Prepare-Branch future -Actions `
+    { git checkout master -B future --quiet | Out-Null },
+    { Commit-File -FileContent "Before releases" -FileName BeforeReleases.txt },
+
+Prepare-Branch release.1.0 -Actions `
+    { git checkout future --quiet },
+    { Commit-File -FileContent "Ready for release 1.0" -FileName ReadyForRelease10.txt },
+    { git checkout future -B release.1.0 --quiet | Out-Null },
+    { Commit-File -FileContent "Release 1.0 fix" -FileName Release10Fix.txt }
+
+Prepare-Branch release.2.0 -Actions `
+    { git checkout future --quiet },
+    { Commit-File -FileContent "Ready for release 2.0" -FileName ReadyForRelease20.txt },
+    { git checkout future -B release.2.0 --quiet | Out-Null },
+    { Commit-File -FileContent "Release 2.0 fix" -FileName Release20Fix.txt }
+
 Write-Output "Checkout master branch"
 git checkout master --quiet
