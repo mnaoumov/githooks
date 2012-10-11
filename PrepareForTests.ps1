@@ -124,7 +124,7 @@ Prepare-Branch release.2.0 -Actions `
 
 Prepare-Branch future -Actions `
     { git checkout future --quiet },
-    { Commit-File -FileContent "Feature release fix" -FileName FutureReleaseFix.txt },
+    { Commit-File -FileContent "Feature release fix" -FileName FutureReleaseFix.txt }
 
 
 Write-Output "Checkout master branch"
