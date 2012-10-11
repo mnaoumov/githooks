@@ -17,7 +17,7 @@ $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
 . "$scriptFolder\GitHelpers.ps1"
 
-if (-not Check-IsMergeCommit)
+if (-not (Check-IsMergeCommit))
 {
     Write-Debug "`nCurrent commit is not a merge commit"
     exit
