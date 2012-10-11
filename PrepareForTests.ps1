@@ -72,11 +72,11 @@ function Prepare-Branch
 
     for ($i = 0; $i -lt $Actions.Length; $i++)
     {
-        Write-Progress "Preparing branch test_merge_pull" -PercentComplete ($i / $Actions.Length * 100)
+        Write-Progress "Preparing branch $BranchName" -PercentComplete ($i / $Actions.Length * 100)
         & $Actions[$i]
     }
 
-    Write-Progress "Preparing branch test_merge_pull" -Completed
+    Write-Progress "Preparing branch $BranchName" -Completed
 }
 
 Prepare-Branch test_merge_pull -Actions `
