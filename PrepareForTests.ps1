@@ -7,6 +7,10 @@ param
 
 $ErrorActionPreference = "Stop";
 
+$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
+
+. "$scriptFolder\Tools\GitHooks\GitHelpers.ps1"
+
 function Commit-File
 {
     param
@@ -17,8 +21,7 @@ function Commit-File
 
     $FileContent | Out-File $FileName -Encoding Ascii
     git add $FileName
-    $currentBranchName = git rev-parse --abbrev-ref HEAD
-    $prefix = if ($currentBranchName -like "TFS*") { "" } else { "ADH " }
+    $prefix = if ((Get-CurrentBranchName) -like "TFS*") { "" } else { "ADH " }
 
     git commit -m ($prefix + $FileContent) --quiet
 }
@@ -34,7 +37,7 @@ function Make-MergeConflictCommit
 }
 
 Write-Output "Installing git hooks"
-Tools\GitHooks\Install-GitHooks.ps1
+& "$scriptFolder\Tools\GitHooks\Install-GitHooks.ps1"
 
 $localGitRepoPath = "C:\Temp\LocalGitRepo"
 

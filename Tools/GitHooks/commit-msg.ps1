@@ -9,6 +9,15 @@ param
 
 $ErrorActionPreference = "Stop";
 
+Trap [Exception] {
+    Write-Error $_
+    ExitWithCode 1
+}
+
+$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
+
+. "$scriptFolder\GitHelpers.ps1"
+
 function ExitWithCode
 { 
     param
@@ -95,12 +104,6 @@ function Show-Dialog
     $result
 }
 
-
-Trap [Exception] {
-    Write-Error $_
-    ExitWithCode 1
-}
-
 Write-Debug "Running commit hook"
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 $workingCopyRoot = Join-Path $scriptFolder "..\.."
@@ -112,7 +115,6 @@ $adhocPattern = "^ADH\s+"
 $fixupSquashPattern = "(fixup)|(squash)[!]\s+"
 $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
 
-$currentBranchName = git rev-parse --abbrev-ref HEAD
 $commitMessage = Get-Content $CommitMessagePath | Out-String
 
 function Update-CommitMessage()
@@ -127,7 +129,7 @@ if ($commitMessage -match $workItemPattern)
     ExitWithCode 0
 }
 #Also allow commits that contain a work item ID in the branch name
-elseif ($currentBranchName -match $workItemPattern)
+elseif ((Get-CurrentBranchName) -match $workItemPattern)
 {
     Write-Debug "ID in branch"
     $WorkItem = $matches[0];
@@ -159,7 +161,7 @@ if ($commitMessage -match $revertPattern) {
 
 #Allow Adhoc commits
 if ($commitMessage -match $adhocPattern) {
-    Write-Debug "Commit was an Adhoc"
+    Write-Debug "Commit was an ad-hoc"
     #Strip out the "ADH"
     $commitMessage = $commitMessage -replace $adhocPattern, ""
     Update-CommitMessage
