@@ -29,3 +29,8 @@ function Check-IsPullMerge
 {
     Get-MergedBranchName -eq Get-TrackedBranchName
 }
+
+function Get-CurrentCommitMessage
+{
+    git log -1 --pretty=%B
+}
