@@ -4,6 +4,6 @@
 param (
 )
 
-$scriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
+$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
 & "$scriptFolder\Fix-IncorrectMerge.ps1"
