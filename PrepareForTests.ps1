@@ -64,7 +64,7 @@ function Prepare-Branch
 {
     param
     (
-        [string] $BranchName
+        [string] $BranchName,
         [ScriptBlock[]] $Actions
     )
 
