@@ -79,7 +79,7 @@ function Prepare-Branch
     Write-Progress "Preparing branch test_merge_pull" -Completed
 }
 
-Prepare-Branch test_merge_pull -Actions
+Prepare-Branch test_merge_pull -Actions `
     { git checkout master -B test_merge_pull --quiet | Out-Null },
     { Make-ParentCommit },
     { Commit-File -FileContent "Commit which will cause pull merge" -FileName CommitWhichWilCausePullMerge.txt },
