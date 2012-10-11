@@ -5,6 +5,8 @@ param
 (
 )
 
+$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
+
 function Main
 {
     $ErrorActionPreference = "Stop"
@@ -14,8 +16,6 @@ function Main
         Write-Error $_
         exit 1
     }
-
-    $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
     . "$scriptFolder\GitHelpers.ps1"
 
