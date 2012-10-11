@@ -108,7 +108,7 @@ Prepare-Branch non_TFS_branch -Actions `
 
 Prepare-Branch future -Actions `
     { git checkout master -B future --quiet | Out-Null },
-    { Commit-File -FileContent "Before releases" -FileName BeforeReleases.txt },
+    { Commit-File -FileContent "Before releases" -FileName BeforeReleases.txt }
 
 Prepare-Branch release.1.0 -Actions `
     { git checkout future --quiet },
