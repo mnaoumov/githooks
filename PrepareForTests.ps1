@@ -60,18 +60,25 @@ Write-Output "Creating git remote 'local' within '$localGitRepoPath'"
 git remote add local $localGitRepoPath
 
 Write-Output "Preparing branch test_merge_pull"
+Write-Progress "Preparing branch test_merge_pull" -PercentComplete 0
 git checkout master -B test_merge_pull --quiet | Out-Null
 
+Write-Progress "Preparing branch test_merge_pull" -PercentComplete 1
 Make-ParentCommit
 
+Write-Progress "Preparing branch test_merge_pull" -PercentComplete 2
 Commit-File -FileContent "Commit which will cause pull merge" -FileName CommitWhichWilCausePullMerge.txt
 
+Write-Progress "Preparing branch test_merge_pull" -PercentComplete 3
 git push local test_merge_pull --set-upstream --quiet | Out-Null
 
+Write-Progress "Preparing branch test_merge_pull" -PercentComplete 4
 git reset --hard HEAD~1 --quiet
 
+Write-Progress "Preparing branch test_merge_pull" -PercentComplete 5
 Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt
 
+Write-Progress "Preparing branch test_merge_pull" -PercentComplete 6
 git config branch.test_merge_pull.rebase false
 
 Write-Output "Creating branch test_merge_pull_backup"
