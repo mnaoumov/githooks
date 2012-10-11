@@ -103,17 +103,8 @@ Prepare-Branch test_merge_pull_conflict -Actions `
 Prepare-Branch test_merge_pull_conflict_backup -Actions `
     { git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet | Out-Null }
 
-Prepare-Branch TFS1234 -Actions `
-    { git checkout master -B TFS1234 --quiet | Out-Null }
-
 Prepare-Branch non_TFS_branch -Actions `
-    { git checkout master -B non_TFS_branch --quiet | Out-Null },
-    { Make-ParentCommit },
-    { Make-MergeConflictCommit }
-
-Prepare-Branch non_TFS_branch_backup -Actions `
-    { git checkout non_TFS_branch -B non_TFS_branch_backup --quiet | Out-Null }
-
+    { git checkout master -B non_TFS_branch --quiet | Out-Null }
 
 Write-Output "Checkout master branch"
 git checkout master --quiet

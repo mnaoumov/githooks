@@ -26,16 +26,10 @@ In all other cases it will prompt with a dialog asking for TFS WorkItem ID
 To test it use
 
     git checkout non_TFS_branch
-    git commit --allow-empty -m "TFS1234 Some message"
-    git commit --allow-empty -m "ADH Some message"
 
-**ADH** will be trimmed out
+    git commit --allow-empty -m "Some message"
 
-    git merge test_merge_pull_conflict_backup
-
-You will get a merge conflict. Resolve it and commit. Hook dialog will not appear.
-
-    git reset --hard non_TFS_branch_backup
+Commit. Hook dialog will appear.
 
 ![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
