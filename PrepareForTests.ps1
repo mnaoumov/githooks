@@ -59,14 +59,47 @@ if ($remotes -contains "local")
 Write-Output "Creating git remote 'local' within '$localGitRepoPath'"
 git remote add local $localGitRepoPath
 
-Write-Output "Preparing branch test_merge_pull"
-Write-Progress "Preparing branch test_merge_pull" -PercentComplete 0
-git checkout master -B test_merge_pull --quiet | Out-Null
 
-Write-Progress "Preparing branch test_merge_pull" -PercentComplete 1
-Make-ParentCommit
+function Prepare-Branch
+{
+    param
+    (
+        [string] $BranchName
+        [ScriptBlock[]] $Actions
+    )
 
-Write-Progress "Preparing branch test_merge_pull" -PercentComplete 2
+    Write-Output "Preparing branch $BranchName"
+
+    for ($i = 0; i < $Actions.Length; $i++)
+    {
+        Write-Progress "Preparing branch test_merge_pull" -PercentComplete ($i / $Actions.Length * 100)
+        & $Actions[$i]
+    }
+
+    Write-Progress "Preparing branch test_merge_pull" -Completed
+}
+
+Prepare-Branch test_merge_pull -Actions
+    { git checkout master -B test_merge_pull --quiet | Out-Null },
+    { Make-ParentCommit },
+    { Commit-File -FileContent "Commit which will cause pull merge" -FileName CommitWhichWilCausePullMerge.txt },
+    { git push local test_merge_pull --set-upstream --quiet | Out-Null }
+    { git reset --hard HEAD~1 --quiet }
+    { Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt }
+    { git config branch.test_merge_pull.rebase false }
+
+
+#Write-Output "Preparing branch test_merge_pull"
+#Write-Progress "Preparing branch test_merge_pull" -PercentComplete 0
+#git checkout master -B test_merge_pull --quiet | Out-Null
+
+#Write-Progress "Preparing branch test_merge_pull" -PercentComplete 1
+#Make-ParentCommit
+
+#Write-Progress "Preparing branch test_merge_pull" -PercentComplete 2
+
+<#
+
 Commit-File -FileContent "Commit which will cause pull merge" -FileName CommitWhichWilCausePullMerge.txt
 
 Write-Progress "Preparing branch test_merge_pull" -PercentComplete 3
@@ -115,3 +148,4 @@ Make-MergeConflictCommit
 
 Write-Output "Checkout master branch"
 git checkout master --quiet
+#>
