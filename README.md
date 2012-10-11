@@ -23,6 +23,18 @@ Hook accepts commit if
 
 In all other cases it will prompt with a dialog asking for TFS WorkItem ID
 
+To test it use
+
+    git checkout non_TFS_branch
+    git commit --allow-empty -m "TFS1234 Some message"
+    git commit --allow-empty -m "ADH Some message"
+
+**ADH** will be trimmed out
+
+    git commit merge test_merge_pull_conflict_backup
+
+Resolve the conflict and commit. Hook dialog will not appear.
+
 ![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
 **post-merge** - executed after non-conflict merge. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
