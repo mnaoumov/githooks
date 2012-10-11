@@ -111,5 +111,9 @@ Prepare-Branch non_TFS_branch -Actions `
     { Make-ParentCommit },
     { Make-MergeConflictCommit }
 
+Prepare-Branch non_TFS_branch_backup -Actions `
+    { git checkout non_TFS_branch -B non_TFS_branch_backup --quiet | Out-Null }
+
+
 Write-Output "Checkout master branch"
 git checkout master --quiet
