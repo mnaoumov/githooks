@@ -31,9 +31,11 @@ To test it use
 
 **ADH** will be trimmed out
 
-    git commit merge test_merge_pull_conflict_backup
+    git merge test_merge_pull_conflict_backup
 
-Resolve the conflict and commit. Hook dialog will not appear.
+You will get a merge conflict. Resolve it and commit. Hook dialog will not appear.
+
+    git reset --hard non_TFS_branch_backup
 
 ![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
