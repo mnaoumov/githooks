@@ -112,7 +112,7 @@ $adhocPattern = "^ADH\s+"
 $fixupSquashPattern = "(fixup)|(squash)[!]\s+"
 $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
 
-$currentBranchName = git name-rev --name-only HEAD
+$currentBranchName = git rev-parse --abbrev-ref HEAD
 $commitMessage = Get-Content $CommitMessagePath | Out-String
 
 function Update-CommitMessage()

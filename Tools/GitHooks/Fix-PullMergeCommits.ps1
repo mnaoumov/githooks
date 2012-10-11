@@ -18,7 +18,7 @@ if (-not $isMergeCommit) {
     exit
 }
 
-$currentBranchName = git name-rev --name-only HEAD
+$currentBranchName = git rev-parse --abbrev-ref HEAD
 $mergedBranchName = git name-rev --name-only HEAD^2
 
 $isPullMerge = $mergedBranchName -like "remotes/*"
