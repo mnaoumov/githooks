@@ -88,64 +88,28 @@ Prepare-Branch test_merge_pull -Actions `
     { Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt },
     { git config branch.test_merge_pull.rebase false }
 
+Prepare-Branch test_merge_pull_backup -Actions `
+    { git checkout test_merge_pull -B test_merge_pull_backup --quiet | Out-Null }
 
-#Write-Output "Preparing branch test_merge_pull"
-#Write-Progress "Preparing branch test_merge_pull" -PercentComplete 0
-#git checkout master -B test_merge_pull --quiet | Out-Null
+Prepare-Branch test_merge_pull_conflict -Actions `
+    { git checkout master -B test_merge_pull_conflict --quiet | Out-Null }
+    { Make-ParentCommit }
+    { Make-MergeConflictCommit }
+    { git push local test_merge_pull_conflict --set-upstream --quiet | Out-Null }
+    { git reset --hard HEAD~1 --quiet }
+    { Commit-File -FileContent "Another commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt }
+    { git config branch.test_merge_pull_conflict.rebase false }
 
-#Write-Progress "Preparing branch test_merge_pull" -PercentComplete 1
-#Make-ParentCommit
+Prepare-Branch test_merge_pull_conflict_backup -Actions `
+    { git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet | Out-Null }
 
-#Write-Progress "Preparing branch test_merge_pull" -PercentComplete 2
+Prepare-Branch TFS1234 -Actions `
+    { git checkout master -B TFS1234 --quiet | Out-Null }
 
-<#
-
-Commit-File -FileContent "Commit which will cause pull merge" -FileName CommitWhichWilCausePullMerge.txt
-
-Write-Progress "Preparing branch test_merge_pull" -PercentComplete 3
-git push local test_merge_pull --set-upstream --quiet | Out-Null
-
-Write-Progress "Preparing branch test_merge_pull" -PercentComplete 4
-git reset --hard HEAD~1 --quiet
-
-Write-Progress "Preparing branch test_merge_pull" -PercentComplete 5
-Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt
-
-Write-Progress "Preparing branch test_merge_pull" -PercentComplete 6
-git config branch.test_merge_pull.rebase false
-
-Write-Output "Creating branch test_merge_pull_backup"
-git checkout test_merge_pull -B test_merge_pull_backup --quiet | Out-Null
-
-Write-Output "Preparing branch test_merge_pull_conflict"
-git checkout master -B test_merge_pull_conflict --quiet | Out-Null
-
-Make-ParentCommit
-
-Make-MergeConflictCommit
-
-git push local test_merge_pull_conflict --set-upstream --quiet | Out-Null
-
-git reset --hard HEAD~1 --quiet
-
-Commit-File -FileContent "Another commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt
-
-git config branch.test_merge_pull_conflict.rebase false
-
-Write-Output "Creating branch test_merge_pull_conflict_backup"
-git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet | Out-Null
-
-Write-Output "Creating branch TFS1234"
-git checkout master -B TFS1234 --quiet | Out-Null
-
-Make-ParentCommit
-
-Write-Output "Creating branch non_TFS_branch"
-git checkout master -B non_TFS_branch --quiet | Out-Null
-
-Make-ParentCommit
-Make-MergeConflictCommit
+Prepare-Branch non_TFS_branch -Actions `
+    { git checkout master -B non_TFS_branch --quiet | Out-Null }
+    { Make-ParentCommit }
+    { Make-MergeConflictCommit }
 
 Write-Output "Checkout master branch"
 git checkout master --quiet
-#>
