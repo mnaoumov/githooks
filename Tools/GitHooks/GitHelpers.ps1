@@ -25,7 +25,7 @@ function Get-TrackedBranchName
     "$remote/$currentBranchName"
 }
 
-function Is-PullMerge
+function Check-IsPullMerge
 {
     Get-MergedBranchName -eq Get-TrackedBranchName
 }
