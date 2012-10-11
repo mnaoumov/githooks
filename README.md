@@ -32,6 +32,8 @@ To test it use
 
 Now **post-merge** hook should help you to do rebase
 
+![Merge commit dialog](Help/images/merge-commit-dialog.png)
+
 To reset branch to the initial state use the following commands. Last command is required only if you selected **Yes, permanently** in the hooks dialog
 
     git checkout test_merge_pull
