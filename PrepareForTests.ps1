@@ -28,6 +28,10 @@ function Make-ParentCommit
     Commit-File -FileContent "Parent commit" -FileName "ParentCommit.txt"
 }
 
+function Make-MergeConflictCommit
+{
+    Commit-File -FileContent "Commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt
+}
 
 Write-Output "Installing git hooks"
 Tools\GitHooks\Install-GitHooks.ps1
@@ -78,7 +82,7 @@ git checkout master -B test_merge_pull_conflict --quiet | Out-Null
 
 Make-ParentCommit
 
-Commit-File -FileContent "Commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt
+Make-MergeConflictCommit
 
 git push local test_merge_pull_conflict --set-upstream --quiet | Out-Null
 
@@ -98,6 +102,9 @@ Make-ParentCommit
 
 Write-Output "Creating branch non_TFS_branch"
 git checkout master -B non_TFS_branch --quiet | Out-Null
+
+Make-ParentCommit
+Make-MergeConflictCommit
 
 Write-Output "Checkout master branch"
 git checkout master --quiet
