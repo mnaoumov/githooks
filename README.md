@@ -32,7 +32,7 @@ To test it use
 
 Now **post-merge** hook should help you to do rebase
 
-![Merge commit dialog](Help/images/merge-commit-dialog.png)
+![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/merge-commit-dialog.png)
 
 To reset branch to the initial state use the following commands. Last command is required only if you selected **Yes, permanently** in the hooks dialog
 
