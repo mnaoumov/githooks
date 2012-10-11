@@ -83,9 +83,9 @@ Prepare-Branch test_merge_pull -Actions `
     { git checkout master -B test_merge_pull --quiet | Out-Null },
     { Make-ParentCommit },
     { Commit-File -FileContent "Commit which will cause pull merge" -FileName CommitWhichWilCausePullMerge.txt },
-    { git push local test_merge_pull --set-upstream --quiet | Out-Null }
-    { git reset --hard HEAD~1 --quiet }
-    { Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt }
+    { git push local test_merge_pull --set-upstream --quiet | Out-Null },
+    { git reset --hard HEAD~1 --quiet },
+    { Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt },
     { git config branch.test_merge_pull.rebase false }
 
 
