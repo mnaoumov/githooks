@@ -19,7 +19,7 @@ Hook accepts commit if
 - it looks like **TFS1234 Some message**
 - it looks like **ADH Some message** - ADH (stands for *ad-hoc*) will be trimmed out
 - it is a merge, fixup, squash or revert commit
-- it is located in a branch with name like **TFS1234** - branch name will be inserted as a prefix to the commit message
+- current branch has name like **TFS1234** - branch name will be inserted as a prefix to the commit message
 
 In all other cases it will prompt with a dialog asking for TFS WorkItem ID
 
