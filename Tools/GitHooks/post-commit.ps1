@@ -6,4 +6,4 @@ param (
 
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
-& "$scriptFolder\Fix-PullMergeCommits.ps1"
+& "$scriptFolder\Fix-IncorrectMerge.ps1"
