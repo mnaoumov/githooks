@@ -23,6 +23,8 @@ Hook accepts commit if
 
 In all other cases it will prompt with a dialog asking for TFS WorkItem ID
 
+![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
+
 **post-merge** - executed after non-conflict merge. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
 
 To test it use
