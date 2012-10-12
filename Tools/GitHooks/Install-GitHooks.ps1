@@ -1,14 +1,16 @@
 #requires -version 2.0
 
 [CmdletBinding()]
-param (
+param
+(
 )
 
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 $repoRoot = Join-Path $scriptFolder "..\..\"
 $gitHooksFolder = Join-Path $repoRoot ".git\hooks"
 
-if (-not (Test-Path $gitHooksFolder)) {
+if (-not (Test-Path $gitHooksFolder))
+{
     throw "Failed to locate .git\hooks directory"
 }
 

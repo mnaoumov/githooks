@@ -13,8 +13,8 @@ function Main
 
     Trap [Exception] `
     {
-        Write-Error $_
-        exit 1
+        Write-Error ($_ | Out-String)
+        exit
     }
 
     $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration

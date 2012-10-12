@@ -11,10 +11,11 @@ $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
 function Main
 {
-    $ErrorActionPreference = "Stop";
+    $ErrorActionPreference = "Stop"
 
-    Trap [Exception] {
-        Write-Error $_
+    Trap [Exception] `
+    {
+        Write-Error ($_ | Out-String)
         ExitWithCode 1
     }
 
@@ -23,7 +24,7 @@ function Main
     if (-not ([Convert]::ToBoolean($hooksConfiguration.CommitMessages.enforceTfsPrefix)))
     {
         Write-Debug "CommitMessages/@enforceTfsPrefix is disabled in HooksConfiguration.xml"
-        ExitWithCode 0
+        ExitWithCode
     }
 
     . "$scriptFolder\GitHelpers.ps1"
@@ -40,53 +41,53 @@ function Main
 
     $commitMessage = Get-Content $CommitMessagePath | Out-String
 
-    #Allow commits that contain a work item ID in the message
+    # Allow commits that contain a work item ID in the message
     if ($commitMessage -match $workItemPattern)
     {
         Write-Debug "ID in message"
-        ExitWithCode 0
+        ExitWithCode
     }
-    #Also allow commits that contain a work item ID in the branch name
+    # Also allow commits that contain a work item ID in the branch name
     elseif ((Get-CurrentBranchName) -match $workItemPattern)
     {
         Write-Debug "ID in branch"
         $WorkItem = $matches[0];
 
-        #Include the work item ID in the commit message
+        # Include the work item ID in the commit message
         $commitMessage = "$WorkItem $commitMessage"
         Update-CommitMessage
-        ExitWithCode 0
+        ExitWithCode
     }
 
-    #Allow merge commits
+    # Allow merge commits
     if (Test-Path $mergeHeadFile)
     {
         Write-Debug "Commit was a merge"
-        ExitWithCode 0
+        ExitWithCode
     }
 
-    #Allow fixup/squash commits
+    # Allow fixup/squash commits
     if ($commitMessage -match $fixupSquashPattern)
     {
         Write-Debug "Commit was a fixup/squash"
-        ExitWithCode 0
+        ExitWithCode
     }
 
-    #Allow revert commits
+    # Allow revert commits
     if ($commitMessage -match $revertPattern)
     {
         Write-Debug "Commit was a revert"
-        ExitWithCode 0
+        ExitWithCode
     }
 
-    #Allow Adhoc commits
+    # Allow Adhoc commits
     if ($commitMessage -match $adhocPattern)
     {
         Write-Debug "Commit was an ad-hoc"
-        #Strip out the "ADH"
+        # Strip out the "ADH"
         $commitMessage = $commitMessage -replace $adhocPattern, ""
         Update-CommitMessage
-        ExitWithCode 0
+        ExitWithCode
     }
 
     $result = Show-Dialog
@@ -99,14 +100,14 @@ function Main
     elseif ($result.AdHoc)
     {
         Write-Debug "Commit was an ad-hoc"
-        ExitWithCode 0
+        ExitWithCode
     }
     else
     {
         Write-Debug "Adding TFS WorkItem ID $($result.WorkItemId)"
         $commitMessage = "TFS$($result.WorkItemId) $commitMessage"
         Update-CommitMessage
-        ExitWithCode 0
+        ExitWithCode
     }
 }
 
@@ -114,10 +115,10 @@ function ExitWithCode
 { 
     param
     (
-        [int] $exitcode
+        [int] $exitCode = 0
     )
 
-    $host.SetShouldExit($exitcode)
+    $host.SetShouldExit($exitCode)
     exit
 }
 

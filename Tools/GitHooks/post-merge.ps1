@@ -1,7 +1,8 @@
 #requires -version 2.0
 
 [CmdletBinding()]
-param (
+param
+(
 )
 
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
