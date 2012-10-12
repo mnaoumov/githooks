@@ -22,8 +22,8 @@ function Main
 
     if (-not ([Convert]::ToBoolean($hooksConfiguration.CommitMessages.enforceTfsPrefix)))
     {
-        Write-Debug "CommitMessages/@enforceTfsPrefix is disabled"
-        ExitWithCode 1
+        Write-Debug "CommitMessages/@enforceTfsPrefix is disabled in HooksConfiguration.xml"
+        ExitWithCode 0
     }
 
     . "$scriptFolder\GitHelpers.ps1"

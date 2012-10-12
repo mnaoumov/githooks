@@ -17,6 +17,8 @@ function Main
         exit 1
     }
 
+    $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+
     . "$scriptFolder\GitHelpers.ps1"
 
     if (-not (Check-IsMergeCommit))
@@ -41,6 +43,12 @@ function Main
 
 function Fix-PullMerge
 {
+    if (-not ([Convert]::ToBoolean($hooksConfiguration.Merges.fixPullMerges)))
+    {
+        Write-Debug "Merges/@fixPullMerges is disabled in HooksConfiguration.xml"
+        return
+    }
+
     Write-Host "`nCurrent merge '$currentBranchName' with '$mergedBranchName' is a pull merge"
 
     Add-Type -AssemblyName PresentationFramework
