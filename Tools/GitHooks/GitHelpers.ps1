@@ -22,7 +22,18 @@ function Get-TrackedBranchName
         $remote = "origin"
     }
 
-    "$remote/$currentBranchName"
+    $remoteBranch = "$remote/$currentBranchName"
+
+    $remoteBranches = (git branch --remote) -replace "^  "
+
+    if ($remoteBranches -contains $remoteBranch)
+    {
+        return $remoteBranch
+    }
+    else
+    {
+        return $null
+    }
 }
 
 function Check-IsPullMerge
