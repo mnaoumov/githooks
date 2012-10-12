@@ -17,11 +17,11 @@ function Main
         ExitWithCode 1
     }
 
+    . "$scriptFolder\Common.ps1"
+
     Add-Type -AssemblyName PresentationFramework
 
     $hooksConfiguration = Get-HooksConfiguration
-
-    . "$scriptFolder\Common.ps1"
 
     if (-not (Check-IsMergeCommit))
     {
