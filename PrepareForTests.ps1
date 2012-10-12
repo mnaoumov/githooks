@@ -11,7 +11,7 @@ function Main
 {
     $ErrorActionPreference = "Stop";
 
-    . "$scriptFolder\Tools\GitHooks\GitHelpers.ps1"
+    . "$scriptFolder\Tools\GitHooks\Common.ps1"
 
     Write-Output "Installing git hooks"
     & "$scriptFolder\Tools\GitHooks\Install-GitHooks.ps1"
