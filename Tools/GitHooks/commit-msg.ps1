@@ -20,7 +20,7 @@ function Main
 
     $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
 
-    if (-not ($hooksConfiguration.CommitMessages.enforceTfsPrefix))
+    if (-not ([Convert]::ToBoolean($hooksConfiguration.CommitMessages.enforceTfsPrefix)))
     {
         Write-Debug "CommitMessages/@enforceTfsPrefix is disabled"
         ExitWithCode 1
@@ -196,7 +196,7 @@ function Show-Dialog
     $result
 }
 
-function Update-CommitMessage()
+function Update-CommitMessage
 {
     $commitMessage | Out-File $CommitMessagePath -Encoding Ascii
 }
