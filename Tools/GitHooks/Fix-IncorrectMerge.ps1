@@ -36,8 +36,7 @@ function Main
     }
     else
     {
-        Write-Debug "`nCurrent merge '$currentBranchName' with '$mergedBranchName' is not a pull merge"
-        return
+        Fix-UnallowedMerge
     }
 }
 
@@ -130,5 +129,74 @@ function RevertAndRebase
     Write-Host "`nExecuting 'git git pull --rebase'"
     git pull --rebase | Write-Host
 }
+
+function Fix-UnallowedMerge
+{
+    if ([Convert]:ToBoolean($hooksConfiguration.Merges.allowAllMerges))
+    {
+        Write-Debug "Merges/@allowAllMerges is enabled in HooksConfiguration.xml"
+        exit
+    }
+
+    $mergeAllowed = ($hooksConfiguration.Merges | `
+        Where-Object { ($_.branch -eq $mergedBranchName) -and ($_.into -eq $currentBranchName) } | `
+        Select-Object -First 1) -ne $null
+
+    if ($mergeAllowed)
+    {
+        Write-Debug "Merge '$mergedBranchName' into '$currentBranchName' is allowed."
+        exit
+    }
+
+    $xaml = [xml] @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Unallowed merge"
+    Height="110"
+    Width="450"
+    ResizeMode="NoResize">
+<Grid>
+    <TextBlock HorizontalAlignment="Left"
+               Margin="10,10,0,0"
+               TextWrapping="Wrap"
+               Text="Merge '$mergedBranchName' into '$currentBranchName' is unallowed. Do you want to revert it?"
+               VerticalAlignment="Top" />
+    <Button x:Name="yesButton"
+            Content="Yes"
+            HorizontalAlignment="Left"
+            Margin="223,44,0,0"
+            VerticalAlignment="Top"
+            Width="100"
+            IsDefault="True" />
+    <Button x:Name="noButton"
+            Content="No"
+            HorizontalAlignment="Left"
+            Margin="328,44,0,0"
+            VerticalAlignment="Top"
+            Width="100"
+            IsCancel="True" />
+</Grid>
+</Window>
+"@
+
+    $reader = New-Object System.Xml.XmlNodeReader $xaml
+    $form = [Windows.Markup.XamlReader]::Load($reader)
+
+    $yesButton = $form.FindName("yesButton")
+    $noButton = $form.FindName("noButton")
+
+    $yesButton.add_Click(
+        {
+            $form.Close()
+            git reset --hard HEAD^1 | Write-Host
+        })
+
+    $noButton.add_Click(
+        {
+            $form.Close()
+            Write-Warning "Merge '$mergedBranchName' into '$currentBranchName' is unallowed."
+        })
+}
+
 
 Main

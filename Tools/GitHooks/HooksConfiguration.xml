@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <HooksConfiguration>
   <CommitMessages enforceTfsPrefix="true" />
-  <Merges fixPullMerges="true">
+  <Merges fixPullMerges="true" allowAllMerges="false">
     <Merge branch="release.1.0" into="release.2.0" />
     <Merge branch="release.2.0" into="future" />
   </Merges>
