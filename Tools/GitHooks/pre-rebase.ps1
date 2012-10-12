@@ -13,17 +13,18 @@ $ErrorActionPreference = "Stop"
 Trap [Exception] `
 {
     Write-Error ($_ | Out-String)
-    ExitWithCode 1
+    ExitWithFailure
 }
 
 $currentBranchName = Get-CurrentBranchName
 
 if (Check-IsBranchPushed)
 {
-    Write-Warning "Rebase of already pushed branches is not allowed"
-    ExitWithCode 1
+    Write-Warning "You cannot rebase branch $currentBranchName because it was already pushed."
+    ExitWithFailure
 }
 else
 {
-    Write-Debug "Branch was not pushed. Rebase allowed"
+    Write-Debug "Branch $currentBranchName was not pushed. Rebase allowed."
+    ExitWithSuccess
 }

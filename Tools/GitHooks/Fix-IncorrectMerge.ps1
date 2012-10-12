@@ -135,7 +135,7 @@ function Fix-UnallowedMerge
     if ([Convert]::ToBoolean($hooksConfiguration.Merges.allowAllMerges))
     {
         Write-Debug "Merges/@allowAllMerges is enabled in HooksConfiguration.xml"
-        exit
+        ExitWithSuccess
     }
 
     $mergeAllowed = ($hooksConfiguration.Merges.Merge | `
@@ -145,7 +145,7 @@ function Fix-UnallowedMerge
     if ($mergeAllowed)
     {
         Write-Debug "Merge '$mergedBranchName' into '$currentBranchName' is allowed."
-        exit
+        ExitWithSuccess
     }
 
     $xaml = [xml] @"

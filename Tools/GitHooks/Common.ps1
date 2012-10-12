@@ -55,9 +55,19 @@ function ExitWithCode
 { 
     param
     (
-        [int] $exitCode = 0
+        [int] $exitCode
     )
 
     $host.SetShouldExit($exitCode)
     exit
+}
+
+function ExitWithSuccess
+{
+    ExitWithCode 0
+}
+
+function ExitWithFailure
+{
+    ExitWithCode 1
 }
