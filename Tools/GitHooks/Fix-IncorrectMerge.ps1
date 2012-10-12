@@ -90,14 +90,6 @@ function Fix-PullMerge
     $yesPermanentlyButton = $form.FindName("yesPermanentlyButton")
     $noButton = $form.FindName("noButton")
 
-    function RevertAndRebase
-    {
-        Write-Host "`nReverting pull merge commit by 'git reset --hard HEAD^1'"
-        git reset --hard HEAD^1 | Write-Host
-        Write-Host "`nExecuting 'git git pull --rebase'"
-        git pull --rebase | Write-Host
-    }
-
     $yesButton.add_Click(
         {
             $form.Close()
@@ -122,6 +114,14 @@ function Fix-PullMerge
 
     $form.WindowStartupLocation = "CenterScreen"
     [void] $form.ShowDialog();
+}
+
+function RevertAndRebase
+{
+    Write-Host "`nReverting pull merge commit by 'git reset --hard HEAD^1'"
+    git reset --hard HEAD^1 | Write-Host
+    Write-Host "`nExecuting 'git git pull --rebase'"
+    git pull --rebase | Write-Host
 }
 
 Main
