@@ -45,3 +45,19 @@ function Get-CurrentCommitMessage
 {
     git log -1 --pretty=%B
 }
+
+function Check-IsBranchPushed
+{
+    (Get-TrackedBranchName) -ne $null
+}
+
+function ExitWithCode
+{ 
+    param
+    (
+        [int] $exitCode = 0
+    )
+
+    $host.SetShouldExit($exitCode)
+    exit
+}

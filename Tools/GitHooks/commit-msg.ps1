@@ -27,7 +27,7 @@ function Main
         ExitWithCode
     }
 
-    . "$scriptFolder\GitHelpers.ps1"
+    . "$scriptFolder\Common.ps1"
 
     Write-Debug "Running commit hook"
     $workingCopyRoot = Join-Path $scriptFolder "..\.."
@@ -109,17 +109,6 @@ function Main
         Update-CommitMessage
         ExitWithCode
     }
-}
-
-function ExitWithCode
-{ 
-    param
-    (
-        [int] $exitCode = 0
-    )
-
-    $host.SetShouldExit($exitCode)
-    exit
 }
 
 function Show-Dialog

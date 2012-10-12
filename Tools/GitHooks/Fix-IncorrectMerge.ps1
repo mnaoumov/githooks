@@ -14,19 +14,19 @@ function Main
     Trap [Exception] `
     {
         Write-Error ($_ | Out-String)
-        exit
+        ExitWithCode 1
     }
 
     Add-Type -AssemblyName PresentationFramework
 
     $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
 
-    . "$scriptFolder\GitHelpers.ps1"
+    . "$scriptFolder\Common.ps1"
 
     if (-not (Check-IsMergeCommit))
     {
         Write-Debug "`nCurrent commit is not a merge commit"
-        exit
+        ExitWithCode
     }
 
     $currentBranchName = Get-CurrentBranchName
@@ -201,6 +201,5 @@ function Fix-UnallowedMerge
     $form.WindowStartupLocation = "CenterScreen"
     [void] $form.ShowDialog();
 }
-
 
 Main

@@ -5,6 +5,8 @@ param
 (
 )
 
+$ErrorActionPreference = "Stop"
+
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 $repoRoot = Join-Path $scriptFolder "..\..\"
 $gitHooksFolder = Join-Path $repoRoot ".git\hooks"
