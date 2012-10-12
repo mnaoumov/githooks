@@ -138,7 +138,7 @@ function Fix-UnallowedMerge
         exit
     }
 
-    $mergeAllowed = ($hooksConfiguration.Merges | `
+    $mergeAllowed = ($hooksConfiguration.Merges.Merge | `
         Where-Object { ($_.branch -eq $mergedBranchName) -and ($_.into -eq $currentBranchName) } | `
         Select-Object -First 1) -ne $null
 
