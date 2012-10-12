@@ -196,6 +196,9 @@ function Fix-UnallowedMerge
             $form.Close()
             Write-Warning "Merge '$mergedBranchName' into '$currentBranchName' is unallowed."
         })
+
+    $form.WindowStartupLocation = "CenterScreen"
+    [void] $form.ShowDialog();
 }
 
 
