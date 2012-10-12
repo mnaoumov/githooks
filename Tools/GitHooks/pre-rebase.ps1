@@ -3,6 +3,8 @@
 [CmdletBinding()]
 param
 (
+    [string] $NewBaseBranchName
+    [string] $BranchName
 )
 
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
