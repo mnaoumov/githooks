@@ -1,3 +1,30 @@
+function ExitWithCode
+{ 
+    param
+    (
+        [int] $exitCode
+    )
+
+    $host.SetShouldExit($exitCode)
+    exit
+}
+
+function ExitWithSuccess
+{
+    ExitWithCode 0
+}
+
+function ExitWithFailure
+{
+    ExitWithCode 1
+}
+
+function Get-HooksConfiguration
+{
+    $scriptFolder = Split-Path $script:MyInvocation.MyCommand.Path -Parent
+    ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+}
+
 function Check-IsMergeCommit
 {
     (git rev-parse --verify --quiet HEAD^2) -ne $null
@@ -10,7 +37,7 @@ function Get-CurrentBranchName
 
 function Get-MergedBranchName
 {
-    (git name-rev --name-only HEAD^2) -replace "remotes/"
+    Get-BranchName HEAD^2
 }
 
 function Get-TrackedBranchName
@@ -51,29 +78,12 @@ function Check-IsBranchPushed
     (Get-TrackedBranchName) -ne $null
 }
 
-function ExitWithCode
-{ 
+function Get-BranchName
+{
     param
     (
-        [int] $exitCode
+        [string] $Commit
     )
 
-    $host.SetShouldExit($exitCode)
-    exit
-}
-
-function ExitWithSuccess
-{
-    ExitWithCode 0
-}
-
-function ExitWithFailure
-{
-    ExitWithCode 1
-}
-
-function Get-HooksConfiguration
-{
-    $scriptFolder = Split-Path $script:MyInvocation.MyCommand.Path -Parent
-    ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+    (git name-rev --name-only $Commit) -replace "remotes/"
 }

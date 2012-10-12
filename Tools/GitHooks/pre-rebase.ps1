@@ -3,7 +3,7 @@
 [CmdletBinding()]
 param
 (
-    [string] $NewBaseBranchName,
+    [string] $NewBaseCommit,
     [string] $BranchName
 )
 
@@ -24,15 +24,27 @@ if ([Convert]::ToBoolean((Get-HooksConfiguration).Branches.allowRebasePushedBran
     ExitWithSuccess
 }
 
-$currentBranchName = Get-CurrentBranchName
+if (-not $BranchName)
+{
+    $BranchName = Get-CurrentBranchName
+}
 
 if (Check-IsBranchPushed)
 {
-    Write-Warning "You cannot rebase branch $currentBranchName because it was already pushed."
+    $newBaseBranchName = Get-BranchName $NewBaseCommit
+    $remoteBranch = Get-TrackedBranchName
+    
+    if ($newBaseBranchName -eq $remoteBranch)
+    {
+        Write-Debug "Pull rebase $BranchName with $remoteBranch detected"
+        ExitWithSuccess
+    }
+
+    Write-Warning "You cannot rebase branch $BranchName because it was already pushed."
     ExitWithFailure
 }
 else
 {
-    Write-Debug "Branch $currentBranchName was not pushed. Rebase allowed."
+    Write-Debug "Branch $BranchName was not pushed. Rebase allowed."
     ExitWithSuccess
 }
