@@ -17,6 +17,8 @@ function Main
         exit
     }
 
+    Add-Type -AssemblyName PresentationFramework
+
     $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
 
     . "$scriptFolder\GitHelpers.ps1"
@@ -49,8 +51,6 @@ function Fix-PullMerge
     }
 
     Write-Host "`nCurrent merge '$currentBranchName' with '$mergedBranchName' is a pull merge"
-
-    Add-Type -AssemblyName PresentationFramework
 
     $xaml = [xml] @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
