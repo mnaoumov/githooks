@@ -132,7 +132,7 @@ function RevertAndRebase
 
 function Fix-UnallowedMerge
 {
-    if ([Convert]:ToBoolean($hooksConfiguration.Merges.allowAllMerges))
+    if ([Convert]::ToBoolean($hooksConfiguration.Merges.allowAllMerges))
     {
         Write-Debug "Merges/@allowAllMerges is enabled in HooksConfiguration.xml"
         exit
