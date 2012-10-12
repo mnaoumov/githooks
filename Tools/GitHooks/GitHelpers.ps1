@@ -27,7 +27,7 @@ function Get-TrackedBranchName
 
 function Check-IsPullMerge
 {
-    Get-MergedBranchName -eq Get-TrackedBranchName
+    (Get-MergedBranchName) -eq (Get-TrackedBranchName)
 }
 
 function Get-CurrentCommitMessage
