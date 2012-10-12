@@ -39,26 +39,6 @@ function Main
     Write-Output "Creating git remote 'local' within '$localGitRepoPath'"
     git remote add local $localGitRepoPath
 
-
-    function Prepare-Branch
-    {
-        param
-        (
-            [string] $BranchName,
-            [ScriptBlock[]] $Actions
-        )
-
-        Write-Output "Preparing branch $BranchName"
-
-        for ($i = 0; $i -lt $Actions.Length; $i++)
-        {
-            Write-Progress "Preparing branch $BranchName" -PercentComplete ($i / $Actions.Length * 100)
-            & $Actions[$i]
-        }
-
-        Write-Progress "Preparing branch $BranchName" -Completed
-    }
-
     Prepare-Branch test_merge_pull -Actions `
         { git checkout master -B test_merge_pull --quiet | Out-Null },
         { Make-ParentCommit },
@@ -68,9 +48,6 @@ function Main
         { Commit-File -FileContent "Another commit which will cause pull merge" -FileName AnotherCommitWhichWilCausePullMerge.txt },
         { git config branch.test_merge_pull.rebase false }
 
-    Prepare-Branch test_merge_pull_backup -Actions `
-        { git checkout test_merge_pull -B test_merge_pull_backup --quiet | Out-Null }
-
     Prepare-Branch test_merge_pull_conflict -Actions `
         { git checkout master -B test_merge_pull_conflict --quiet | Out-Null },
         { Make-ParentCommit },
@@ -79,9 +56,6 @@ function Main
         { git reset --hard HEAD~1 --quiet },
         { Commit-File -FileContent "Another commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt },
         { git config branch.test_merge_pull_conflict.rebase false }
-
-    Prepare-Branch test_merge_pull_conflict_backup -Actions `
-        { git checkout test_merge_pull_conflict -B test_merge_pull_conflict_backup --quiet | Out-Null }
 
     Prepare-Branch non_TFS_branch -Actions `
         { git checkout master -B non_TFS_branch --quiet | Out-Null }
@@ -140,6 +114,28 @@ function Make-MergeConflictCommit
 function Make-AnotherMergeConflictCommit
 {
     Commit-File -FileContent "Another commit which will cause pull merge conflict" -FileName CommitWhichWilCausePullMergeConflict.txt
+}
+
+function Prepare-Branch
+{
+    param
+    (
+        [string] $BranchName,
+        [ScriptBlock[]] $Actions
+    )
+
+    Write-Output "Preparing branch $BranchName"
+
+    for ($i = 0; $i -lt $Actions.Length; $i++)
+    {
+        Write-Progress "Preparing branch $BranchName" -PercentComplete ($i / $Actions.Length * 100)
+        & $Actions[$i]
+    }
+
+    Write-Progress "Preparing branch $BranchName" -Completed
+
+    Write-Output "Creating backup for branch $BranchName"
+    git checkout $BranchName -B "$($BranchName)_backup" --quiet | Out-Null
 }
 
 Main
