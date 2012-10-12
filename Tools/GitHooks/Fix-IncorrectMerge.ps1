@@ -188,6 +188,7 @@ function Fix-UnallowedMerge
     $yesButton.add_Click(
         {
             $form.Close()
+            Write-Host "`nReverting merge commit by 'git reset --hard HEAD^1'"
             git reset --hard HEAD^1 | Write-Host
         })
 
