@@ -7,16 +7,108 @@ param
     [string] $CommitMessagePath
 )
 
-$ErrorActionPreference = "Stop";
-
-Trap [Exception] {
-    Write-Error $_
-    ExitWithCode 1
-}
-
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
-. "$scriptFolder\GitHelpers.ps1"
+function Main
+{
+    $ErrorActionPreference = "Stop";
+
+    Trap [Exception] {
+        Write-Error $_
+        ExitWithCode 1
+    }
+
+    $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+
+    if (-not ($hooksConfiguration.CommitMessages.enforceTfsPrefix))
+    {
+        Write-Debug "CommitMessages/@enforceTfsPrefix is disabled"
+        ExitWithCode 1
+    }
+
+    . "$scriptFolder\GitHelpers.ps1"
+
+    Write-Debug "Running commit hook"
+    $workingCopyRoot = Join-Path $scriptFolder "..\.."
+    Write-Debug "WorkingCopyRoot is $workingCopyRoot"
+
+    $mergeHeadFile = Join-Path $workingCopyRoot ".git\MERGE_HEAD"
+    $workItemPattern = "^TFS\d+"
+    $adhocPattern = "^ADH\s+"
+    $fixupSquashPattern = "(fixup)|(squash)[!]\s+"
+    $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
+
+    $commitMessage = Get-Content $CommitMessagePath | Out-String
+
+    #Allow commits that contain a work item ID in the message
+    if ($commitMessage -match $workItemPattern)
+    {
+        Write-Debug "ID in message"
+        ExitWithCode 0
+    }
+    #Also allow commits that contain a work item ID in the branch name
+    elseif ((Get-CurrentBranchName) -match $workItemPattern)
+    {
+        Write-Debug "ID in branch"
+        $WorkItem = $matches[0];
+
+        #Include the work item ID in the commit message
+        $commitMessage = "$WorkItem $commitMessage"
+        Update-CommitMessage
+        ExitWithCode 0
+    }
+
+    #Allow merge commits
+    if (Test-Path $mergeHeadFile)
+    {
+        Write-Debug "Commit was a merge"
+        ExitWithCode 0
+    }
+
+    #Allow fixup/squash commits
+    if ($commitMessage -match $fixupSquashPattern)
+    {
+        Write-Debug "Commit was a fixup/squash"
+        ExitWithCode 0
+    }
+
+    #Allow revert commits
+    if ($commitMessage -match $revertPattern)
+    {
+        Write-Debug "Commit was a revert"
+        ExitWithCode 0
+    }
+
+    #Allow Adhoc commits
+    if ($commitMessage -match $adhocPattern)
+    {
+        Write-Debug "Commit was an ad-hoc"
+        #Strip out the "ADH"
+        $commitMessage = $commitMessage -replace $adhocPattern, ""
+        Update-CommitMessage
+        ExitWithCode 0
+    }
+
+    $result = Show-Dialog
+
+    if ($result.Cancel)
+    {
+        Write-Warning "Commit message missing TFS WorkItem ID.`nIt should appear at the start of your commit message, like: TFS1234 Add more awesome"
+        ExitWithCode 1
+    }
+    elseif ($result.AdHoc)
+    {
+        Write-Debug "Commit was an ad-hoc"
+        ExitWithCode 0
+    }
+    else
+    {
+        Write-Debug "Adding TFS WorkItem ID $($result.WorkItemId)"
+        $commitMessage = "TFS$($result.WorkItemId) $commitMessage"
+        Update-CommitMessage
+        ExitWithCode 0
+    }
+}
 
 function ExitWithCode
 { 
@@ -104,86 +196,9 @@ function Show-Dialog
     $result
 }
 
-Write-Debug "Running commit hook"
-$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
-$workingCopyRoot = Join-Path $scriptFolder "..\.."
-Write-Debug "WorkingCopyRoot is $workingCopyRoot"
-
-$mergeHeadFile = Join-Path $workingCopyRoot ".git\MERGE_HEAD"
-$workItemPattern = "^TFS\d+"
-$adhocPattern = "^ADH\s+"
-$fixupSquashPattern = "(fixup)|(squash)[!]\s+"
-$revertPattern = "This reverts commit [0-9a-fA-F]{40}"
-
-$commitMessage = Get-Content $CommitMessagePath | Out-String
-
 function Update-CommitMessage()
 {
     $commitMessage | Out-File $CommitMessagePath -Encoding Ascii
 }
 
-#Allow commits that contain a work item ID in the message
-if ($commitMessage -match $workItemPattern)
-{
-    Write-Debug "ID in message"
-    ExitWithCode 0
-}
-#Also allow commits that contain a work item ID in the branch name
-elseif ((Get-CurrentBranchName) -match $workItemPattern)
-{
-    Write-Debug "ID in branch"
-    $WorkItem = $matches[0];
-
-    #Include the work item ID in the commit message
-    $commitMessage = "$WorkItem $commitMessage"
-    Update-CommitMessage
-    ExitWithCode 0
-}
-
-#Allow merge commits
-if (Test-Path $mergeHeadFile)
-{
-    Write-Debug "Commit was a merge"
-    ExitWithCode 0
-}
-
-#Allow fixup/squash commits
-if ($commitMessage -match $fixupSquashPattern) {
-    Write-Debug "Commit was a fixup/squash"
-    ExitWithCode 0
-}
-
-#Allow revert commits
-if ($commitMessage -match $revertPattern) {
-    Write-Debug "Commit was a revert"
-    ExitWithCode 0
-}
-
-#Allow Adhoc commits
-if ($commitMessage -match $adhocPattern) {
-    Write-Debug "Commit was an ad-hoc"
-    #Strip out the "ADH"
-    $commitMessage = $commitMessage -replace $adhocPattern, ""
-    Update-CommitMessage
-    ExitWithCode 0
-}
-
-$result = Show-Dialog
-
-if ($result.Cancel)
-{
-    Write-Warning "Commit message missing TFS WorkItem ID.`nIt should appear at the start of your commit message, like: TFS1234 Add more awesome"
-    ExitWithCode 1
-}
-elseif ($result.AdHoc)
-{
-    Write-Debug "Commit was an ad-hoc"
-    ExitWithCode 0
-}
-else
-{
-    Write-Debug "Adding TFS WorkItem ID $($result.WorkItemId)"
-    $commitMessage = "TFS$($result.WorkItemId) $commitMessage"
-    Update-CommitMessage
-    ExitWithCode 0
-}
+Main

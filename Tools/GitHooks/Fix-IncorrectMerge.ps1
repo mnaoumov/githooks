@@ -27,9 +27,8 @@ function Main
 
     $currentBranchName = Get-CurrentBranchName
     $mergedBranchName = Get-MergedBranchName
-    $isPullMerge = Check-IsPullMerge
 
-    if ($isPullMerge)
+    if (Check-IsPullMerge)
     {
         Fix-PullMerge
     }
