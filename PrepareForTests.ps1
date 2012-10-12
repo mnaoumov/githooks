@@ -91,6 +91,14 @@ function Main
         { git checkout master -B test_rebase2 --quiet | Out-Null },
         { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt }
 
+    Prepare-Branch test_push -Actions `
+        { git checkout master -B test_push --quiet | Out-Null },
+        { git push local test_push --set-upstream --quiet | Out-Null },
+        { Commit-File -FileContent "Change 1" -FileName Change1.txt },
+        { Commit-File -FileContent "Change 2" -FileName Change2.txt },
+        { Commit-File -FileContent "Change 3" -FileName Change3.txt },
+        { git checkout local/test_push -B "local_test_push_backup" --quiet | Out-Null }
+
     Write-Output "Checkout branch master"
     git checkout master --quiet
 }
