@@ -85,11 +85,11 @@ function Main
     Prepare-Branch test_rebase -Actions `
         { git checkout master -B test_rebase --quiet | Out-Null },
         { Commit-File -FileContent "Some change" -FileName SomeChange.txt },
-        { git push local test_rebase --set-upstream --quiet | Out-Null },
+        { git push local test_rebase --set-upstream --quiet | Out-Null }
 
     Prepare-Branch test_rebase2 -Actions `
         { git checkout master -B test_rebase2 --quiet | Out-Null },
-        { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt },
+        { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt }
 
     Write-Output "Checkout branch master"
     git checkout master --quiet
