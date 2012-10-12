@@ -3,7 +3,7 @@
 [CmdletBinding()]
 param
 (
-    [string] $NewBaseBranchName
+    [string] $NewBaseBranchName,
     [string] $BranchName
 )
 
