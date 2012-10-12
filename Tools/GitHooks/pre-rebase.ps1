@@ -16,6 +16,12 @@ Trap [Exception] `
     ExitWithFailure
 }
 
+if ([Convert]::ToBoolean((Get-HooksConfiguration).Branches.allowRebasePushedBranches))
+{
+    Write-Debug "Rebases/@allowRebasePushedBranches is enabled in HooksConfiguration.xml"
+    ExitWithSuccess
+}
+
 $currentBranchName = Get-CurrentBranchName
 
 if (Check-IsBranchPushed)

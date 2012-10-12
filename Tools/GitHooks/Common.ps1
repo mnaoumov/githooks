@@ -71,3 +71,9 @@ function ExitWithFailure
 {
     ExitWithCode 1
 }
+
+function Get-HooksConfiguration
+{
+    $scriptFolder = Split-Path $script:MyInvocation.MyCommand.Path -Parent
+    ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+}

@@ -19,7 +19,7 @@ function Main
 
     Add-Type -AssemblyName PresentationFramework
 
-    $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+    $hooksConfiguration = Get-HooksConfiguration
 
     . "$scriptFolder\Common.ps1"
 

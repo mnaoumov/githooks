@@ -19,15 +19,13 @@ function Main
         ExitWithFailure
     }
 
-    $hooksConfiguration = ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+    . "$scriptFolder\Common.ps1"
 
-    if (-not ([Convert]::ToBoolean($hooksConfiguration.CommitMessages.enforceTfsPrefix)))
+    if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.enforceTfsPrefix)))
     {
         Write-Debug "CommitMessages/@enforceTfsPrefix is disabled in HooksConfiguration.xml"
         ExitWithSuccess
     }
-
-    . "$scriptFolder\Common.ps1"
 
     Write-Debug "Running commit hook"
     $workingCopyRoot = Join-Path $scriptFolder "..\.."
