@@ -32,11 +32,11 @@ if (-not $BranchName)
 if (Check-IsBranchPushed)
 {
     $newBaseBranchName = Get-BranchName $NewBaseCommit
-    $remoteBranch = Get-TrackedBranchName
+    $remoteBranchName = Get-TrackedBranchName $BranchName
     
-    if ($newBaseBranchName -eq $remoteBranch)
+    if ($newBaseBranchName -eq $remoteBranchName)
     {
-        Write-Debug "Pull rebase $BranchName with $remoteBranch detected"
+        Write-Debug "Pull rebase $BranchName with $remoteBranchName detected"
         ExitWithSuccess
     }
 

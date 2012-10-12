@@ -42,14 +42,23 @@ function Get-MergedBranchName
 
 function Get-TrackedBranchName
 {
-    $currentBranchName = Get-CurrentBranchName
-    $remote = git config branch.$currentBranchName.remote
+    param
+    (
+        [string] $BranchName
+    )
+
+    if (-not $BranchName)
+    {
+        $BranchName = Get-CurrentBranchName
+    }
+
+    $remote = git config branch.$BranchName.remote
     if (-not $remote)
     {
         $remote = "origin"
     }
 
-    $remoteBranch = "$remote/$currentBranchName"
+    $remoteBranch = "$remote/$BranchName"
 
     $remoteBranches = (git branch --remote) -replace "^  "
 
