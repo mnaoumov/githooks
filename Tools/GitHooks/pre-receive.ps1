@@ -22,7 +22,13 @@ Trap [Exception] `
 
 $missingCommit = "0000000000000000000000000000000000000000"
 
-$branchName = Get-BranchName $RefName
+if ($RefName -notlike "refs/heads/*")
+{
+    Write-Debug "$RefName is not a branch commit"
+    ExitWithSuccess
+}
+
+$branchName = $RefName -replace "refs/heads/"
 
 if ($PrevCommit -eq $missingCommit)
 {
