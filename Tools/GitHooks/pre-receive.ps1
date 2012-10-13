@@ -22,17 +22,25 @@ Trap [Exception] `
 
 $missingCommit = "0000000000000000000000000000000000000000"
 
-$commitsRange = if ($PrevCommit -eq $missingCommit) { $NewCommit } else { "$PrevCommit..$NewCommit" }
+$branchName = Get-BranchName $RefName
 
-$commits = git log --pretty=%s%b $commitsRange
-$commits = $commits[$commits.Length..0]
+if ($PrevCommit -eq $missingCommit)
+{
+    Write-Debug "$branchName is a new branch"
+    ExitWithSuccess
+}
 
-$commits | `
-    ForEach-Object `
+$mergeCommits = git log --merges --format=%H "$PrevCommit..$NewCommit"
+[Array]::Reverse($mergeCommits)
+
+foreach ($mergeCommit in $mergeCommits)
+{
+    if (-not (Test-IsAncestorCommit -Commit $mergeCommit -AncestorCommit $PrevCommit))
     {
-        if ($_ -eq "Change 2")
-        {
-            Write-Warning "Change 2 is not allowed"
-            ExitWithFailure
-        }
+        $commitMessage = git log -1 $mergeCommit --format=oneline
+        Write-Warning "The following commit should not exist in branch $branchName`n$commitMessage"
+        ExitWithFailure
     }
+}
+
+ExitWithSuccess

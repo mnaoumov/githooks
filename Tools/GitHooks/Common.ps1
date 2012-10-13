@@ -79,7 +79,7 @@ function Check-IsPullMerge
 
 function Get-CurrentCommitMessage
 {
-    git log -1 --pretty=%B
+    git log -1 --pretty=%s
 }
 
 function Check-IsBranchPushed
@@ -95,4 +95,18 @@ function Get-BranchName
     )
 
     (git name-rev --name-only $Commit) -replace "remotes/"
+}
+
+function Test-IsAncestorCommit
+{
+    param
+    (
+        [string] $Commit,
+        [string] $AncestorCommit
+    )
+
+    $AncestorCommit = git rev-parse $AncestorCommit
+    $mergeBase = git merge-base $Commit $AncestorCommit
+
+    $mergeBase -eq $AncestorCommit
 }
