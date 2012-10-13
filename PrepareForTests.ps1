@@ -42,7 +42,7 @@ function Main
     git remote add local $localGitRepoPath
 
     Write-Host "Copying server hooks into remote 'local'"
-    Get-ChildItem -Path $gitHooksFolder -Filter "pre-recieve$"| `
+    Get-ChildItem -Path $gitHooksFolder -Filter "pre-receive$"| `
         Copy-Item -Destination "$localGitRepoPath\hooks"
 
 
