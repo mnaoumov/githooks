@@ -8,9 +8,11 @@ param
     [string] $RefName
 )
 
+$ErrorActionPreference = "Stop"
+
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
-$ErrorActionPreference = "Stop"
+. "$scriptFolder\Common.ps1"
 
 Trap [Exception] `
 {
@@ -18,9 +20,11 @@ Trap [Exception] `
     ExitWithFailure
 }
 
-Write-Warning $RefName
+$missingCommit = "0000000000000000000000000000000000000000"
 
-$commits = git log --pretty=%s%b "$PrevCommit..$NewCommit"
+$commitsRange = if ($PrevCommit -eq $missingCommit) { $NewCommit } else { "$PrevCommit..$NewCommit" }
+
+$commits = git log --pretty=%s%b $commitsRange
 $commits = $commits[$commits.Length..0]
 
 $commits | `
