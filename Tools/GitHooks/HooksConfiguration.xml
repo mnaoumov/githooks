@@ -4,6 +4,7 @@
   <Merges fixPullMerges="true" allowAllMerges="false">
     <Merge branch="release.1.0" into="release.2.0" />
     <Merge branch="release.2.0" into="future" />
+    <Merge branch="test_push" into="test_push2" />
   </Merges>
   <Rebases allowRebasePushedBranches="false" />
 </HooksConfiguration>
