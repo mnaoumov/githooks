@@ -100,11 +100,15 @@ function Main
 
     Prepare-Branch test_push -Actions `
         { git checkout master -B test_push --quiet | Out-Null },
+        { Commit-File -FileContent "Some change" -FileName SomeChange.txt },
         { git push local test_push --set-upstream --quiet | Out-Null },
-        { Commit-File -FileContent "Change 1" -FileName Change1.txt },
-        { Commit-File -FileContent "Change 2" -FileName Change2.txt },
-        { Commit-File -FileContent "Change 3" -FileName Change3.txt },
-        { git checkout local/test_push -B "local_test_push_backup" --quiet | Out-Null }
+        { Commit-File -FileContent "Change before merge" -FileName ChangeBeforeMerge.txt },
+        { git checkout master -B test_push2 --quiet | Out-Null },
+        { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt },
+        { git merge test_push | Out-Null },
+        { Commit-File -FileContent "Change after merge" -FileName ChangeAfterMerge.txt },
+        { git checkout test_push --quiet | Out-Null },
+        { git reset --hard test_push2 | Out-Null }
 
     Write-Host "Checkout branch master"
     git checkout master --quiet
