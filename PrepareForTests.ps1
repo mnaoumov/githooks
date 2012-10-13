@@ -11,20 +11,22 @@ function Main
 {
     $ErrorActionPreference = "Stop";
 
-    . "$scriptFolder\Tools\GitHooks\Common.ps1"
+    $gitHooksFolder = "$scriptFolder\Tools\GitHooks"
 
-    Write-Output "Installing git hooks"
-    & "$scriptFolder\Tools\GitHooks\Install-GitHooks.ps1"
+    . "$gitHooksFolder\Common.ps1"
+
+    Write-Host "Installing git hooks"
+    & "$gitHooksFolder\Install-GitHooks.ps1"
 
     $localGitRepoPath = "C:\Temp\LocalGitRepo"
 
     if (Test-Path $localGitRepoPath)
     {
-        Write-Output "Removing existing local git repository '$localGitRepoPath'"
+        Write-Host "Removing existing local git repository '$localGitRepoPath'"
         Remove-Item $localGitRepoPath -Recurse -Force
     }
 
-    Write-Output "Creating local git repository '$localGitRepoPath'"
+    Write-Host "Creating local git repository '$localGitRepoPath'"
     New-Item $localGitRepoPath -ItemType Directory | Out-Null
     git init --bare --quiet $localGitRepoPath
 
@@ -32,12 +34,17 @@ function Main
 
     if ($remotes -contains "local")
     {
-        Write-Output "Removing existing git remote 'local'"
+        Write-Host "Removing existing git remote 'local'"
         git remote rm local
     }
 
-    Write-Output "Creating git remote 'local' within '$localGitRepoPath'"
+    Write-Host "Creating git remote 'local' within '$localGitRepoPath'"
     git remote add local $localGitRepoPath
+
+    Write-Host "Copying server hooks into remote 'local'"
+    Get-ChildItem -Path $gitHooksFolder -Filter "pre-recieve$"| `
+        Copy-Item -Destination "$localGitRepoPath\hooks"
+
 
     Prepare-Branch test_merge_pull -Actions `
         { git checkout master -B test_merge_pull --quiet | Out-Null },
@@ -99,7 +106,7 @@ function Main
         { Commit-File -FileContent "Change 3" -FileName Change3.txt },
         { git checkout local/test_push -B "local_test_push_backup" --quiet | Out-Null }
 
-    Write-Output "Checkout branch master"
+    Write-Host "Checkout branch master"
     git checkout master --quiet
 }
 
@@ -141,7 +148,7 @@ function Prepare-Branch
         [ScriptBlock[]] $Actions
     )
 
-    Write-Output "Preparing branch $BranchName"
+    Write-Host "Preparing branch $BranchName"
 
     for ($i = 0; $i -lt $Actions.Length; $i++)
     {
@@ -151,7 +158,7 @@ function Prepare-Branch
 
     Write-Progress "Preparing branch $BranchName" -Completed
 
-    Write-Output "Creating backup for branch $BranchName"
+    Write-Host "Creating backup for branch $BranchName"
     git checkout $BranchName -B "$($BranchName)_backup" --quiet | Out-Null
 }
 
