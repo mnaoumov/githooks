@@ -41,7 +41,8 @@ $mergeCommits = git log --merges --format=%H "$PrevCommit..$NewCommit"
 
 foreach ($mergeCommit in $mergeCommits)
 {
-    if (-not (Test-IsAncestorCommit -Commit $mergeCommit -AncestorCommit $PrevCommit))
+    $firstParentCommit = git rev-parse $mergeCommit^1
+    if (-not (Test-IsAncestorCommit -Commit $firstParentCommit -AncestorCommit $PrevCommit))
     {
         $commitMessage = git log -1 $mergeCommit --format=oneline
         Write-Warning "The following commit should not exist in branch $branchName`n$commitMessage"
