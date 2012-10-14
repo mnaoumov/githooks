@@ -18,33 +18,8 @@ function Main
     Write-Host "Installing git hooks"
     & "$gitHooksFolder\Install-GitHooks.ps1"
 
-    $localGitRepoPath = "C:\Temp\LocalGitRepo"
-
-    if (Test-Path $localGitRepoPath)
-    {
-        Write-Host "Removing existing local git repository '$localGitRepoPath'"
-        Remove-Item $localGitRepoPath -Recurse -Force
-    }
-
-    Write-Host "Creating local git repository '$localGitRepoPath'"
-    New-Item $localGitRepoPath -ItemType Directory | Out-Null
-    git init --bare --quiet $localGitRepoPath
-
-    $remotes = git remote
-
-    if ($remotes -contains "local")
-    {
-        Write-Host "Removing existing git remote 'local'"
-        git remote rm local
-    }
-
-    Write-Host "Creating git remote 'local' within '$localGitRepoPath'"
-    git remote add local $localGitRepoPath
-
-    Write-Host "Copying server hooks into remote 'local'"
-    Get-ChildItem -Path $gitHooksFolder -Include ("pre-receive*", "Common.ps1") -Recurse | `
-        Copy-Item -Destination "$localGitRepoPath\hooks"
-
+    New-GitRepo -Path "C:\Temp\LocalGitRepo" -RemoteName local
+    New-GitRepo -Path "C:\Temp\LocalGitRepo2" -RemoteName local2
 
     Prepare-Branch test_merge_pull -Actions `
         { git checkout master -B test_merge_pull --quiet | Out-Null },
@@ -101,7 +76,7 @@ function Main
     Prepare-Branch test_push -Actions `
         { git checkout master -B test_push --quiet | Out-Null },
         { Commit-File -FileContent "Some change" -FileName SomeChange.txt },
-        { git push local test_push --set-upstream --quiet | Out-Null },
+        { git push local2 test_push --set-upstream --quiet | Out-Null },
         { Commit-File -FileContent "Change before merge" -FileName ChangeBeforeMerge.txt },
         { git checkout master -B test_push2 --quiet | Out-Null },
         { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt },
@@ -164,6 +139,40 @@ function Prepare-Branch
 
     Write-Host "Creating backup for branch $BranchName"
     git checkout $BranchName -B "$($BranchName)_backup" --quiet | Out-Null
+}
+
+function New-GitRepo
+{
+    param
+    ($l
+        [string] $Path,
+        [string] $RemoteName
+    )
+
+    if (Test-Path $Path)
+    {
+        Write-Host "Removing existing local git repository '$Path'"
+        Remove-Item $Path -Recurse -Force
+    }
+
+    Write-Host "Creating local git repository '$Path'"
+    New-Item $Path -ItemType Directory | Out-Null
+    git init --bare --quiet $Path
+
+    $remotes = git remote
+
+    if ($remotes -contains $RemoteName)
+    {
+        Write-Host "Removing existing git remote '$RemoteName'"
+        git remote rm $RemoteName
+    }
+
+    Write-Host "Creating git remote '$RemoteName' within '$Path'"
+    git remote add $RemoteName $Path
+
+    Write-Host "Copying server hooks into remote '$RemoteName'"
+    Get-ChildItem -Path $gitHooksFolder -Include ("pre-receive*", "Common.ps1") -Recurse | `
+        Copy-Item -Destination "$Path\hooks"
 }
 
 Main
