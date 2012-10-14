@@ -5,6 +5,6 @@
 # status after issuing an appropriate message if it wants to stop the
 # commit.  The hook is allowed to edit the commit message file.
 
-PsCommand=".\\tools\\GitHooks\\commit-msg.ps1 \"$1\""
-powershell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$PsCommand"
-exit
+commitMessagePath=$1
+psCommand=".\\Tools\\GitHooks\\commit-msg.ps1 -CommitMessagePath \"$commitMessagePath\""
+PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
