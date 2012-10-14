@@ -20,9 +20,9 @@
 # Both standard output and standard error output are forwarded to git send-pack
 # on the other end, so you can simply echo messages for the user.
 
-while read prevCommit newCommit refName
+while read oldRef newRef refName
 do
-    psCommand=".\\hooks\\pre-receive.ps1 -PrevCommit \"$prevCommit\" -NewCommit \"$newCommit\" -RefName \"$refName\""
+    psCommand=".\\hooks\\pre-receive.ps1 -OldRef \"$oldRef\" -NewRef \"$newRef\" -RefName \"$refName\""
     PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
 
     exitCode=$?

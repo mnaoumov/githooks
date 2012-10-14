@@ -13,10 +13,9 @@ function Main
 
     Trap [Exception] `
     {
-        Write-Error ($_ | Out-String)
-        ExitWithCode 1
+        ProcessErrors $_
     }
-
+    
     . "$scriptFolder\Common.ps1"
 
     Add-Type -AssemblyName PresentationFramework

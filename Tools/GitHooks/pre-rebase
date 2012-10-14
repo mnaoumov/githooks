@@ -11,6 +11,7 @@
 # $1 -- the upstream the series was forked from.
 # $2 -- the branch being rebased (or empty when rebasing the current branch).
 
-PsCommand=".\\tools\\GitHooks\\pre-rebase.ps1 \"$1\" \"$2\""
-powershell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$PsCommand"
-exit
+newBaseCommit=$1
+rebasingBranchName=$2
+psCommand=".\\Tools\\GitHooks\\pre-rebase.ps1 -NewBaseCommit \"$newBaseCommit\" -RebasingBranchName \"$rebasingBranchName\""
+PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"

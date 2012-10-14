@@ -3,8 +3,8 @@
 [CmdletBinding()]
 param
 (
-    [string] $PrevCommit,
-    [string] $NewCommit,
+    [string] $OldRef,
+    [string] $NewRef,
     [string] $RefName
 )
 
@@ -16,11 +16,10 @@ $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
 
 Trap [Exception] `
 {
-    Write-Error ($_ | Out-String)
-    ExitWithFailure
+    ProcessErrors $_
 }
-
-$missingCommit = "0000000000000000000000000000000000000000"
+    
+$missingRef = "0000000000000000000000000000000000000000"
 
 if ($RefName -notlike "refs/heads/*")
 {
@@ -30,19 +29,19 @@ if ($RefName -notlike "refs/heads/*")
 
 $branchName = $RefName -replace "refs/heads/"
 
-if ($PrevCommit -eq $missingCommit)
+if ($OldRef -eq $missingRef)
 {
     Write-Debug "$branchName is a new branch"
     ExitWithSuccess
 }
 
-$mergeCommits = git log --merges --format=%H "$PrevCommit..$NewCommit"
+$mergeCommits = git log --merges --format=%H "$OldRef..$NewRef"
 [Array]::Reverse($mergeCommits)
 
 foreach ($mergeCommit in $mergeCommits)
 {
     $firstParentCommit = git rev-parse $mergeCommit^1
-    if (-not (Test-IsAncestorCommit -Commit $firstParentCommit -AncestorCommit $PrevCommit))
+    if (-not (Test-FastForward -From $OldRef -To $firstParentCommit))
     {
         $commitMessage = git log -1 $mergeCommit --format=oneline
         Write-Warning "The following commit should not exist in branch $branchName`n$commitMessage"

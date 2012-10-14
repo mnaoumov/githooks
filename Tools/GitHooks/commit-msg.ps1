@@ -15,8 +15,7 @@ function Main
 
     Trap [Exception] `
     {
-        Write-Error ($_ | Out-String)
-        ExitWithFailure
+        ProcessErrors $_
     }
 
     . "$scriptFolder\Common.ps1"

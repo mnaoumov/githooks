@@ -19,6 +19,17 @@ function ExitWithFailure
     ExitWithCode 1
 }
 
+function ProcessErrors
+{
+    param
+    (
+        [ErrorRecord[]] $Errors
+    )
+
+    Write-Error ($Errors | Out-String)
+    ExitWithFailure
+}
+
 function Get-HooksConfiguration
 {
     $scriptFolder = Split-Path $script:MyInvocation.MyCommand.Path -Parent
@@ -97,16 +108,16 @@ function Get-BranchName
     (git name-rev --name-only $Commit) -replace "remotes/"
 }
 
-function Test-IsAncestorCommit
+function Test-FastForward
 {
     param
     (
-        [string] $Commit,
-        [string] $AncestorCommit
+        [string] $From,
+        [string] $To
     )
 
-    $AncestorCommit = git rev-parse $AncestorCommit
-    $mergeBase = git merge-base $Commit $AncestorCommit
+    $From = git rev-parse $From
+    $mergeBase = git merge-base $From $To
 
-    $mergeBase -eq $AncestorCommit
+    $mergeBase -eq $From
 }

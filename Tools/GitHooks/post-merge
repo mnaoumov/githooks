@@ -11,6 +11,5 @@
 # permissions/ownership, ACLS, etc). See contrib/hooks/setgitperms.perl for an
 # example of how to do this.
 
-PsCommand=".\\tools\\GitHooks\\post-merge.ps1"
-PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$PsCommand"
-exit
+psCommand=".\\Tools\\GitHooks\\post-merge.ps1"
+PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"

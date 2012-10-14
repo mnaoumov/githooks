@@ -4,7 +4,7 @@
 param
 (
     [string] $NewBaseCommit,
-    [string] $BranchName
+    [string] $RebasingBranchName
 )
 
 $scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -14,37 +14,36 @@ $ErrorActionPreference = "Stop"
 
 Trap [Exception] `
 {
-    Write-Error ($_ | Out-String)
-    ExitWithFailure
+    ProcessErrors $_
 }
-
+    
 if ([Convert]::ToBoolean((Get-HooksConfiguration).Branches.allowRebasePushedBranches))
 {
     Write-Debug "Rebases/@allowRebasePushedBranches is enabled in HooksConfiguration.xml"
     ExitWithSuccess
 }
 
-if (-not $BranchName)
+if (-not $RebasingBranchName)
 {
-    $BranchName = Get-CurrentBranchName
+    $RebasingBranchName = Get-CurrentBranchName
 }
 
 if (Check-IsBranchPushed)
 {
     $newBaseBranchName = Get-BranchName $NewBaseCommit
-    $remoteBranchName = Get-TrackedBranchName $BranchName
+    $remoteBranchName = Get-TrackedBranchName $RebasingBranchName
     
     if ($newBaseBranchName -eq $remoteBranchName)
     {
-        Write-Debug "Pull rebase $BranchName with $remoteBranchName detected"
+        Write-Debug "Pull rebase $RebasingBranchName with $remoteBranchName detected"
         ExitWithSuccess
     }
 
-    Write-Warning "You cannot rebase branch $BranchName because it was already pushed."
+    Write-Warning "You cannot rebase branch $RebasingBranchName because it was already pushed."
     ExitWithFailure
 }
 else
 {
-    Write-Debug "Branch $BranchName was not pushed. Rebase allowed."
+    Write-Debug "Branch $RebasingBranchName was not pushed. Rebase allowed."
     ExitWithSuccess
 }
