@@ -144,7 +144,7 @@ function Prepare-Branch
 function New-GitRepo
 {
     param
-    ($l
+    (
         [string] $Path,
         [string] $RemoteName
     )
