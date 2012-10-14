@@ -137,34 +137,42 @@ function Show-Dialog
 
     $result = @{}
 
-    $okButton.add_Click({
-        $form.Close()
-        $result.AdHoc = $adhocCheckBox.IsChecked;
-        $result.WorkItemId = $workItemIdTextBox.Text;
-    })
-
-    $cancelButton.add_Click({
-        $form.Close()
-        $result.Cancel = $true
-    })
-
-    $adhocCheckBox.add_Click({
-        $workItemIdTextBox.IsEnabled = !$adhocCheckBox.IsChecked
-        if ($workItemIdTextBox.Text -eq "")
+    $okButton.add_Click(
         {
-            $okButton.IsEnabled = $adhocCheckBox.IsChecked
-        }
-    })
+            $form.Close()
+            $result.AdHoc = $adhocCheckBox.IsChecked;
+            $result.WorkItemId = $workItemIdTextBox.Text;
+        })
 
-    $workItemIdTextBox.add_PreviewTextInput({
-        param($Sender, $e)
-
-        [UInt32] $value = 0
-        if (!([UInt32]::TryParse($e.Text, [ref] $value)))
+    $cancelButton.add_Click(
         {
-            $e.Handled = $true
-        }
-    })
+            $form.Close()
+            $result.Cancel = $true
+        })
+
+    $adhocCheckBox.add_Click(
+        {
+            $workItemIdTextBox.IsEnabled = !$adhocCheckBox.IsChecked
+            if ($workItemIdTextBox.Text -eq "")
+            {
+                $okButton.IsEnabled = $adhocCheckBox.IsChecked
+            }
+        })
+
+    $workItemIdTextBox.add_PreviewTextInput(
+        {
+            param
+            (
+                $Sender,
+                $e
+            )
+
+            [UInt32] $value = 0
+            if (!([UInt32]::TryParse($e.Text, [ref] $value)))
+            {
+                $e.Handled = $true
+            }
+        })
 
     $workItemIdTextBox.add_TextChanged({
         $okButton.IsEnabled = $workItemIdTextBox.Text -ne ""

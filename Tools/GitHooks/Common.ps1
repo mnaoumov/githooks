@@ -36,7 +36,7 @@ function Get-HooksConfiguration
     ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
 }
 
-function Check-IsMergeCommit
+function Test-MergeCommit
 {
     (git rev-parse --verify --quiet HEAD^2) -ne $null
 }
@@ -83,7 +83,7 @@ function Get-TrackedBranchName
     }
 }
 
-function Check-IsPullMerge
+function Test-PullMerge
 {
     (Get-MergedBranchName) -eq (Get-TrackedBranchName)
 }
@@ -93,7 +93,7 @@ function Get-CurrentCommitMessage
     git log -1 --pretty=%s
 }
 
-function Check-IsBranchPushed
+function Test-BranchPushed
 {
     (Get-TrackedBranchName) -ne $null
 }

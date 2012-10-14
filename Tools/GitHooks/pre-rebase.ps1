@@ -28,7 +28,7 @@ if (-not $RebasingBranchName)
     $RebasingBranchName = Get-CurrentBranchName
 }
 
-if (Check-IsBranchPushed)
+if (Test-BranchPushed)
 {
     $newBaseBranchName = Get-BranchName $NewBaseCommit
     $remoteBranchName = Get-TrackedBranchName $RebasingBranchName

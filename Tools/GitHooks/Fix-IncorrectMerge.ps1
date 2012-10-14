@@ -22,7 +22,7 @@ function Main
 
     $hooksConfiguration = Get-HooksConfiguration
 
-    if (-not (Check-IsMergeCommit))
+    if (-not (Test-MergeCommit))
     {
         Write-Debug "`nCurrent commit is not a merge commit"
         ExitWithCode
@@ -31,7 +31,7 @@ function Main
     $currentBranchName = Get-CurrentBranchName
     $mergedBranchName = Get-MergedBranchName
 
-    if (Check-IsPullMerge)
+    if (Test-PullMerge)
     {
         Fix-PullMerge
     }
