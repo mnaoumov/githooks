@@ -36,6 +36,11 @@ if ($OldRef -eq $missingRef)
 }
 
 $mergeCommits = git log --merges --format=%H "$OldRef..$NewRef"
+if (-not $mergeCommits)
+{
+    ExitWithSuccess
+}
+
 [Array]::Reverse($mergeCommits)
 
 foreach ($mergeCommit in $mergeCommits)
