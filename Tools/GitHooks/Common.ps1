@@ -23,7 +23,7 @@ function ProcessErrors
 {
     param
     (
-        [ErrorRecord[]] $Errors
+        [System.Management.Automation.ErrorRecord[]] $Errors
     )
 
     Write-Error ($Errors | Out-String)
