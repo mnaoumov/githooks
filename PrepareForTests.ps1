@@ -82,8 +82,9 @@ function Main
         { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt },
         { git merge test_push },
         { Commit-File -FileContent "Change after merge" -FileName ChangeAfterMerge.txt },
-        { git checkout test_push --quiet },
-        { git reset --hard test_push2 }
+        { git checkout master -B test_push3 --quiet },
+        { Commit-File -FileContent "Some other change 2" -FileName SomeOtherChange2.txt },
+        { git merge test_push2 }
 
     Write-Host "Checkout branch master"
     git checkout master --quiet
