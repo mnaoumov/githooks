@@ -77,11 +77,15 @@ function Main
         { git checkout master -B test_push --quiet },
         { Commit-File -FileContent "Some change" -FileName SomeChange.txt },
         { git push local2 test_push --set-upstream --quiet },
-        { Commit-File -FileContent "Change before merge" -FileName ChangeBeforeMerge.txt },
+        { Commit-File -FileContent "Change before merge" -FileName ChangeBeforeMerge.txt }
+
+    Prepare-Branch test_push2 -Actions `
         { git checkout master -B test_push2 --quiet },
         { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt },
         { git merge test_push },
-        { Commit-File -FileContent "Change after merge" -FileName ChangeAfterMerge.txt },
+        { Commit-File -FileContent "Change after merge" -FileName ChangeAfterMerge.txt }
+
+    Prepare-Branch test_push3 -Actions `
         { git checkout master -B test_push3 --quiet },
         { Commit-File -FileContent "Some other change 2" -FileName SomeOtherChange2.txt },
         { git merge test_push2 }
