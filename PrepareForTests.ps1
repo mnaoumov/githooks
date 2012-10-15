@@ -82,12 +82,14 @@ function Main
     Prepare-Branch test_push2 -Actions `
         { git checkout master -B test_push2 --quiet },
         { Commit-File -FileContent "Some other change" -FileName SomeOtherChange.txt },
+        { git push local2 test_push2 --set-upstream --quiet },
         { git merge test_push },
         { Commit-File -FileContent "Change after merge" -FileName ChangeAfterMerge.txt }
 
     Prepare-Branch test_push3 -Actions `
         { git checkout master -B test_push3 --quiet },
         { Commit-File -FileContent "Some other change 2" -FileName SomeOtherChange2.txt },
+        { git push local2 test_push3 --set-upstream --quiet },
         { git merge test_push2 }
 
     Write-Host "Checkout branch master"
