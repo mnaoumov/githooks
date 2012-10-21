@@ -37,9 +37,7 @@ function Start-PowerShell
 Test-Fixture "commit-msg hook tests" `
     -SetUp `
     {
-        $externalProcess = $null
-        $tempPath = "$env:Temp\Test_{0}" -f (Get-Date -Format "yyyy-MM-dd_HH-mm-ss-ffff")
-        New-Item -Path $tempPath -ItemType Directory
+        $tempPath = Get-TempTestPath
 
         $localRepoPath = Prepare-LocalGitRepo $tempPath
         Push-Location $localRepoPath
@@ -48,11 +46,6 @@ Test-Fixture "commit-msg hook tests" `
     } `
     -TearDown `
     {
-        if ($externalProcess -ne $null)
-        {
-            taskkill /PID $($externalProcess.Id) /F /T
-        }
-
         Pop-Location
         Remove-Item -Path $tempPath -Recurse -Force
     } `
@@ -89,8 +82,7 @@ Test-Fixture "commit-msg hook tests" `
 Test-Fixture "commit-msg hook UI dialog tests" `
     -SetUp `
     {
-        $tempPath = "$env:Temp\Test_{0}" -f (Get-Date -Format "yyyy-MM-dd_HH-mm-ss-ffff")
-        New-Item -Path $tempPath -ItemType Directory
+        $tempPath = Get-TempTestPath
 
         $localRepoPath = Prepare-LocalGitRepo $tempPath
         Push-Location $localRepoPath

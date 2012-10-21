@@ -286,9 +286,17 @@ function Write-TestsSummary
     Write-Host "`n"
 }
 
+function Get-TempTestPath
+{
+    $tempPath = "$env:Temp\Test_{0}" -f (Get-Date -Format "yyyy-MM-dd_HH-mm-ss-ffff")
+    New-Item -Path $tempPath -ItemType Directory | Out-Null
+
+    $tempPath
+}
+
 Clear-PoshUnitContext
 
 Export-ModuleMember Invoke-PoshUnit, Test-Fixture, Test
 
 Export-ModuleMember -Variable Assert, Is, Has, Throws
-Export-ModuleMember Test-Delegate
+Export-ModuleMember Test-Delegate, Get-TempTestPath

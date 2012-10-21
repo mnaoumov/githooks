@@ -35,8 +35,7 @@ function Get-ExtensionlessFileNames
 Test-Fixture "Install-GitHooks Tests" `
     -SetUp `
     {
-        $tempPath = "$env:Temp\Test_{0}" -f (Get-Date -Format "yyyy-MM-dd_HH-mm-ss-ffff")
-        New-Item -Path $tempPath -ItemType Directory
+        $tempPath = Get-TempTestPath
 
         $localRepoPath = Prepare-LocalGitRepo $tempPath
         Push-Location $localRepoPath
