@@ -5,19 +5,17 @@ param
 (
 )
 
-$ErrorActionPreference = "Stop"
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
-$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
-$repoRoot = Join-Path $scriptFolder "..\..\"
-$gitHooksFolder = Join-Path $repoRoot ".git\hooks"
+$gitHooksFolder = Resolve-Path "$PSScriptRoot\..\..\.git\hooks"
 
 if (-not (Test-Path $gitHooksFolder))
 {
     throw "Failed to locate .git\hooks directory"
 }
 
-Get-ChildItem -Path $scriptFolder | `
-    Where-Object -Filter { $_.Extension -eq "" } | `
-    Copy-Item -Destination $gitHooksFolder
+Copy-Item -Path "$PSScriptRoot\*" -Filter "*." -Destination $gitHooksFolder
 
-Write-Host "Git hooks installed"
+"Git hooks installed"
