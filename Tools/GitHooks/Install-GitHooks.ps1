@@ -3,6 +3,7 @@
 [CmdletBinding()]
 param
 (
+    [string[]] $Hooks = "*"
 )
 
 $script:ErrorActionPreference = "Stop"
@@ -16,6 +17,6 @@ if (-not (Test-Path $gitHooksFolder))
     throw "Failed to locate .git\hooks directory"
 }
 
-Copy-Item -Path "$PSScriptRoot\*" -Filter "*." -Destination $gitHooksFolder
+Copy-Item -Path "$PSScriptRoot\*" -Filter "*." -Include $Hooks -Destination $gitHooksFolder
 
 "Git hooks installed"

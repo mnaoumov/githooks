@@ -19,6 +19,8 @@ if (-not (Test-Path $poshUnitModuleFile))
 
 Import-Module $poshUnitModuleFile
 
+. "$PSScriptRoot\TestHelpers.ps1"
+
 function Get-ExtensionlessFileNames
 {
     param
@@ -36,13 +38,8 @@ Test-Fixture "Install-GitHooks Tests" `
         $tempPath = "$env:Temp\Test_{0}" -f (Get-Date -Format "yyyy-MM-dd_HH-mm-ss-ffff")
         New-Item -Path $tempPath -ItemType Directory
 
-        $localRepoPath = "$tempPath\LocalGitRepo"
-        New-Item $localRepoPath -ItemType Directory
-
+        $localRepoPath = Prepare-LocalGitRepo $tempPath
         Push-Location $localRepoPath
-        git init
-
-        Copy-Item "$PSScriptRoot\..\tools" $localRepoPath -Recurse
     } `
     -TearDown `
     {
