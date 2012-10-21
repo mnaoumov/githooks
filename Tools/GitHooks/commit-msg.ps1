@@ -150,12 +150,18 @@ function Show-Dialog
             $result.Cancel = $true
         })
 
-    $adhocCheckBox.add_Click(
+    $adhocCheckBox.add_Checked(
         {
-            $workItemIdTextBox.IsEnabled = !$adhocCheckBox.IsChecked
+            $workItemIdTextBox.IsEnabled = $false
+            $okButton.IsEnabled = $true
+        })
+
+    $adhocCheckBox.add_Unchecked(
+        {
+            $workItemIdTextBox.IsEnabled = $true
             if ($workItemIdTextBox.Text -eq "")
             {
-                $okButton.IsEnabled = $adhocCheckBox.IsChecked
+                $okButton.IsEnabled = $false
             }
         })
 

@@ -31,7 +31,7 @@ function Start-PowerShell
 
     $command = ([string] $ScriptBlock) -replace "`"", "\`""
 
-    Start-Process -FilePath PowerShell.exe -ArgumentList "-NoExit -Command `"$command`"" -PassThru -WindowStyle Minimized
+    Start-Process -FilePath PowerShell.exe -ArgumentList "-Command `"$command`"" -PassThru -WindowStyle Minimized
 }
 
 Test-Fixture "commit-msg hook tests" `
@@ -107,7 +107,10 @@ Test-Fixture "commit-msg hook UI dialog tests" `
     {
         Pop-Location
 
-        taskkill /PID $($externalProcess.Id) /F /T
+        if (-not $externalProcess.HasExited)
+        {
+            taskkill /PID $($externalProcess.Id) /F /T
+        }
 
         Remove-Item -Path $tempPath -Recurse -Force
     } `
@@ -130,5 +133,37 @@ Test-Fixture "commit-msg hook UI dialog tests" `
             $currentCommitMessage = Get-CurrentCommitMessage
 
             $Assert::That($currentCommitMessage, $Is::EqualTo($lastCommitMessage))
+        }
+    ),
+    (
+        Test "When TFS WorkItem ID is entered it is used as a prefix for commit message" `
+        {
+            $dialog | `
+                Get-UIAEdit -AutomationId workItemIdTextBox | `
+                Set-UIAEditText -Text 1234
+
+            $dialog | `
+                Get-UIAButton -Name OK | `
+                Invoke-UIAButtonClick
+
+            $commitMessage = Get-CurrentCommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
+        }
+    ),
+    (
+        Test "When Ad-hoc checkbox is selected commit message is used as is" `
+        {
+            $dialog | `
+                Get-UIACheckBox -Name "Ad-hoc change" | `
+                Invoke-UIACheckBoxToggle
+
+            $dialog | `
+                Get-UIAButton -Name OK | `
+                Invoke-UIAButtonClick
+
+            $commitMessage = Get-CurrentCommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("Some message"))
         }
     )
