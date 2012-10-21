@@ -28,8 +28,8 @@ function Get-ExtensionlessFileNames
         [string] $Path
     )
 
-    Get-ChildItem -Path $Path -Filter "*." | `
-        Select-Object -ExpandProperty Name
+    [string[]] (Get-ChildItem -Path $Path -Filter "*." | `
+        Select-Object -ExpandProperty Name)
 }
 
 Test-Fixture "Install-GitHooks Tests" `
@@ -49,11 +49,20 @@ Test-Fixture "Install-GitHooks Tests" `
     (
         Test "Install-GitHooks copies all extensionless files from tools\GitHooks into .\git\hooks" `
         {
-            & "tools\GitHooks\Install-GitHooks.ps1"
+            tools\GitHooks\Install-GitHooks.ps1
 
             $sourceHookFiles = Get-ExtensionlessFileNames "tools\GitHooks"
             $installedHookFiles = Get-ExtensionlessFileNames ".git\hooks"
 
             $Assert::That($installedHookFiles, $Is::EqualTo($sourceHookFiles))
+        }
+    ),
+    (
+        Test "Install-GitHooks with parameter copies only specified hooks" `
+        {
+            tools\GitHooks\Install-GitHooks.ps1 -Hooks "commit-msg", "post-merge"
+
+            $installedHookFiles = Get-ExtensionlessFileNames ".git\hooks"
+            $Assert::That($installedHookFiles, $Is::EqualTo(@("commit-msg", "post-merge")))
         }
     )
