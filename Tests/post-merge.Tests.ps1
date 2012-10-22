@@ -104,4 +104,29 @@ Test-Fixture "post-merge hooks tests" `
             $Assert::That($commitMessage, $Is::EqualTo("Change that will cause non-conflict merge"))
             $Assert::That($previousCommitMessage, $Is::EqualTo("Change"))
         }
+    ),
+    (
+        Test "When 'Yes, permanently' button in the dialog is clicked pull is reset and rebased" `
+        {
+            $dialog | `
+                Get-UIAButton -Name "Yes, permanently" | `
+                Invoke-UIAButtonClick
+
+            $commitMessage = Get-CommitMessage
+            $previousCommitMessage = Get-CommitMessage HEAD~1
+
+            $Assert::That($commitMessage, $Is::EqualTo("Change that will cause non-conflict merge"))
+            $Assert::That($previousCommitMessage, $Is::EqualTo("Change"))
+        }
+    ),
+    (
+        Test "When 'Yes, permanently' button in the dialog is clicked pull rebase setting is set to true" `
+        {
+            $dialog | `
+                Get-UIAButton -Name "Yes, permanently" | `
+                Invoke-UIAButtonClick
+
+            $setting = git config branch.master.rebase
+            $Assert::That($setting, $Is::EqualTo("true"))
+        }
     )
