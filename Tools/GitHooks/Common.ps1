@@ -126,3 +126,13 @@ function Test-FastForward
 
     $mergeBase -eq $From
 }
+
+function Get-RepoRoot
+{
+    git rev-parse --show-toplevel
+}
+
+function Test-RebaseInProcess
+{
+    Test-Path "$(Get-RepoRoot)\.git\rebase-apply"
+}
