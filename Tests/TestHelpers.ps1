@@ -25,10 +25,25 @@ function Prepare-LocalGitRepo
         Push-Location $localRepoPath
         git init
         git commit --allow-empty -m "Init repo"
-        Pop-Location
 
         Copy-Item "$PSScriptRoot\..\tools" $localRepoPath -Recurse
+        git add -A
+        git commit -m "Copy tools"
+
+        Pop-Location
     } | Out-Null
 
     $localRepoPath
+}
+
+function Start-PowerShell
+{
+    param
+    (
+        [ScriptBlock] $ScriptBlock
+    )
+
+    $command = ([string] $ScriptBlock) -replace "`"", "\`""
+
+    Start-Process -FilePath PowerShell.exe -ArgumentList "-Command `"$command`"" -PassThru -WindowStyle Minimized
 }

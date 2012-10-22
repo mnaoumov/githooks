@@ -22,18 +22,6 @@ Import-Module $poshUnitModuleFile
 . "$PSScriptRoot\TestHelpers.ps1"
 . "$PSScriptRoot\..\Tools\GitHooks\Common.ps1"
 
-function Start-PowerShell
-{
-    param
-    (
-        [ScriptBlock] $ScriptBlock
-    )
-
-    $command = ([string] $ScriptBlock) -replace "`"", "\`""
-
-    Start-Process -FilePath PowerShell.exe -ArgumentList "-Command `"$command`"" -PassThru -WindowStyle Minimized
-}
-
 Test-Fixture "commit-msg hook tests" `
     -SetUp `
     {
@@ -54,7 +42,7 @@ Test-Fixture "commit-msg hook tests" `
         Test "When commit message starts with TFSxxxx it is used as is" `
         {
             git commit --allow-empty -m "TFS1234 Some message"
-            $commitMessage = Get-CurrentCommitMessage
+            $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
         }
@@ -63,7 +51,7 @@ Test-Fixture "commit-msg hook tests" `
         Test "When commit message starts with ADH, ADH is trimmed out" `
         {
             git commit --allow-empty -m "ADH Some other message"
-            $commitMessage = Get-CurrentCommitMessage
+            $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("Some other message"))
         }
@@ -73,7 +61,7 @@ Test-Fixture "commit-msg hook tests" `
         {
             git checkout -b TFS1234 --quiet
             git commit --allow-empty -m "Some message"
-            $commitMessage = Get-CurrentCommitMessage
+            $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
         }
@@ -108,7 +96,7 @@ Test-Fixture "commit-msg hook UI dialog tests" `
     } `
     -Tests `
     (
-        Test "When commit message does not start with TFSxxx the dialog is shown" `
+        Test "When commit message does not start with TFSxxxx the dialog is shown" `
         {
             $Assert::That($dialog, $Is::Not.Null)
         }
@@ -116,13 +104,13 @@ Test-Fixture "commit-msg hook UI dialog tests" `
     (
         Test "When Cancel button in the dialog is clicked commit is cancelled" `
         {
-            $lastCommitMessage = Get-CurrentCommitMessage
+            $lastCommitMessage = Get-CommitMessage
 
             $dialog | `
                 Get-UIAButton -Name Cancel | `
                 Invoke-UIAButtonClick
 
-            $currentCommitMessage = Get-CurrentCommitMessage
+            $currentCommitMessage = Get-CommitMessage
 
             $Assert::That($currentCommitMessage, $Is::EqualTo($lastCommitMessage))
         }
@@ -138,7 +126,7 @@ Test-Fixture "commit-msg hook UI dialog tests" `
                 Get-UIAButton -Name OK | `
                 Invoke-UIAButtonClick
 
-            $commitMessage = Get-CurrentCommitMessage
+            $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
         }
@@ -154,7 +142,7 @@ Test-Fixture "commit-msg hook UI dialog tests" `
                 Get-UIAButton -Name OK | `
                 Invoke-UIAButtonClick
 
-            $commitMessage = Get-CurrentCommitMessage
+            $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("Some message"))
         }

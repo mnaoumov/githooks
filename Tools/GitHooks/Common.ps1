@@ -88,9 +88,14 @@ function Test-PullMerge
     (Get-MergedBranchName) -eq (Get-TrackedBranchName)
 }
 
-function Get-CurrentCommitMessage
+function Get-CommitMessage
 {
-    git log -1 --pretty=%s
+    param
+    (
+        [string] $Rev = "HEAD"
+    )
+
+    git log $Rev -1 --format=%s
 }
 
 function Test-BranchPushed

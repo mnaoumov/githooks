@@ -114,7 +114,7 @@ function Fix-PullMerge
     $noButton.add_Click(
         {
             $form.Close()
-            Write-Warning "`nPlease avoid pushing merge pull commit `"$(Get-CurrentCommitMessage)`"."
+            Write-Warning "`nPlease avoid pushing merge pull commit `"$(Get-CommitMessage)`"."
         })
 
     $form.WindowStartupLocation = "CenterScreen"
