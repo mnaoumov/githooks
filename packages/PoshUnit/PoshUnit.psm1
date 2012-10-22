@@ -218,6 +218,10 @@ function Test-Fixture
                 {
                     $testsPassed++
                 }
+                else
+                {
+                    $testsFailed++
+                }
             }
             catch
             {
