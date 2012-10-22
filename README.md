@@ -8,7 +8,7 @@ To use this hooks to your repository you should put all files in **tools\GitHook
 
 **Tools\GitHooks\Install-GitHooks.ps1** - installs all hooks in your repository
 
-**PrepareForTests.ps1** - prepares local repository for test for the usecases described below
+**Invoke-Tests.ps1** - tests all hooks
 
 ## Available hooks: ##
 
@@ -23,44 +23,8 @@ Hook accepts commit if
 
 In all other cases it will prompt with a dialog asking for TFS WorkItem ID
 
-To test it use
-
-    git checkout non_TFS_branch
-
-    git commit --allow-empty -m "Some message"
-
-Commit. Hook dialog will appear.
-
 ![Provide TFS WorkItem ID dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
-**post-merge** - executed after non-conflict merge. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
-
-To test it use
-
-    git checkout test_merge_pull
-    git pull
-
-Now **post-merge** hook should help you to do rebase
+**post-merge** & **post-commit**- executed after non-conflict merge and conflict merge correspondingly. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
 
 ![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/merge-commit-dialog.png)
-
-To reset branch to the initial state use the following commands. Last command is required only if you selected **Yes, permanently** in the hooks dialog
-
-    git checkout test_merge_pull
-    git reset --hard test_merge_pull_backup
-    git config branch.test_merge_pull.rebase false
-
-**post-commit** - executed after conflict merge. Hook handles the situation when you have pull merge with conflict and helps to use pull rebase instead.
-
-To test it use
-
-    git checkout test_merge_pull_conflict
-    git pull
-
-Now **post-commit** hook should help you to do rebase
-
-To reset branch to the initial state use the following commands. Last command is required only if you selected **Yes, permanently** in the hooks dialog
-
-    git checkout test_merge_pull_conflict
-    git reset --hard test_merge_pull_conflict_backup
-    git config branch.test_merge_pull_conflict.rebase false
