@@ -57,7 +57,7 @@ Test-Fixture "post-merge hooks tests" `
 
         $externalProcess = Start-PowerShell { git pull }
 
-        Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
+        Init-UIAutomation
 
         $dialog = Get-UIAWindow -Name "Merge pull warning"
     } `

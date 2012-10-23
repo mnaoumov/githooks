@@ -79,7 +79,7 @@ Test-Fixture "commit-msg hook UI dialog tests" `
 
         $externalProcess = Start-PowerShell { git commit --allow-empty -m "Some message" }
 
-        Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
+        Init-UIAutomation
 
         $dialog = Get-UIAWindow -Name "Provide TFS WorkItem ID"
     } `

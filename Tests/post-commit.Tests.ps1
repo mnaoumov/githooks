@@ -60,7 +60,7 @@ Test-Fixture "post-commit hooks tests" `
 
         $externalProcess = Start-PowerShell { git commit -F ".git\\MERGE_MSG" }
 
-        Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
+        Init-UIAutomation
 
         $dialog = Get-UIAWindow -Name "Merge pull warning"
     } `
