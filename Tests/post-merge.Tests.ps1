@@ -21,7 +21,7 @@ Import-Module $poshUnitModuleFile
 . "$PSScriptRoot\TestHelpers.ps1"
 . "$PSScriptRoot\..\Tools\GitHooks\Common.ps1"
 
-Test-Fixture "post-merge hooks tests" `
+Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
     -SetUp `
     {
         $tempPath = Get-TempTestPath
@@ -58,8 +58,9 @@ Test-Fixture "post-merge hooks tests" `
         $externalProcess = Start-PowerShell { git pull }
 
         Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
+        [UIAutomation.Mode]::Profile = "Normal"
 
-        $dialog = Get-UIAWindow -Name "Merge pull warning"
+        $dialog = Get-UIAWindow -Name "Merge pull warning" -Seconds 5
     } `
     -TearDown `
     {
@@ -128,5 +129,66 @@ Test-Fixture "post-merge hooks tests" `
 
             $setting = git config branch.master.rebase
             $Assert::That($setting, $Is::EqualTo("true"))
+        }
+    )
+
+Test-Fixture "post-merge hooks tests for non-conflict merge between branches" `
+    -SetUp `
+    {
+        $tempPath = Get-TempTestPath
+        $localRepoPath = Prepare-LocalGitRepo $tempPath
+
+        $remoteRepoPath = "$tempPath\RemoteGitRepo"
+        New-Item -Path $remoteRepoPath -ItemType Directory
+        Push-Location $remoteRepoPath
+        git init --bare
+        Pop-Location
+
+        Push-Location $localRepoPath
+        git remote add origin $remoteRepoPath
+        git push origin master --set-upstream
+        tools\GitHooks\Install-GitHooks.ps1 post-merge
+
+        git checkout -b release.1.0
+        New-Item -Path "Release.1.0.BugFix.txt" -ItemType File
+        git add "Release.1.0.BugFix.txt"
+        git commit -m "Release 1.0 bug fix"
+
+        git checkout master
+        New-Item -Path "Feature.for.future.releases.txt" -ItemType File
+        git add "Feature.for.future.releases"
+        git commit -m "Feature for future releases"
+
+        $externalProcess = $null
+    } `
+    -TearDown `
+    {
+        Pop-Location
+
+        if (($externalProcess -ne $null) -and (-not $externalProcess.HasExited))
+        {
+            taskkill /PID $($externalProcess.Id) /F /T
+        }
+
+        Remove-Item -Path $tempPath -Recurse -Force
+    } `
+    -Tests `
+    (
+        Test "When merge is allowed in configuration dialog is not shown" `
+        {
+            git merge release.1.0
+            Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
+            $dialog = Get-UIAWindow -Name "Unalowed merge"
+            $Assert::That($dialog, $Is::Null)
+        }
+    ),
+    (
+        Test "When merge is not allowed in configuration dialog is shown" `
+        {
+            git checkout release.1.0
+            Start-PowerShell { git merge master }
+            Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
+            $dialog = Get-UIAWindow -Name "Unalowed merge"
+            $Assert::That($dialog, $Is::Not.Null)
         }
     )

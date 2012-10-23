@@ -2,10 +2,7 @@
 <HooksConfiguration>
   <CommitMessages enforceTfsPrefix="true" />
   <Merges fixPullMerges="true" allowAllMerges="false">
-    <Merge branch="release.1.0" into="release.2.0" />
-    <Merge branch="release.2.0" into="future" />
-    <Merge branch="test_push" into="test_push2" />
-    <Merge branch="test_push2" into="test_push3" />
+    <Merge branch="release.1.0" into="master" />
   </Merges>
   <Rebases allowRebasePushedBranches="false" />
 </HooksConfiguration>

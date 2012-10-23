@@ -21,7 +21,7 @@ Import-Module $poshUnitModuleFile
 . "$PSScriptRoot\TestHelpers.ps1"
 . "$PSScriptRoot\..\Tools\GitHooks\Common.ps1"
 
-Test-Fixture "post-commit hooks tests" `
+Test-Fixture "post-commit hooks tests for conflict pull merge" `
     -SetUp `
     {
         $tempPath = Get-TempTestPath
