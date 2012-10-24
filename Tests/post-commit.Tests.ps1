@@ -58,22 +58,35 @@ Test-Fixture "post-commit hooks tests" `
         git pull
         git add -A
 
-        $externalProcess = Start-PowerShell { git commit -F ".git\\MERGE_MSG" }
+        function TearDown
+        {
+            Pop-Location
 
-        Init-UIAutomation
+            if (-not $externalProcess.HasExited)
+            {
+                taskkill /PID $($externalProcess.Id) /F /T
+            }
 
-        $dialog = Get-UIAWindow -Name "Merge pull warning"
+            Remove-Item -Path $tempPath -Recurse -Force
+        }
+
+        try
+        {
+            $externalProcess = Start-PowerShell { git commit -F ".git\\MERGE_MSG" }
+
+            Init-UIAutomation
+
+            $dialog = Get-UIAWindow -Name "Merge pull warning"
+        }
+        catch
+        {
+            TearDown
+            throw
+        }
     } `
     -TearDown `
     {
-        Pop-Location
-
-        if (-not $externalProcess.HasExited)
-        {
-            taskkill /PID $($externalProcess.Id) /F /T
-        }
-
-        Remove-Item -Path $tempPath -Recurse -Force
+        TearDown
     } `
     -Tests `
     (

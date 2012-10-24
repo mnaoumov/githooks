@@ -55,22 +55,35 @@ Test-Fixture "post-merge hooks tests" `
         git add "SomeOtherFile.txt"
         git commit -m "Change that will cause non-conflict merge"
 
-        $externalProcess = Start-PowerShell { git pull }
+        function TearDown
+        {
+            Pop-Location
 
-        Init-UIAutomation
+            if (-not $externalProcess.HasExited)
+            {
+                taskkill /PID $($externalProcess.Id) /F /T
+            }
 
-        $dialog = Get-UIAWindow -Name "Merge pull warning"
+            Remove-Item -Path $tempPath -Recurse -Force
+        }
+
+        try
+        {
+            $externalProcess = Start-PowerShell { git pull }
+
+            Init-UIAutomation
+
+            $dialog = Get-UIAWindow -Name "Merge pull warning"
+        }
+        catch
+        {
+            TearDown
+            throw
+        }
     } `
     -TearDown `
     {
-        Pop-Location
-
-        if (-not $externalProcess.HasExited)
-        {
-            taskkill /PID $($externalProcess.Id) /F /T
-        }
-
-        Remove-Item -Path $tempPath -Recurse -Force
+        TearDown
     } `
     -Tests `
     (
