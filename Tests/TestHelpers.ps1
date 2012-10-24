@@ -52,4 +52,5 @@ function Init-UIAutomation
 {
     Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
     [UIAutomation.Mode]::Profile = "Normal"
+    [UIAutomation.Preferences]::Timeout = 60000
 }
