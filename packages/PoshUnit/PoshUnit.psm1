@@ -29,6 +29,8 @@ function Clear-PoshUnitContext
         ShowStackTrace = $false;
         ShowErrors = $true;
         ShowOutput = $false;
+        TestFixtureFilter = "*";
+        TestFilter = "*";
     }
 }
 
@@ -42,7 +44,9 @@ function Invoke-PoshUnit
         [bool] $Recurse = $true,
         [bool] $ShowOutput = $false,
         [bool] $ShowErrors = $true,
-        [bool] $ShowStackTrace = $false
+        [bool] $ShowStackTrace = $false,
+        [string] $TestFixtureFilter = "*",
+        [string] $TestFilter = "*"
     )
 
     $global:PoshUnitContext = New-Object PSObject -Property `
@@ -53,7 +57,9 @@ function Invoke-PoshUnit
         InsideInvokePoshUnit = $true;
         ShowErrors = $ShowErrors;
         ShowStackTrace = $ShowStackTrace;
-        ShowOutput = $ShowOutput
+        ShowOutput = $ShowOutput;
+        TestFixtureFilter = $TestFixtureFilter;
+        TestFilter = $TestFilter;
     }
 
     $testFixtureFiles = Get-ChildItem -Path $Path -Filter $Filter -Recurse:$Recurse | `
@@ -155,6 +161,12 @@ function Test-Fixture
         [PSObject[]] $Tests = @()
     )
 
+    if ($Name -notlike $global:PoshUnitContext.TestFixtureFilter)
+    {
+        Write-Verbose "Skipping Test Fixture '$Name' because it is not matching filter"
+        return
+    }
+
     if (-not $global:PoshUnitContext.InsideInvokePoshUnit)
     {
         Clear-PoshUnitContext
@@ -178,6 +190,12 @@ function Test-Fixture
 
     foreach ($test in $Tests)
     {
+        if ($test.Name -notlike $global:PoshUnitContext.TestFilter)
+        {
+            Write-Verbose "Skipping Test '$($test.Name)' because it is not matching filter"
+            continue
+        }
+
         $isTestPassed = $false
 
         Write-Host "`n    Test '$($test.Name)'" -ForegroundColor Yellow

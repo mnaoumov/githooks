@@ -3,6 +3,14 @@
 [CmdletBinding()]
 param
 (
+    [string] $Path = "Tests",
+    [string] $Filter = "*.Tests.ps1",
+    [bool] $Recurse = $true,
+    [bool] $ShowOutput = $false,
+    [bool] $ShowErrors = $true,
+    [bool] $ShowStackTrace = $false,
+    [string] $TestFixtureFilter = "*",
+    [string] $TestFilter = "*"
 )
 
 $script:ErrorActionPreference = "Stop"
@@ -20,4 +28,4 @@ if (-not (Test-Path $poshUnitModuleFile))
 
 Import-Module $poshUnitModuleFile
 
-Invoke-PoshUnit
+Invoke-PoshUnit -Path $Path -Filter $Filter -Recurse $Recurse -ShowOutput $ShowOutput -ShowErrors $ShowErrors -ShowStackTrace $ShowStackTrace -TestFixtureFilter $TestFixtureFilter -TestFilter $TestFilter
