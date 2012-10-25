@@ -99,6 +99,8 @@ Test-Fixture "post-commit hooks tests" `
                 Get-UIAButton -Name No | `
                 Invoke-UIAButtonClick
 
+            Wait-ProcessExit $externalProcess
+
             $commitMessage = Get-CommitMessage
 
             $Assert::That((Test-MergeCommit), $Is::True)
@@ -111,6 +113,8 @@ Test-Fixture "post-commit hooks tests" `
                 Get-UIAButton -Name Yes | `
                 Invoke-UIAButtonClick
 
+            Wait-ProcessExit $externalProcess
+
             $Assert::That((Test-RebaseInProcess), $Is::True)
         }
     ),
@@ -120,6 +124,8 @@ Test-Fixture "post-commit hooks tests" `
             $dialog | `
                 Get-UIAButton -Name Yes | `
                 Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
 
             git add -A
             git rebase --continue
@@ -138,6 +144,8 @@ Test-Fixture "post-commit hooks tests" `
                 Get-UIAButton -Name "Yes, permanently" | `
                 Invoke-UIAButtonClick
 
+            Wait-ProcessExit $externalProcess
+
             $Assert::That((Test-RebaseInProcess), $Is::True)
         }
     ),
@@ -147,6 +155,8 @@ Test-Fixture "post-commit hooks tests" `
             $dialog | `
                 Get-UIAButton -Name "Yes, permanently" | `
                 Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
 
             git add -A
             git rebase --continue
@@ -164,6 +174,8 @@ Test-Fixture "post-commit hooks tests" `
             $dialog | `
                 Get-UIAButton -Name "Yes, permanently" | `
                 Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
 
             $setting = git config branch.master.rebase
             $Assert::That($setting, $Is::EqualTo("true"))

@@ -9,6 +9,8 @@ $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
+$TestTimeout = 60000
+
 function Prepare-LocalGitRepo
 {
     param
@@ -52,7 +54,7 @@ function Init-UIAutomation
 {
     Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
     [UIAutomation.Mode]::Profile = "Normal"
-    [UIAutomation.Preferences]::Timeout = 60000
+    [UIAutomation.Preferences]::Timeout = $TestTimeout
 }
 
 function Stop-ProcessTree
@@ -65,5 +67,18 @@ function Stop-ProcessTree
     if (($Process -ne $null) -and (-not $Process.HasExited))
     {
         taskkill /PID $($Process.Id) /F /T
+    }
+}
+
+function Wait-ProcessExit
+{
+    param
+    (
+        [System.Diagnostics.Process] $Process
+    )
+
+    if (($Process -ne $null) -and (-not $Process.HasExited))
+    {
+        $Process.WaitForExit($TestTimeout)
     }
 }

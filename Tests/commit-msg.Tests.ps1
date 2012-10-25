@@ -107,6 +107,8 @@ Test-Fixture "commit-msg hook UI dialog tests" `
                 Get-UIAButton -Name Cancel | `
                 Invoke-UIAButtonClick
 
+            Wait-ProcessExit $externalProcess
+
             $currentCommitMessage = Get-CommitMessage
 
             $Assert::That($currentCommitMessage, $Is::EqualTo($lastCommitMessage))
@@ -123,6 +125,8 @@ Test-Fixture "commit-msg hook UI dialog tests" `
                 Get-UIAButton -Name OK | `
                 Invoke-UIAButtonClick
 
+            Wait-ProcessExit $externalProcess
+
             $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
@@ -138,6 +142,8 @@ Test-Fixture "commit-msg hook UI dialog tests" `
             $dialog | `
                 Get-UIAButton -Name OK | `
                 Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
 
             $commitMessage = Get-CommitMessage
 

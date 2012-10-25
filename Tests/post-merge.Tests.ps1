@@ -96,6 +96,8 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
                 Get-UIAButton -Name No | `
                 Invoke-UIAButtonClick
 
+            Wait-ProcessExit $externalProcess
+
             $Assert::That((Test-MergeCommit), $Is::True)
         }
     ),
@@ -105,6 +107,8 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
             $dialog | `
                 Get-UIAButton -Name Yes | `
                 Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
 
             $commitMessage = Get-CommitMessage
             $previousCommitMessage = Get-CommitMessage HEAD~1
@@ -120,6 +124,8 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
                 Get-UIAButton -Name "Yes, permanently" | `
                 Invoke-UIAButtonClick
 
+            Wait-ProcessExit $externalProcess
+
             $commitMessage = Get-CommitMessage
             $previousCommitMessage = Get-CommitMessage HEAD~1
 
@@ -133,6 +139,8 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
             $dialog | `
                 Get-UIAButton -Name "Yes, permanently" | `
                 Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
 
             $setting = git config branch.master.rebase
             $Assert::That($setting, $Is::EqualTo("true"))
@@ -198,7 +206,6 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
             Init-UIAutomation
 
             $dialog = Get-UIAWindow -Name "Unallowed merge"
-
             $Assert::That($dialog, $Is::Not.Null)
         }
     ),
@@ -215,6 +222,8 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
             $dialog | `
                 Get-UIAButton -Name No | `
                 Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
 
             $Assert::That((Test-MergeCommit), $Is::True)
         }
