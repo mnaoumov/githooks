@@ -59,10 +59,7 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
         {
             Pop-Location
 
-            if (($externalProcess -ne $null) -and (-not $externalProcess.HasExited))
-            {
-                taskkill /PID $($externalProcess.Id) /F /T
-            }
+            Stop-ProcessTree $externalProcess
 
             Remove-Item -Path $tempPath -Recurse -Force
         }
@@ -181,10 +178,7 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
     {
         Pop-Location
 
-        if (($externalProcess -ne $null) -and (-not $externalProcess.HasExited))
-        {
-            taskkill /PID $($externalProcess.Id) /F /T
-        }
+        Stop-ProcessTree $externalProcess
 
         Remove-Item -Path $tempPath -Recurse -Force
     } `

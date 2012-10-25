@@ -62,10 +62,7 @@ Test-Fixture "post-commit hooks tests" `
         {
             Pop-Location
 
-            if (-not $externalProcess.HasExited)
-            {
-                taskkill /PID $($externalProcess.Id) /F /T
-            }
+            Stop-ProcessTree $externalProcess
 
             Remove-Item -Path $tempPath -Recurse -Force
         }

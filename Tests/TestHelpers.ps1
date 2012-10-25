@@ -54,3 +54,16 @@ function Init-UIAutomation
     [UIAutomation.Mode]::Profile = "Normal"
     [UIAutomation.Preferences]::Timeout = 60000
 }
+
+function Stop-ProcessTree
+{
+    param
+    (
+        [System.Diagnostics.Process] $Process
+    )
+
+    if (($Process -ne $null) -and (-not $Process.HasExited))
+    {
+        taskkill /PID $($Process.Id) /F /T
+    }
+}
