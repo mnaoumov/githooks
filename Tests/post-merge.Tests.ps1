@@ -201,4 +201,21 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
 
             $Assert::That($dialog, $Is::Not.Null)
         }
+    ),
+    (
+        Test "When No button in the dialog is clicked pull merge is preserved" `
+        {
+            git checkout release.1.0
+            $externalProcess = Start-PowerShell { git merge master }
+
+            Init-UIAutomation
+
+            $dialog = Get-UIAWindow -Name "Unallowed merge"
+
+            $dialog | `
+                Get-UIAButton -Name No | `
+                Invoke-UIAButtonClick
+
+            $Assert::That((Test-MergeCommit), $Is::True)
+        }
     )
