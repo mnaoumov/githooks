@@ -96,9 +96,7 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
                 Get-UIAButton -Name No | `
                 Invoke-UIAButtonClick
 
-            $commitMessage = Get-CommitMessage
-
-            $Assert::That($commitMessage, $Is::StringStarting("Merge branch 'master'"))
+            $Assert::That((Test-MergeCommit), $Is::True)
         }
     ),
     (

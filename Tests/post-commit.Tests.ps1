@@ -101,7 +101,7 @@ Test-Fixture "post-commit hooks tests" `
 
             $commitMessage = Get-CommitMessage
 
-            $Assert::That($commitMessage, $Is::StringStarting("Merge branch 'master'"))
+            $Assert::That((Test-MergeCommit), $Is::True)
         }
     ),
     (
