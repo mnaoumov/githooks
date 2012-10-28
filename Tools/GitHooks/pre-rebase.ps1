@@ -30,12 +30,11 @@ if (-not $RebasingBranchName)
 
 if (Test-BranchPushed)
 {
-    $newBaseBranchName = Get-BranchName $NewBaseCommit
     $remoteBranchName = Get-TrackedBranchName $RebasingBranchName
-    
-    if ($newBaseBranchName -eq $remoteBranchName)
+
+    if ((Test-FastForward -From $remoteBranchName -To $NewBaseCommit))
     {
-        Write-Debug "Pull rebase $RebasingBranchName with $remoteBranchName detected"
+        Write-Debug "Rebase $RebasingBranchName with descendant of $remoteBranchName detected"
         ExitWithSuccess
     }
 

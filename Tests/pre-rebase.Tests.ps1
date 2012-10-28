@@ -58,7 +58,7 @@ Test-Fixture "pre-rebase hooks" `
         New-Item -Path "SomeOtherFile.txt" -ItemType File
         git add "SomeOtherFile.txt"
         git commit -m "Some other change"
-
+        git push origin master
     } `
     -TearDown `
     {
@@ -113,6 +113,10 @@ Test-Fixture "pre-rebase hooks" `
     (
         Test "Rebase of pushed branches on descendant of tracked remote branch is allowed" `
         {
+            New-Item -Path "ChangeInMaster.txt" -ItemType File
+            git add "ChangeInMaster.txt"
+            git commit -m "Change in master"
+
             git checkout HEAD~1 -b new_branch
             New-Item -Path "NewChange.txt" -ItemType File
             git add "NewChange.txt"
