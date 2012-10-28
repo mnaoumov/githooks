@@ -227,4 +227,23 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
 
             $Assert::That((Test-MergeCommit), $Is::True)
         }
+    ),
+    (
+        Test "When Yes button in the dialog is clicked pull merge is rolled back" `
+        {
+            git checkout release.1.0
+            $externalProcess = Start-PowerShell { git merge master }
+
+            Init-UIAutomation
+
+            $dialog = Get-UIAWindow -Name "Unallowed merge"
+
+            $dialog | `
+                Get-UIAButton -Name Yes | `
+                Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
+
+            $Assert::That([ref] (Test-MergeCommit), $Is::False)
+        }
     )
