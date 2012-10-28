@@ -41,7 +41,7 @@ namespace PoshUnit
     {
         public static TestDelegate ToTestDelegate(ScriptBlock block)
         {
-            return () =>
+            return delegate
                 { 
                     try
                     {

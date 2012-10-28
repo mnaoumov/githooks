@@ -9,7 +9,10 @@ $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
-Import-Module "$PSScriptRoot\..\NUnit.psm1"
+if ((Get-Module NUnit) -eq $null)
+{
+    Import-Module "$PSScriptRoot\..\NUnit.psm1"
+}
 
 function Test-NUnit
 {

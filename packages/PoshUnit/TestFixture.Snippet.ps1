@@ -9,7 +9,25 @@ $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
-Import-Module "$PSScriptRoot\relative\path\to\PoshUnit.psm1"
+# -----------------------------------------------------------------------------------------------------------
+# This block is not mandatory. It is needed only if you want your TestFixture script to be self-testable
+#
+
+if ((Get-Module PoshUnit) -eq $null)
+{
+    $poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
+    $poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
+
+    if (-not (Test-Path $poshUnitModuleFile))
+    {
+        throw "$poshUnitModuleFile not found"
+    }
+
+    Import-Module $poshUnitModuleFile
+}
+
+#
+# -----------------------------------------------------------------------------------------------------------
 
 Test-Fixture "<Insert Test Fixture Name>" `
     -TestFixtureSetUp `

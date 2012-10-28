@@ -9,15 +9,19 @@ $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
-$poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
-$poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
-
-if (-not (Test-Path $poshUnitModuleFile))
+if ((Get-Module PoshUnit) -eq $null)
 {
-    throw "$poshUnitModuleFile not found"
+    $poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
+    $poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
+
+    if (-not (Test-Path $poshUnitModuleFile))
+    {
+        throw "$poshUnitModuleFile not found"
+    }
+
+    Import-Module $poshUnitModuleFile
 }
 
-Import-Module $poshUnitModuleFile
 . "$PSScriptRoot\TestHelpers.ps1"
 . "$PSScriptRoot\..\Tools\GitHooks\Common.ps1"
 
@@ -98,7 +102,7 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
 
             Wait-ProcessExit $externalProcess
 
-            $Assert::That((Test-MergeCommit), $Is::True)
+            $Assert::IsTrue((Test-MergeCommit))
         }
     ),
     (
@@ -194,7 +198,7 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
         {
             git merge release.1.0
 
-            $Assert::That((Test-MergeCommit), $Is::True)
+            $Assert::IsTrue((Test-MergeCommit))
         }
     ),
     (
@@ -225,7 +229,7 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
 
             Wait-ProcessExit $externalProcess
 
-            $Assert::That((Test-MergeCommit), $Is::True)
+            $Assert::IsTrue((Test-MergeCommit))
         }
     ),
     (
@@ -244,6 +248,6 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
 
             Wait-ProcessExit $externalProcess
 
-            $Assert::That([ref] (Test-MergeCommit), $Is::False)
+            $Assert::IsFalse((Test-MergeCommit))
         }
     )

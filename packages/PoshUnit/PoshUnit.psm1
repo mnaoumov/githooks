@@ -8,15 +8,17 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-
-$nunitModulePath = "$PSScriptRoot\NUnit.psm1"
-
-if (-not (Test-Path $nunitModulePath))
+if ((Get-Module NUnit) -eq $null)
 {
-    throw "$nunitModulePath not found"
-}
+    $nunitModulePath = "$PSScriptRoot\NUnit.psm1"
 
-Import-Module $nunitModulePath
+    if (-not (Test-Path $nunitModulePath))
+    {
+        throw "$nunitModulePath not found"
+    }
+
+    Import-Module $nunitModulePath
+}
 
 function Clear-PoshUnitContext
 {
@@ -32,6 +34,17 @@ function Clear-PoshUnitContext
         TestFixtureFilter = "*";
         TestFilter = "*";
     }
+}
+
+function Write-TestsSummary
+{
+    Write-Host ("Tests completed`nPassed: {0} Failed: {1}" -f $global:PoshUnitContext.TestsPassed, $global:PoshUnitContext.TestsFailed)
+    if ($global:PoshUnitContext.TestFixturesFailed -ne 0)
+    {
+        Write-Host ("Test fixtures failed: {0}" -f $global:PoshUnitContext.TestFixturesFailed)
+    }
+
+    Write-Host "`n"
 }
 
 function Invoke-PoshUnit
@@ -295,17 +308,6 @@ function Test
         Name = $Name;
         Method = $Method
     }
-}
-
-function Write-TestsSummary
-{
-    Write-Host ("Tests completed`nPassed: {0} Failed: {1}" -f $global:PoshUnitContext.TestsPassed, $global:PoshUnitContext.TestsFailed)
-    if ($global:PoshUnitContext.TestFixturesFailed -ne 0)
-    {
-        Write-Host ("Test fixtures failed: {0}" -f $global:PoshUnitContext.TestFixturesFailed)
-    }
-
-    Write-Host "`n"
 }
 
 function Get-TempTestPath

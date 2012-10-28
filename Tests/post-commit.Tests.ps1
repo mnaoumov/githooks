@@ -9,15 +9,19 @@ $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
-$poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
-$poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
-
-if (-not (Test-Path $poshUnitModuleFile))
+if ((Get-Module PoshUnit) -eq $null)
 {
-    throw "$poshUnitModuleFile not found"
+    $poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
+    $poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
+
+    if (-not (Test-Path $poshUnitModuleFile))
+    {
+        throw "$poshUnitModuleFile not found"
+    }
+
+    Import-Module $poshUnitModuleFile
 }
 
-Import-Module $poshUnitModuleFile
 . "$PSScriptRoot\TestHelpers.ps1"
 . "$PSScriptRoot\..\Tools\GitHooks\Common.ps1"
 
@@ -103,7 +107,7 @@ Test-Fixture "post-commit hooks tests" `
 
             $commitMessage = Get-CommitMessage
 
-            $Assert::That((Test-MergeCommit), $Is::True)
+            $Assert::IsTrue((Test-MergeCommit))
         }
     ),
     (
@@ -115,7 +119,7 @@ Test-Fixture "post-commit hooks tests" `
 
             Wait-ProcessExit $externalProcess
 
-            $Assert::That((Test-RebaseInProcess), $Is::True)
+            $Assert::IsTrue((Test-RebaseInProcess))
         }
     ),
     (
@@ -146,7 +150,7 @@ Test-Fixture "post-commit hooks tests" `
 
             Wait-ProcessExit $externalProcess
 
-            $Assert::That((Test-RebaseInProcess), $Is::True)
+            $Assert::IsTrue((Test-RebaseInProcess))
         }
     ),
     (

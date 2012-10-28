@@ -13,15 +13,18 @@ $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 # This block is not mandatory. It is needed only if you want your TestFixture script to be self-testable
 #
 
-$poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
-$poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
-
-if (-not (Test-Path $poshUnitModuleFile))
+if ((Get-Module PoshUnit) -eq $null)
 {
-    throw "$poshUnitModuleFile not found"
-}
+    $poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
+    $poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
 
-Import-Module $poshUnitModuleFile
+    if (-not (Test-Path $poshUnitModuleFile))
+    {
+        throw "$poshUnitModuleFile not found"
+    }
+
+    Import-Module $poshUnitModuleFile
+}
 
 #
 # -----------------------------------------------------------------------------------------------------------
