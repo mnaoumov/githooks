@@ -68,4 +68,21 @@ Test-Fixture "Install-GitHooks Tests" `
             $installedHookFiles = Get-ExtensionlessFileNames ".git\hooks"
             $Assert::That($installedHookFiles, $Is::EqualTo(@("commit-msg", "post-merge")))
         }
+    ),
+    (
+        Test "Install-GitHooks -ServerSide installs pre-receive hoook" `
+        {
+            $remoteRepoPath = "$tempPath\RemoteGitRepo"
+            New-Item -Path $remoteRepoPath -ItemType Directory
+            Push-Location $remoteRepoPath
+            git init --bare
+            Pop-Location
+
+            tools\GitHooks\Install-GitHooks.ps1 -ServerSide $true -RemoteRepoPath $remoteRepoPath
+
+            $installedHookFiles = [string[]] (Get-ChildItem -Path "$remoteRepoPath\hooks" -Exclude "*.sample" | `
+                Select-Object -ExpandProperty Name)
+
+            $Assert::That($installedHookFiles, $Is::EquivalentTo([string[]] @("pre-receive", "pre-receive.ps1", "Common.ps1")))
+        }
     )
