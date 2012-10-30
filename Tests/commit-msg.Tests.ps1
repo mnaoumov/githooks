@@ -44,10 +44,10 @@ Test-Fixture "commit-msg hook tests" `
     (
         Test "When commit message starts with TFSxxxx it is used as is" `
         {
-            git commit --allow-empty -m "TFS1234 Some message"
+            git commit --allow-empty -m "TFS1357 Some message"
             $commitMessage = Get-CommitMessage
 
-            $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
+            $Assert::That($commitMessage, $Is::EqualTo("TFS1357 Some message"))
         }
     ),
     (
@@ -62,11 +62,11 @@ Test-Fixture "commit-msg hook tests" `
     (
         Test "When branch name starts with TFSxxxx, the branch name is added as a prefix to all commit messages" `
         {
-            git checkout -b TFS1234 --quiet
+            git checkout -b TFS1357 --quiet
             git commit --allow-empty -m "Some message"
             $commitMessage = Get-CommitMessage
 
-            $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
+            $Assert::That($commitMessage, $Is::EqualTo("TFS1357 Some message"))
         }
     )
 
@@ -122,7 +122,7 @@ Test-Fixture "commit-msg hook UI dialog tests" `
         {
             $dialog | `
                 Get-UIAEdit -AutomationId workItemIdTextBox | `
-                Set-UIAEditText -Text 1234
+                Set-UIAEditText -Text 1357
 
             $dialog | `
                 Get-UIAButton -Name OK | `
@@ -132,7 +132,7 @@ Test-Fixture "commit-msg hook UI dialog tests" `
 
             $commitMessage = Get-CommitMessage
 
-            $Assert::That($commitMessage, $Is::EqualTo("TFS1234 Some message"))
+            $Assert::That($commitMessage, $Is::EqualTo("TFS1357 Some message"))
         }
     ),
     (
@@ -151,5 +151,15 @@ Test-Fixture "commit-msg hook UI dialog tests" `
             $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("Some message"))
+        }
+    ),
+    (
+        Test "When commit message starts with TFSxxxx with fake ID comit is cancelled" `
+        {
+            git commit --allow-empty -m "TFS1234 Some message"
+
+            $commitExitCode = $LASTEXITCODE
+
+            $Assert::That($commitExitCode, $Is::EqualTo(1))
         }
     )

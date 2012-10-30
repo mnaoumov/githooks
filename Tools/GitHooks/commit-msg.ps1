@@ -31,7 +31,7 @@ function Main
     Write-Debug "WorkingCopyRoot is $workingCopyRoot"
 
     $mergeHeadFile = Join-Path $workingCopyRoot ".git\MERGE_HEAD"
-    $workItemPattern = "^TFS\d+"
+    $workItemPattern = "^TFS(?<id>\d+)"
     $adhocPattern = "^ADH\s+"
     $fixupSquashPattern = "(fixup)|(squash)[!]\s+"
     $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
@@ -42,6 +42,13 @@ function Main
     if ($commitMessage -match $workItemPattern)
     {
         Write-Debug "ID in message"
+        $workItemId = [int] $matches["id"]
+        $fakeWorkItems = [int[]] (Get-HooksConfiguration).CommitMessages.FakeWorkItems.FakeWorkItem
+        if ($fakeWorkItems -contains $workItemId)
+        {
+            Write-Warning "TFS WorkItem ID $workItemId is a fake. Please use a real one"
+            ExitWithFailure
+        }
         ExitWithSuccess
     }
     # Also allow commits that contain a work item ID in the branch name
