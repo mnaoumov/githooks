@@ -171,4 +171,24 @@ Test-Fixture "commit-msg hook UI dialog tests" `
 
             $Assert::That($focusedElement.Current.AutomationId, $Is::EqualTo("workItemIdTextBox"))
         }
+    ),
+    (
+        Test "When fake TFS WorkItem ID is entered commit is cancelled" `
+        {
+            $lastCommitMessage = Get-CommitMessage
+
+            $dialog | `
+                Get-UIAEdit -AutomationId workItemIdTextBox | `
+                Set-UIAEditText -Text 1234
+
+            $dialog | `
+                Get-UIAButton -Name OK | `
+                Invoke-UIAButtonClick
+
+            Wait-ProcessExit $externalProcess
+
+            $currentCommitMessage = Get-CommitMessage
+
+            $Assert::That($currentCommitMessage, $Is::EqualTo($lastCommitMessage))
+        }
     )

@@ -42,13 +42,7 @@ function Main
     if ($commitMessage -match $workItemPattern)
     {
         Write-Debug "ID in message"
-        $workItemId = [int] $matches["id"]
-        $fakeWorkItems = [int[]] (Get-HooksConfiguration).CommitMessages.FakeWorkItems.FakeWorkItem
-        if ($fakeWorkItems -contains $workItemId)
-        {
-            Write-Warning "TFS WorkItem ID $workItemId is a fake. Please use a real one"
-            ExitWithFailure
-        }
+        Validate-WorkItemId $matches["id"]
         ExitWithSuccess
     }
     # Also allow commits that contain a work item ID in the branch name
@@ -106,6 +100,7 @@ function Main
     }
     else
     {
+        Validate-WorkItemId $result.WorkItemId
         Write-Debug "Adding TFS WorkItem ID $($result.WorkItemId)"
         Update-CommitMessage "TFS$($result.WorkItemId) $commitMessage"
         ExitWithSuccess
@@ -209,6 +204,21 @@ function Update-CommitMessage
     )
 
     $commitMessage | Out-File $CommitMessagePath -Encoding Ascii
+}
+
+function Validate-WorkItemId
+{
+    param
+    (
+        [int] $WorkItemId
+    )
+    
+    $fakeWorkItems = [int[]] (Get-HooksConfiguration).CommitMessages.FakeWorkItems.FakeWorkItem
+    if ($fakeWorkItems -contains $WorkItemId)
+    {
+        Write-Warning "TFS WorkItem ID $WorkItemId is a fake. Please use a real one"
+        ExitWithFailure
+    }
 }
 
 Main
