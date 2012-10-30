@@ -137,7 +137,7 @@ function Show-Dialog
     $adhocCheckBox = $form.FindName("adHocCheckBox")
     $workItemIdTextBox = $form.FindName("workItemIdTextBox")
 
-    $result = `
+    $result = New-Object PSObject -Property `
     @{
         Cancel = $false;
         AdHoc = $false;
