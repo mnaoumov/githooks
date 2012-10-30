@@ -7,18 +7,18 @@ param
     [string] $CommitMessagePath
 )
 
-$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
 function Main
 {
-    $ErrorActionPreference = "Stop"
-
     Trap [Exception] `
     {
         ProcessErrors $_
     }
 
-    . "$scriptFolder\Common.ps1"
+    . "$PSScriptRoot\Common.ps1"
 
     if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.enforceTfsPrefix)))
     {
@@ -27,7 +27,7 @@ function Main
     }
 
     Write-Debug "Running commit hook"
-    $workingCopyRoot = Join-Path $scriptFolder "..\.."
+    $workingCopyRoot = Join-Path $PSScriptRoot "..\.."
     Write-Debug "WorkingCopyRoot is $workingCopyRoot"
 
     $mergeHeadFile = Join-Path $workingCopyRoot ".git\MERGE_HEAD"
@@ -137,7 +137,12 @@ function Show-Dialog
     $adhocCheckBox = $form.FindName("adHocCheckBox")
     $workItemIdTextBox = $form.FindName("workItemIdTextBox")
 
-    $result = @{}
+    $result = `
+    @{
+        Cancel = $false;
+        AdHoc = $false;
+        WorkItemId = 0
+    }
 
     $okButton.add_Click(
         {
