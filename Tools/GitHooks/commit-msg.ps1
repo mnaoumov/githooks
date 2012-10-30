@@ -120,7 +120,7 @@ function Show-Dialog
 
     $xaml = [xml] @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Provide TFS WorkItem ID" Height="140" Width="480">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Provide TFS WorkItem ID" Height="140" Width="480" FocusManager.FocusedElement="{Binding ElementName=workItemIdTextBox}">
     <Grid>
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap"
                    Text="You should provide TFS WorkItem ID for your commit or mark it as an ad-hoc change" VerticalAlignment="Top" />

@@ -68,6 +68,16 @@ Test-Fixture "commit-msg hook tests" `
 
             $Assert::That($commitMessage, $Is::EqualTo("TFS1357 Some message"))
         }
+    ),
+    (
+        Test "When commit message starts with TFSxxxx with fake ID comit is cancelled" `
+        {
+            git commit --allow-empty -m "TFS1234 Some message"
+
+            $commitExitCode = $LASTEXITCODE
+
+            $Assert::That($commitExitCode, $Is::EqualTo(1))
+        }
     )
 
 Test-Fixture "commit-msg hook UI dialog tests" `
@@ -154,12 +164,11 @@ Test-Fixture "commit-msg hook UI dialog tests" `
         }
     ),
     (
-        Test "When commit message starts with TFSxxxx with fake ID comit is cancelled" `
+        Test "When dialog is shown workItemIdTextBox is focused" `
         {
-            git commit --allow-empty -m "TFS1234 Some message"
+            $focusedElement = $dialog | `
+                Get-UIAFocus
 
-            $commitExitCode = $LASTEXITCODE
-
-            $Assert::That($commitExitCode, $Is::EqualTo(1))
+            $Assert::That($focusedElement.Current.AutomationId, $Is::EqualTo("workItemIdTextBox"))
         }
     )
