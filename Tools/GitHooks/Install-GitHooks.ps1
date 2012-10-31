@@ -32,6 +32,17 @@ elseif (-not $RemoteRepoPath)
 else
 {
     $gitHooksFolder = Join-Path $RemoteRepoPath "hooks"
-    Copy-Item -Path "$(PSScriptRoot)\*" -Include "pre-receive", "pre-receive.ps1", "Common.ps1" -Destination $gitHooksFolder
+    $commonFiles = @("Common.ps1", "HooksConfiguration.xml")
+    $allServerHooks = @("pre-receive", "post-receive")
+    $hooksToInstall = $allServerHooks -like $Hooks
+    if (-not $hooksToInstall)
+    {
+        Write-Warning "No hooks to install"
+    }
+    else
+    {
+        $filesToCopy = $hooksToInstall + ($hooksToInstall | ForEach-Object { $_ + ".ps1" }) + $commonFiles
+        Copy-Item -Path "$(PSScriptRoot)\*" -Include $filesToCopy -Destination $gitHooksFolder
+    }
 }
 

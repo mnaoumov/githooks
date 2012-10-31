@@ -55,7 +55,7 @@ Test-Fixture "pre-receive hooks" `
         git add "FeatureForFutureReleases.txt"
         git commit -m "Fix for future releases"
 
-        tools\GitHooks\Install-GitHooks.ps1 -ServerSide $true -RemoteRepoPath $remoteRepoPath
+        tools\GitHooks\Install-GitHooks.ps1 "pre-receive" -ServerSide $true -RemoteRepoPath $remoteRepoPath
     } `
     -TearDown `
     {
