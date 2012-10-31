@@ -46,6 +46,12 @@ HooksConfiguration has node **FakeWorkItems** which contains some WorkItems that
 
 ![Provide TFS WorkItem ID dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
+Interactive prompt:
+
+    C:\Work\MyCode> git commit -m "My commit message"
+    Enter TFS WorkItem ID (or ADH if ad-hoc): 1357
+    [master 1ff8b5b] TFS1357 My commit message
+
 ### post-merge & post-commit ###
 
 Executed after non-conflict merge and conflict merge correspondingly. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
