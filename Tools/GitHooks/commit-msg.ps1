@@ -35,8 +35,17 @@ function Main
     $adhocPattern = "^ADH\s+"
     $fixupSquashPattern = "(fixup)|(squash)[!]\s+"
     $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
-
+    $badFormatPattern = "(?s:TFS[^\w\d]*(?<id>\d+)\s*(?<text>.*))"
+    
     $commitMessage = Get-Content $CommitMessagePath | Out-String
+
+    # Clean up similar, but wrong, formats
+    if ($commitMessage -match $badFormatPattern)
+    {
+        $commitMessage = "TFS$($matches["id"]) $($matches["text"])"
+        Update-CommitMessage $CommitMessage
+        Write-Debug "Re-wrote message to: [$CommitMessage]"
+    }
 
     # Allow commits that contain a work item ID in the message
     if ($commitMessage -match $workItemPattern)

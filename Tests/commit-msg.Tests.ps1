@@ -79,6 +79,15 @@ Test-Fixture "commit-msg hook tests" `
 
             $Assert::That($commitExitCode, $Is::EqualTo(1))
         }
+    ),
+    (
+        Test "When commit has a format similar enough to TFSxxxx it is changed to follow the pattern" `
+        {
+            git commit --allow-empty -m "TFS--1357    Some message"
+            $commitMessage = Get-CommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("TFS1357 Some message"))
+        }
     )
 
 Test-Fixture "commit-msg hook UI dialog tests" `
