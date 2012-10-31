@@ -200,3 +200,99 @@ Test-Fixture "commit-msg hook UI dialog tests" `
             $Assert::That($currentCommitMessage, $Is::EqualTo($lastCommitMessage))
         }
     )
+
+Test-Fixture "commit-msg hook interactive tests" `
+    -SetUp `
+    {
+        $tempPath = Get-TempTestPath
+
+        $localRepoPath = Prepare-LocalGitRepo $tempPath
+        Push-Location $localRepoPath
+
+        . "Tools\GitHooks\Common.ps1"
+
+        tools\GitHooks\Install-GitHooks.ps1 commit-msg
+
+        $hooksConfiguration = Get-HooksConfiguration
+        $hooksConfiguration.CommitMessages.showDialogFromConsole = "false"
+
+        Set-HooksConfiguration $hooksConfiguration
+
+        $externalProcess = Start-PowerShell { git commit --allow-empty -m "Some message" }
+
+        Init-UIAutomation
+
+        $powerShellUI = $externalProcess | Get-UIAWindow
+    } `
+    -TearDown `
+    {
+        Pop-Location
+
+        Stop-ProcessTree $externalProcess
+
+        Remove-Item -Path $tempPath -Recurse -Force
+    } `
+    -Tests `
+    (
+        Test "When TFS WorkItem ID is entered it is used as a prefix for commit message" `
+        {
+            $powerShellUI | `
+                Set-UIAFocus | `
+                Set-UIAControlKeys -Text "1357`r"
+
+            Wait-ProcessExit $externalProcess
+
+            $commitMessage = Get-CommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("TFS1357 Some message"))
+
+        }
+    ),
+    (
+        Test "When ADH is entered commit message is used as is" `
+        {
+            $powerShellUI | `
+                Set-UIAFocus | `
+                Set-UIAControlKeys -Text "ADH`r"
+
+            Wait-ProcessExit $externalProcess
+
+            $commitMessage = Get-CommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("Some message"))
+
+        }
+    ),
+    (
+        Test "When something wrong is entered commit is cancelled" `
+        {
+            $lastCommitMessage = Get-CommitMessage
+
+            $powerShellUI | `
+                Set-UIAFocus | `
+                Set-UIAControlKeys -Text "Wrong`r"
+
+            Wait-ProcessExit $externalProcess
+
+            $commitMessage = Get-CommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo($lastCommitMessage))
+
+        }
+    ),
+    (
+        Test "When fake TFS WorkItem ID is entered commit is cancelled" `
+        {
+            $lastCommitMessage = Get-CommitMessage
+
+            $powerShellUI | `
+                Set-UIAFocus | `
+                Set-UIAControlKeys -Text "1234`r"
+
+            Wait-ProcessExit $externalProcess
+
+            $currentCommitMessage = Get-CommitMessage
+
+            $Assert::That($currentCommitMessage, $Is::EqualTo($lastCommitMessage))
+        }
+    )
