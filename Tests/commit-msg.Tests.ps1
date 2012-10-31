@@ -23,7 +23,6 @@ if ((Get-Module PoshUnit) -eq $null)
 }
 
 . "$(PSScriptRoot)\TestHelpers.ps1"
-. "$(PSScriptRoot)\..\Tools\GitHooks\Common.ps1"
 
 Test-Fixture "commit-msg hook tests" `
     -SetUp `
@@ -32,6 +31,8 @@ Test-Fixture "commit-msg hook tests" `
 
         $localRepoPath = Prepare-LocalGitRepo $tempPath
         Push-Location $localRepoPath
+
+        . "Tools\GitHooks\Common.ps1"
 
         tools\GitHooks\Install-GitHooks.ps1 commit-msg
     } `
@@ -88,7 +89,14 @@ Test-Fixture "commit-msg hook UI dialog tests" `
         $localRepoPath = Prepare-LocalGitRepo $tempPath
         Push-Location $localRepoPath
 
+        . "Tools\GitHooks\Common.ps1"
+
         tools\GitHooks\Install-GitHooks.ps1 commit-msg
+
+        $hooksConfiguration = Get-HooksConfiguration
+        $hooksConfiguration.CommitMessages.showDialogFromConsole = "true"
+
+        Set-HooksConfiguration $hooksConfiguration
 
         $externalProcess = Start-PowerShell { git commit --allow-empty -m "Some message" }
 

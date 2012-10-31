@@ -46,6 +46,16 @@ function Get-HooksConfiguration
     ([xml] (Get-Content "$(PSScriptRoot)\HooksConfiguration.xml")).HooksConfiguration
 }
 
+function Set-HooksConfiguration
+{
+    param
+    (
+        [System.Xml.XmlElement] $HooksConfiguration
+    )
+
+    $HooksConfiguration.OwnerDocument.Save("$(PSScriptRoot)\HooksConfiguration.xml")
+}
+
 function Test-MergeCommit
 {
     (git rev-parse --verify --quiet HEAD^2) -ne $null

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <HooksConfiguration>
-  <CommitMessages enforceTfsPrefix="true">
+  <CommitMessages enforceTfsPrefix="true" showDialogFromConsole="false">
     <FakeWorkItems>
       <FakeWorkItem>0</FakeWorkItem>
       <FakeWorkItem>123</FakeWorkItem>

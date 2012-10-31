@@ -86,7 +86,28 @@ function Main
         ExitWithSuccess
     }
 
-    $result = Show-Dialog
+
+    if (Test-ShouldShowDialog)
+    {
+        $result = Show-Dialog
+    }
+    else
+    {
+        $result = New-Object PSObject -Property `
+        @{
+            Cancel = $false;
+            AdHoc = $false;
+            WorkItemId = 0
+        }
+
+        $rawInput = Read-Host 'Enter TFS WorkItem ID (or ADH if ad-hoc)'
+        $result.AdHoc = $rawInput -eq 'ADH'
+        if (-not $result.AdHoc)
+        {
+            $result.Cancel = $rawInput -notmatch '\d+'
+            $result.WorkItemId = $rawInput
+        }
+    }
 
     if ($result.Cancel)
     {
@@ -224,6 +245,36 @@ function Validate-WorkItemId
         Write-Warning "TFS WorkItem ID $WorkItemId is a fake. Please use a real one"
         ExitWithFailure
     }
+}
+
+function Get-GitParentProcess
+{
+    $gitProcess = Get-WmiObject Win32_Process -Filter "ProcessId = $PID"
+
+    do
+    {
+        $gitProcess = Get-WmiObject Win32_Process -Filter "ProcessId = $($gitProcess.ParentProcessId)"
+    }
+    while (($gitProcess -ne $null) -and ($gitProcess.ProcessName -ne "git.exe"))
+    
+    if ($gitProcess -eq $null)
+    {
+        return $null
+    }
+    else
+    {
+        return Get-WmiObject Win32_Process -Filter "ProcessId = $($gitProcess.ParentProcessId)"
+    }
+}
+
+function Test-ShouldShowDialog
+{
+    if ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.showDialogFromConsole))
+    {
+        return $true;
+    }
+
+    @('powershell.exe', 'cmd.exe') -notcontains (Get-GitParentProcess).ProcessName
 }
 
 Main
