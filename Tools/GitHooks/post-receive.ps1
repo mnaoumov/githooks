@@ -31,6 +31,6 @@ $nextBranch = (Get-HooksConfiguration).Merges.Merge | `
     Where-Object { ($_.branch -eq $branchName) } | `
     Select-Object -ExpandProperty into -First 1
 
-Write-Warning "*****************************************************************************************************"
+Write-Warning "*****"
 Write-Warning "You pushed branch '$branchName'. Please merge it to the branch '$nextBranch' and push it as well ASAP"
-Write-Warning "*****************************************************************************************************"
+Write-Warning "*****"
