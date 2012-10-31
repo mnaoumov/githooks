@@ -37,15 +37,17 @@ if (Test-BranchPushed)
 
     if ((Test-FastForward -From $remoteBranchName -To $NewBaseCommit))
     {
-        Write-Debug "Rebase $RebasingBranchName with descendant of $remoteBranchName detected"
+        Write-Debug "Rebase '$RebasingBranchName' with descendant of '$remoteBranchName' detected"
         ExitWithSuccess
     }
 
-    Write-Warning "You cannot rebase branch $RebasingBranchName because it was already pushed."
+    Write-Warning "*****"
+    Write-Warning "You cannot rebase branch '$RebasingBranchName' because it was already pushed."
+    Write-Warning "*****"
     ExitWithFailure
 }
 else
 {
-    Write-Debug "Branch $RebasingBranchName was not pushed. Rebase allowed."
+    Write-Debug "Branch '$RebasingBranchName' was not pushed. Rebase allowed."
     ExitWithSuccess
 }
