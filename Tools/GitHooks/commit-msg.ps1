@@ -252,22 +252,40 @@ function Validate-WorkItemId
 
 function Get-GitParentProcess
 {
-    $gitProcess = Get-WmiObject Win32_Process -Filter "ProcessId = $PID"
+    $process = Get-ProcessById $PID
 
     do
     {
-        $gitProcess = Get-WmiObject Win32_Process -Filter "ProcessId = $($gitProcess.ParentProcessId)"
+        $process = Get-ParentProcess $process
     }
-    while (($gitProcess -ne $null) -and ($gitProcess.ProcessName -ne "git.exe"))
-    
-    if ($gitProcess -eq $null)
+    while (($process -ne $null) -and ($process.ProcessName -ne "git.exe"))
+
+    while ($process.ProcessName -eq "git.exe")
     {
-        return $null
+        $process = Get-ParentProcess $process
     }
-    else
-    {
-        return Get-WmiObject Win32_Process -Filter "ProcessId = $($gitProcess.ParentProcessId)"
-    }
+
+    $process
+}
+
+function Get-ProcessById
+{
+    param
+    (
+        [int] $Id
+    )
+
+    Get-WmiObject Win32_Process -Filter "ProcessId = $Id"
+}
+
+function Get-ParentProcess
+{
+    param
+    (
+        $Process
+    )
+
+    Get-ProcessById $Process.ParentProcessId
 }
 
 function Test-ShouldShowDialog
