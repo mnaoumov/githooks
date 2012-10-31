@@ -130,8 +130,6 @@ function Main
 
 function Show-Dialog
 {
-    Write-Progress -Activity "Getting commit metadata" -Status "Initializing UI" -PercentComplete 0
-
     Add-Type -AssemblyName PresentationFramework
 
     $xaml = [xml] @"
@@ -212,12 +210,8 @@ function Show-Dialog
         $okButton.IsEnabled = $workItemIdTextBox.Text -ne ""
     })
 
-    Write-Progress -Activity "Getting commit metadata" -Status "Prompting for metadata" -PercentComplete 0
-
     $form.WindowStartupLocation = "CenterScreen"
     [void] $form.ShowDialog();
-
-    Write-Progress -Activity "Getting commit metadata" -Status "Prompting for metadata" -Completed
 
     $result
 }
