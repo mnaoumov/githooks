@@ -19,8 +19,8 @@ Trap [Exception] `
 {
     ProcessErrors $_
 }
-    
-if ([Convert]::ToBoolean((Get-HooksConfiguration).Branches.allowRebasePushedBranches))
+
+if ([Convert]::ToBoolean((Get-HooksConfiguration).Rebases.allowRebasePushedBranches))
 {
     Write-Debug "Rebases/@allowRebasePushedBranches is enabled in HooksConfiguration.xml"
     ExitWithSuccess
