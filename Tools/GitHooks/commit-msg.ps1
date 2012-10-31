@@ -9,7 +9,7 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 function Main
 {
@@ -18,7 +18,7 @@ function Main
         ProcessErrors $_
     }
 
-    . "$PSScriptRoot\Common.ps1"
+    . "$(PSScriptRoot)\Common.ps1"
 
     if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.enforceTfsPrefix)))
     {
@@ -27,7 +27,7 @@ function Main
     }
 
     Write-Debug "Running commit hook"
-    $workingCopyRoot = Join-Path $PSScriptRoot "..\.."
+    $workingCopyRoot = Join-Path $(PSScriptRoot) "..\.."
     Write-Debug "WorkingCopyRoot is $workingCopyRoot"
 
     $mergeHeadFile = Join-Path $workingCopyRoot ".git\MERGE_HEAD"

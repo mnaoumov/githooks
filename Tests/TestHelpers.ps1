@@ -7,7 +7,7 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 $TestTimeout = 60000
 
@@ -28,7 +28,7 @@ function Prepare-LocalGitRepo
         git init
         git commit --allow-empty -m "Init repo"
 
-        Copy-Item "$PSScriptRoot\..\tools" $localRepoPath -Recurse
+        Copy-Item "$(PSScriptRoot)\..\tools" $localRepoPath -Recurse
         git add -A
         git commit -m "Copy tools"
 
@@ -52,7 +52,7 @@ function Start-PowerShell
 
 function Init-UIAutomation
 {
-    Import-Module "$PSScriptRoot\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
+    Import-Module "$(PSScriptRoot)\..\packages\UIAutomation.0.8.1.NET40\UIAutomation.dll"
     [UIAutomation.Mode]::Profile = "Normal"
     [UIAutomation.Preferences]::Timeout = $TestTimeout
 }

@@ -7,7 +7,7 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 function Main
 {
@@ -16,7 +16,7 @@ function Main
         ProcessErrors $_
     }
     
-    . "$PSScriptRoot\Common.ps1"
+    . "$(PSScriptRoot)\Common.ps1"
 
     Add-Type -AssemblyName PresentationFramework
 

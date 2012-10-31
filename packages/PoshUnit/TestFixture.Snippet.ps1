@@ -7,7 +7,7 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 # -----------------------------------------------------------------------------------------------------------
 # This block is not mandatory. It is needed only if you want your TestFixture script to be self-testable
@@ -15,8 +15,8 @@ $PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
 if ((Get-Module PoshUnit) -eq $null)
 {
-    $poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
-    $poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
+    $poshUnitFolder = if (Test-Path "$(PSScriptRoot)\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
+    $poshUnitModuleFile = Resolve-Path "$(PSScriptRoot)\$poshUnitFolder\PoshUnit.psm1"
 
     if (-not (Test-Path $poshUnitModuleFile))
     {

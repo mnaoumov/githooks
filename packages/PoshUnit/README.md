@@ -23,9 +23,9 @@ Create file **&lt;Test Fixture Name&gt;.Tests.ps1** using the following snippet
 	
 	$script:ErrorActionPreference = "Stop"
 	Set-StrictMode -Version Latest
-	$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+	function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 	
-	Import-Module "$PSScriptRoot\relative\path\to\PoshUnit.psm1"
+	Import-Module "$(PSScriptRoot)\relative\path\to\PoshUnit.psm1"
 	
 	Test-Fixture "<Insert Test Fixture Name>" `
 	    -TestFixtureSetUp `

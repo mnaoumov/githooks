@@ -7,11 +7,11 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 if ((Get-Module PoshUnit) -eq $null)
 {
-    Import-Module "$PSScriptRoot\..\PoshUnit.psm1"
+    Import-Module "$(PSScriptRoot)\..\PoshUnit.psm1"
 }
 
 Test-Fixture "Failing TestFixtureSetUp" `

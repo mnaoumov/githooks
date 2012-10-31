@@ -7,6 +7,6 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
-& "$PSScriptRoot\Fix-IncorrectMerge.ps1"
+& "$(PSScriptRoot)\Fix-IncorrectMerge.ps1"

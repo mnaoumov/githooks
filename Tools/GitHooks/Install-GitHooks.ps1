@@ -10,18 +10,18 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 if (-not $ServerSide)
 {
-    $gitHooksFolder = Resolve-Path "$PSScriptRoot\..\..\.git\hooks"
+    $gitHooksFolder = Resolve-Path "$(PSScriptRoot)\..\..\.git\hooks"
 
     if (-not (Test-Path $gitHooksFolder))
     {
         throw "Failed to locate .git\hooks directory"
     }
 
-    Copy-Item -Path "$PSScriptRoot\*" -Filter "*." -Include $Hooks -Destination $gitHooksFolder
+    Copy-Item -Path "$(PSScriptRoot)\*" -Filter "*." -Include $Hooks -Destination $gitHooksFolder
 
     Write-Host "Git hooks installed"
 }
@@ -32,6 +32,6 @@ elseif (-not $RemoteRepoPath)
 else
 {
     $gitHooksFolder = Join-Path $RemoteRepoPath "hooks"
-    Copy-Item -Path "$PSScriptRoot\*" -Include "pre-receive", "pre-receive.ps1", "Common.ps1" -Destination $gitHooksFolder
+    Copy-Item -Path "$(PSScriptRoot)\*" -Include "pre-receive", "pre-receive.ps1", "Common.ps1" -Destination $gitHooksFolder
 }
 

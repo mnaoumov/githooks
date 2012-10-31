@@ -7,12 +7,12 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
-$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 if ((Get-Module PoshUnit) -eq $null)
 {
-    $poshUnitFolder = if (Test-Path "$PSScriptRoot\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
-    $poshUnitModuleFile = Resolve-Path "$PSScriptRoot\$poshUnitFolder\PoshUnit.psm1"
+    $poshUnitFolder = if (Test-Path "$(PSScriptRoot)\..\PoshUnit.Dev.txt") { ".." } else { "..\packages\PoshUnit" }
+    $poshUnitModuleFile = Resolve-Path "$(PSScriptRoot)\$poshUnitFolder\PoshUnit.psm1"
 
     if (-not (Test-Path $poshUnitModuleFile))
     {
@@ -22,8 +22,8 @@ if ((Get-Module PoshUnit) -eq $null)
     Import-Module $poshUnitModuleFile
 }
 
-. "$PSScriptRoot\TestHelpers.ps1"
-. "$PSScriptRoot\..\Tools\GitHooks\Common.ps1"
+. "$(PSScriptRoot)\TestHelpers.ps1"
+. "$(PSScriptRoot)\..\Tools\GitHooks\Common.ps1"
 
 Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
     -SetUp `
