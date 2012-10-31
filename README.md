@@ -14,7 +14,13 @@ Hooks controlled via configuration file **Tools\GitHooks\HooksConfiguration.xml*
 
     <?xml version="1.0" encoding="UTF-8"?>
     <HooksConfiguration>
-      <CommitMessages enforceTfsPrefix="true" />
+      <CommitMessages enforceTfsPrefix="true" showDialogFromConsole="false">
+        <FakeWorkItems>
+          <FakeWorkItem>0</FakeWorkItem>
+          <FakeWorkItem>123</FakeWorkItem>
+          <FakeWorkItem>1234</FakeWorkItem>
+        </FakeWorkItems>
+      </CommitMessages>
       <Merges fixPullMerges="true" allowAllMerges="false">
         <Merge branch="release.1.0" into="master" />
       </Merges>
