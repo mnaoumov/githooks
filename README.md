@@ -29,7 +29,9 @@ Hooks controlled via configuration file **Tools\GitHooks\HooksConfiguration.xml*
 
 ## Available hooks: ##
 
-**commit-msg** - executed after commit message was set. Hooks enforces to provide TFS WorkItem ID or mark commit as an ad-hoc.
+### commit-msg ###
+
+Executed after commit message was set. Hook enforces to provide TFS WorkItem ID or mark commit as an ad-hoc.
 
 Hook accepts commit if
 
@@ -38,15 +40,42 @@ Hook accepts commit if
 - it is a merge, fixup, squash or revert commit
 - current branch has name like **TFS1234** - branch name will be inserted as a prefix to the commit message
 
-In all other cases it will prompt with a dialog asking for TFS WorkItem ID
+In all other cases it will prompt with a dialog asking for TFS WorkItem ID or if you are committing from console it will show an interactive prompt (if **showDialogFromConsole** setting is set to true)
 
 ![Provide TFS WorkItem ID dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
-**post-merge** & **post-commit** - executed after non-conflict merge and conflict merge correspondingly. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
+### post-merge & post-commit ###
+
+Executed after non-conflict merge and conflict merge correspondingly. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
 
 ![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/merge-commit-dialog.png)
 
-
-**post-merge** & **post-commit** - another hook checks if merge between branches allowed. And prompts the following dialog
+Hooks also check if merge between branches is allowed. List of allowed commits is specified under **Merges** node in a configuration file.
+If merge is not allowed it prompts the following dialog
 
 ![Unallowed merge dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/unallowed-merge-dialog.png)
+
+### pre-rebase ###
+
+Executed before rebase is started. Hook checks if you are trying to rebase a branch which was already pushed and denies the whole rebase before it is started.
+
+    The pre-rebase hook refused to rebase.
+    WARNING: *****
+    WARNING: You cannot rebase branch 'master' because it was already pushed.
+    WARNING: *****
+
+### pre-receive ###
+
+Server-side hook, executed after push but before changes were actually applied in a remote repository. Hook checks against pull merges and another very annoying and weird case which is difficult to explain (see my [blogpost](http://mnaoumov.wordpress.com/2012/09/20/guide-how-to-easy-screw-up-your-git-repository/) which describes this case).
+
+    remote: WARNING: *****
+    remote: WARNING: The following commit should not exist in branch release.1.0
+    remote: WARNING: 72c4545c5c35587517fd9f595528b381427ab388 Merge branch 'release.1.0'
+    remote: WARNING: *****
+
+### post-receive ###
+Server-side hook, executed after push after changes were actually applied. Hooks reminds the committer to merge his change in a corresponding branch if applicable
+
+    remote: WARNING: *****
+    remote: WARNING: You pushed branch 'release.1.0'. Please merge it to the branch 'master' and push it as well ASAP
+    remote: WARNING: *****
