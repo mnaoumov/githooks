@@ -42,7 +42,7 @@ if (Test-BranchPushed)
     }
 
     Write-Warning "*****"
-    Write-Warning "You cannot rebase branch '$RebasingBranchName' because it was already pushed."
+    Write-Warning "You cannot rebase branch '$RebasingBranchName' because it was already pushed"
     Write-Warning "*****"
     ExitWithFailure
 }
