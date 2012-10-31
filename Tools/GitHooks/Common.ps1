@@ -1,3 +1,14 @@
+#requires -version 2.0
+
+[CmdletBinding()]
+param
+(
+)
+
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+
 function ExitWithCode
 { 
     param
@@ -32,8 +43,7 @@ function ProcessErrors
 
 function Get-HooksConfiguration
 {
-    $scriptFolder = Split-Path $script:MyInvocation.MyCommand.Path -Parent
-    ([xml] (Get-Content "$scriptFolder\HooksConfiguration.xml")).HooksConfiguration
+    ([xml] (Get-Content "$PSScriptRoot\HooksConfiguration.xml")).HooksConfiguration
 }
 
 function Test-MergeCommit

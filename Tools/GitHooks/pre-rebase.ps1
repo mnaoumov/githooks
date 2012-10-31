@@ -7,8 +7,11 @@ param
     [string] $RebasingBranchName
 )
 
-$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
-. "$scriptFolder\Common.ps1"
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
+
+. "$PSScriptRoot\Common.ps1"
 
 $ErrorActionPreference = "Stop"
 

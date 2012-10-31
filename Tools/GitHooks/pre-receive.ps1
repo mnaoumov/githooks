@@ -8,11 +8,11 @@ param
     [string] $RefName
 )
 
-$ErrorActionPreference = "Stop"
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
-$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
-
-. "$scriptFolder\Common.ps1"
+. "$PSScriptRoot\Common.ps1"
 
 Trap [Exception] `
 {

@@ -5,6 +5,8 @@ param
 (
 )
 
-$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
-& "$scriptFolder\Fix-IncorrectMerge.ps1"
+& "$PSScriptRoot\Fix-IncorrectMerge.ps1"

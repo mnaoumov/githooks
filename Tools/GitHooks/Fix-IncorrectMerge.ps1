@@ -5,18 +5,18 @@ param
 (
 )
 
-$scriptFolder = Split-Path $MyInvocation.MyCommand.Path -Parent
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+$PSScriptRoot = $MyInvocation.MyCommand.Path | Split-Path
 
 function Main
 {
-    $ErrorActionPreference = "Stop"
-
     Trap [Exception] `
     {
         ProcessErrors $_
     }
     
-    . "$scriptFolder\Common.ps1"
+    . "$PSScriptRoot\Common.ps1"
 
     Add-Type -AssemblyName PresentationFramework
 
