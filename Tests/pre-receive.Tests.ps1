@@ -87,4 +87,31 @@ Test-Fixture "pre-receive hooks" `
 
             $Assert::That($pushExitCode, $Is::EqualTo(1))
         }
+    ),
+    (
+        Test "Push of pull merges is not allowed" `
+        {
+            $anotherLocalRepoPath = "$tempPath\AnotherLocalGitRepo"
+            New-Item -Path $anotherLocalRepoPath -ItemType Directory
+
+            Push-Location $anotherLocalRepoPath
+            git clone $remoteRepoPath .
+            New-Item -Path "SomeFile.txt" -ItemType File
+            git add "SomeFile.txt"
+            git commit -m "Change"
+            git push origin master
+            Pop-Location
+
+            New-Item -Path "SomeOtherFile.txt" -ItemType File
+            git add "SomeOtherFile.txt"
+            git commit -m "Change that will cause non-conflict merge"
+
+            git pull
+
+            git push origin master
+
+            $pushExitCode = $LASTEXITCODE
+
+            $Assert::That($pushExitCode, $Is::EqualTo(1))
+        }
     )
