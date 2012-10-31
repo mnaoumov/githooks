@@ -35,12 +35,14 @@ Executed after commit message was set. Hook enforces to provide TFS WorkItem ID 
 
 Hook accepts commit if
 
-- it looks like **TFS1234 Some message**
+- it looks like **TFS1357 Some message**
 - it looks like **ADH Some message** - ADH (stands for *ad-hoc*) will be trimmed out
 - it is a merge, fixup, squash or revert commit
-- current branch has name like **TFS1234** - branch name will be inserted as a prefix to the commit message
+- current branch has name like **TFS1357** - branch name will be inserted as a prefix to the commit message
 
 In all other cases it will prompt with a dialog asking for TFS WorkItem ID or if you are committing from console it will show an interactive prompt (if **showDialogFromConsole** setting is set to false)
+
+HooksConfiguration has node **FakeWorkItems** which contains some WorkItems that usually is fake. Sometime commiters are lazy to provide a WorkItem ID and put some random ones. Hook detects the situation and declines such commits.
 
 ![Provide TFS WorkItem ID dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
