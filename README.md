@@ -61,7 +61,7 @@ Executed before rebase is started. Hook checks if you are trying to rebase a bra
 
     The pre-rebase hook refused to rebase.
     WARNING: *****
-    WARNING: You cannot rebase branch 'master' because it was already pushed.
+    WARNING: You cannot rebase branch 'master' because it was already pushed
     WARNING: *****
 
 ### pre-receive ###
