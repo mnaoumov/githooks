@@ -40,7 +40,7 @@ Hook accepts commit if
 - it is a merge, fixup, squash or revert commit
 - current branch has name like **TFS1234** - branch name will be inserted as a prefix to the commit message
 
-In all other cases it will prompt with a dialog asking for TFS WorkItem ID or if you are committing from console it will show an interactive prompt (if **showDialogFromConsole** setting is set to true)
+In all other cases it will prompt with a dialog asking for TFS WorkItem ID or if you are committing from console it will show an interactive prompt (if **showDialogFromConsole** setting is set to false)
 
 ![Provide TFS WorkItem ID dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
