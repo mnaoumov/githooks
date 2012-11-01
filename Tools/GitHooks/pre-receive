@@ -23,7 +23,7 @@
 while read oldRef newRef refName
 do
     psCommand=".\\hooks\\pre-receive.ps1 -OldRef \"$oldRef\" -NewRef \"$newRef\" -RefName \"$refName\""
-    /cygdrive/c/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
+    c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
 
     exitCode=$?
 

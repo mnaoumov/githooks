@@ -14,4 +14,4 @@
 newBaseCommit=$1
 rebasingBranchName=$2
 psCommand=".\\Tools\\GitHooks\\pre-rebase.ps1 -NewBaseCommit \"$newBaseCommit\" -RebasingBranchName \"$rebasingBranchName\""
-PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
+c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"

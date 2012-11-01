@@ -1,2 +1,6 @@
-pre-receive eol=lf
+commit-msg eol=lf
+post-commit eol=lf
+post-merge eol=lf
 post-receive eol=lf
+pre-rebase eol=lf
+pre-receive eol=lf
