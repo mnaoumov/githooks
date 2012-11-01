@@ -253,7 +253,12 @@ function Get-GitParentProcess
     {
         $process = Get-ParentProcess $process
     }
-    while (($process -ne $null) -and ($process.ProcessName -ne "git.exe"))
+    while (($process -ne $null) -and ($process.ProcessName -ne "git.exe") -and ($process.ProcessName -ne "sh.exe"))
+
+    if ($process.ProcessName -eq "sh.exe")
+    {
+        return $process
+    }
 
     while ($process.ProcessName -eq "git.exe")
     {
