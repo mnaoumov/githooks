@@ -14,11 +14,6 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 . "$(PSScriptRoot)\Common.ps1"
 
-Trap [Exception] `
-{
-    ProcessErrors $_
-}
-    
 $missingRef = "0000000000000000000000000000000000000000"
 
 if ($RefName -notlike "refs/heads/*")

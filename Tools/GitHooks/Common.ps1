@@ -30,17 +30,6 @@ function ExitWithFailure
     ExitWithCode 1
 }
 
-function ProcessErrors
-{
-    param
-    (
-        [System.Management.Automation.ErrorRecord[]] $Errors
-    )
-
-    Write-Error ($Errors | Out-String)
-    ExitWithFailure
-}
-
 function Get-HooksConfiguration
 {
     ([xml] (Get-Content "$(PSScriptRoot)\HooksConfiguration.xml")).HooksConfiguration

@@ -11,11 +11,6 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 function Main
 {
-    Trap [Exception] `
-    {
-        ProcessErrors $_
-    }
-    
     . "$(PSScriptRoot)\Common.ps1"
 
     Add-Type -AssemblyName PresentationFramework

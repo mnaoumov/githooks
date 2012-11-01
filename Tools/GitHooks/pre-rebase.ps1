@@ -15,11 +15,6 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 $ErrorActionPreference = "Stop"
 
-Trap [Exception] `
-{
-    ProcessErrors $_
-}
-
 if ([Convert]::ToBoolean((Get-HooksConfiguration).Rebases.allowRebasePushedBranches))
 {
     Write-Debug "Rebases/@allowRebasePushedBranches is enabled in HooksConfiguration.xml"

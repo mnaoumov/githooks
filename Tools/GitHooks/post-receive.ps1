@@ -14,11 +14,6 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 . "$(PSScriptRoot)\Common.ps1"
 
-Trap [Exception] `
-{
-    ProcessErrors $_
-}
-
 if ($RefName -notlike "refs/heads/*")
 {
     Write-Debug "$RefName is not a branch commit"
