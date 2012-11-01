@@ -1,0 +1,2 @@
+pre-receive eol=lf
+post-receive eol=lf
