@@ -290,7 +290,7 @@ function Test-ShouldShowDialog
         return $true;
     }
 
-    @('powershell.exe', 'cmd.exe') -notcontains (Get-GitParentProcess).ProcessName
+    @('powershell.exe', 'cmd.exe', 'sh.exe') -notcontains (Get-GitParentProcess).ProcessName
 }
 
 Main
