@@ -30,7 +30,7 @@ if ($OldRef -eq $missingRef)
     ExitWithSuccess
 }
 
-$mergeCommits = git log --first-parent --merges --format=%H "$OldRef..$NewRef"
+$mergeCommits = @(git log --first-parent --merges --format=%H "$OldRef..$NewRef")
 if (-not $mergeCommits)
 {
     ExitWithSuccess
