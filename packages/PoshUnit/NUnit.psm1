@@ -7,6 +7,7 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
+Trap { throw $_ }
 
 $packagesFolder = if (Test-Path "$PSScriptRoot\PoshUnit.Dev.txt") { "packages" } else { ".." }
 $packagesFolder = Resolve-Path "$PSScriptRoot\$packagesFolder"

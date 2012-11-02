@@ -8,6 +8,7 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+Trap { throw $_ }
 
 function Main
 {

@@ -16,6 +16,7 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+Trap { throw $_ }
 
 if ((Get-Module PoshUnit) -eq $null)
 {

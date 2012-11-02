@@ -8,6 +8,7 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+Trap { throw $_ }
 
 # -----------------------------------------------------------------------------------------------------------
 # This block is not mandatory. It is needed only if you want your TestFixture script to be self-testable

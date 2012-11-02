@@ -10,10 +10,10 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+Trap { throw $_ }
 
 function Main
 {
-    Trap [Exception] { throw $_ }
     . "$(PSScriptRoot)\Common.ps1"
 
     if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.enforceTfsPrefix)))

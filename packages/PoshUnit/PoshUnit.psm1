@@ -7,6 +7,7 @@ param
 
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
+Trap { throw $_ }
 
 if ((Get-Module NUnit) -eq $null)
 {
