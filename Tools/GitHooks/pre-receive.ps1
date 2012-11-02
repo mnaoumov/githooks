@@ -44,10 +44,7 @@ foreach ($mergeCommit in $mergeCommits)
     if (-not (Test-FastForward -From $OldRef -To $firstParentCommit))
     {
         $commitMessage = git log -1 $mergeCommit --format=oneline
-        Write-Warning "*****"
-        Write-Warning "The following commit should not exist in branch $branchName"
-        Write-Warning $commitMessage
-        Write-Warning "*****"
+        Write-HooksWarning "The following commit should not exist in branch $branchName`n$commitMessage`nPlease execute 'git pull --rebase' and try to push again"
         ExitWithFailure
     }
 }

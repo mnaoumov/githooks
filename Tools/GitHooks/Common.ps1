@@ -145,3 +145,49 @@ function Test-RebaseInProcess
 {
     Test-Path "$(Get-RepoRoot)\.git\rebase-apply"
 }
+
+function Write-HooksWarning
+{
+    param
+    (
+        [string] $Message
+    )
+
+    $maxLength = 70
+
+    Write-Warning ("*" * $maxLength)
+    Wrap-Text -Text $Message -MaxLength $maxLength | `
+        Write-Warning
+    Write-Warning ("*" * $maxLength)
+}
+
+function Wrap-Text
+{
+    param
+    (
+        [string] $Text,
+        [int] $MaxLength
+    )
+
+    $lines = $Text -split "`n"
+
+    foreach ($line in $lines)
+    {
+        if ($line -eq "")
+        {
+            Write-Output ""
+            continue
+        }
+
+        while ($line.Length -ge $MaxLength)
+        {
+            Write-Output ($line.Substring(0, $MaxLength))
+            $line = $line.Substring($MaxLength)
+        }
+
+        if ($line -ne "")
+        {
+            Write-Output $line
+        }
+    }
+}

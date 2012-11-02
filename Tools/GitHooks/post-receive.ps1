@@ -28,7 +28,5 @@ $nextBranch = (Get-HooksConfiguration).Merges.Merge | `
 
 if ($nextBranch -ne $null)
 {
-    Write-Warning "*****"
-    Write-Warning "You pushed branch '$branchName'. Please merge it to the branch '$nextBranch' and push it as well ASAP"
-    Write-Warning "*****"
+    Write-HooksWarning "You pushed branch '$branchName'. Please merge it to the branch '$nextBranch' and push it as well ASAP"
 }

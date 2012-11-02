@@ -36,9 +36,7 @@ if (Test-BranchPushed)
         ExitWithSuccess
     }
 
-    Write-Warning "*****"
-    Write-Warning "You cannot rebase branch '$RebasingBranchName' because it was already pushed"
-    Write-Warning "*****"
+    Write-HooksWarning "You cannot rebase branch '$RebasingBranchName' because it was already pushed"
     ExitWithFailure
 }
 else
