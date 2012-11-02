@@ -13,6 +13,7 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 function Main
 {
+    Trap [Exception] { throw $_ }
     . "$(PSScriptRoot)\Common.ps1"
 
     if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.enforceTfsPrefix)))
@@ -253,11 +254,11 @@ function Get-GitParentProcess
     {
         $process = Get-ParentProcess $process
     }
-    while (($process -ne $null) -and ($process.ProcessName -ne "git.exe") -and ($process.ProcessName -ne "sh.exe"))
+    while (($process -ne $null) -and ($process.ProcessName -ne "git.exe"))
 
-    if ($process.ProcessName -eq "sh.exe")
+    if ($process -eq $null)
     {
-        return $process
+        return $null
     }
 
     while ($process.ProcessName -eq "git.exe")
@@ -295,7 +296,7 @@ function Test-ShouldShowDialog
         return $true;
     }
 
-    @('powershell.exe', 'cmd.exe', 'sh.exe') -notcontains (Get-GitParentProcess).ProcessName
+    @("powershell.exe", "cmd.exe", "sh.exe") -notcontains (Get-GitParentProcess).ProcessName
 }
 
 Main
