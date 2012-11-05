@@ -10,6 +10,7 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+
 Trap { throw $_ }
 
 function Main
@@ -293,7 +294,14 @@ function Test-ShouldShowDialog
 {
     if ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.showDialogFromConsole))
     {
-        return $true;
+        return $true
+    }
+
+    $gitParentProcess = Get-GitParentProcess
+
+    if ($gitParentProcess -eq $null)
+    {
+        return $true
     }
 
     @("powershell.exe", "cmd.exe", "sh.exe") -notcontains (Get-GitParentProcess).ProcessName
