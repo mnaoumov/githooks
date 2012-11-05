@@ -81,7 +81,7 @@ function Get-TrackedBranchName
 
     $remoteBranch = "$remote/$BranchName"
 
-    $remoteBranches = (git branch --remote) -replace "^  "
+    $remoteBranches = @((git branch -r) -replace "^  ")
 
     if ($remoteBranches -contains $remoteBranch)
     {
