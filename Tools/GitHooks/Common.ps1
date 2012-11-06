@@ -8,6 +8,7 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+
 Trap { throw $_ }
 
 function ExitWithCode
@@ -48,7 +49,7 @@ function Set-HooksConfiguration
 
 function Test-MergeCommit
 {
-    (git rev-parse --verify --quiet HEAD^2) -ne $null
+    -not (Test-RefEquals HEAD^2 $null)
 }
 
 function Get-CurrentBranchName
@@ -95,7 +96,33 @@ function Get-TrackedBranchName
 
 function Test-PullMerge
 {
-    (Get-MergedBranchName) -eq (Get-TrackedBranchName)
+    Test-RefEquals (Get-MergedBranchName) (Get-TrackedBranchName)
+}
+
+function Test-RefEquals
+{
+    param
+    (
+        [string] $FirstRef,
+        [string] $SecondRef
+    )
+
+    (Resolve-RefSafe $FirstRef) -eq (Resolve-RefSafe $SecondRef)
+}
+
+function Resolve-RefSafe
+{
+    param
+    (
+        [string] $Ref
+    )
+
+    if (-not $Ref)
+    {
+        return $null
+    }
+
+    git rev-parse --verify --quiet $Ref
 }
 
 function Get-CommitMessage
@@ -120,6 +147,11 @@ function Get-BranchName
         [string] $Commit
     )
 
+    if (-not (Resolve-RefSafe $Commit))
+    {
+        return $null
+    }
+
     (git name-rev --name-only $Commit) -replace "remotes/"
 }
 
@@ -134,7 +166,7 @@ function Test-FastForward
     $From = git rev-parse $From
     $mergeBase = git merge-base $From $To
 
-    $mergeBase -eq $From
+    Test-RefEquals $mergeBase $From
 }
 
 function Get-RepoRoot
