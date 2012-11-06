@@ -8,6 +8,7 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+
 Trap { throw $_ }
 
 function Main
@@ -130,6 +131,12 @@ function Fix-UnallowedMerge
     if ([Convert]::ToBoolean($hooksConfiguration.Merges.allowAllMerges))
     {
         Write-Debug "Merges/@allowAllMerges is enabled in HooksConfiguration.xml"
+        ExitWithSuccess
+    }
+
+    if ($mergedBranchName -like "*^*")
+    {
+        Write-Debug "Unresolved merged branch '$mergedBranchName'"
         ExitWithSuccess
     }
 
