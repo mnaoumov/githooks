@@ -4,4 +4,4 @@
 # commit is made.
 
 psCommand=".\\Tools\\GitHooks\\post-commit.ps1"
-c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
+c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -NoProfile -Command "$psCommand"

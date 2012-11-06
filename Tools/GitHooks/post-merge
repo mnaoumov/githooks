@@ -12,4 +12,4 @@
 # example of how to do this.
 
 psCommand=".\\Tools\\GitHooks\\post-merge.ps1"
-c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
+c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -NoProfile -Command "$psCommand"

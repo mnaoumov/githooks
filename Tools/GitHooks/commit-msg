@@ -7,4 +7,4 @@
 
 commitMessagePath=$1
 psCommand=".\\Tools\\GitHooks\\commit-msg.ps1 -CommitMessagePath \"$commitMessagePath\""
-c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -Command "$psCommand"
+c:/windows/system32/WindowsPowerShell/v1.0/PowerShell.exe -Sta -ExecutionPolicy RemoteSigned -NoProfile -Command "$psCommand"

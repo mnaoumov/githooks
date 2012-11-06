@@ -48,7 +48,7 @@ function Start-PowerShell
 
     $command = ([string] $ScriptBlock) -replace "`"", "\`""
 
-    Start-Process -FilePath PowerShell.exe -ArgumentList "-Command `"$command`"" -PassThru -WindowStyle Minimized
+    Start-Process -FilePath PowerShell.exe -ArgumentList "-NoProfile -Command `"$command`"" -PassThru -WindowStyle Minimized
 }
 
 function Init-UIAutomation
