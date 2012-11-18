@@ -19,10 +19,16 @@ function Main
 
     $hooksConfiguration = Get-HooksConfiguration
 
+    if (Test-FastForward -From HEAD -To FETCH_HEAD)
+    {
+        Write-Debug "`nCurrent commit was already pushed"
+        ExitWithSuccess
+    }
+
     if (-not (Test-MergeCommit))
     {
         Write-Debug "`nCurrent commit is not a merge commit"
-        ExitWithCode
+        ExitWithSuccess
     }
 
     $currentBranchName = Get-CurrentBranchName
@@ -131,12 +137,6 @@ function Fix-UnallowedMerge
     if ([Convert]::ToBoolean($hooksConfiguration.Merges.allowAllMerges))
     {
         Write-Debug "Merges/@allowAllMerges is enabled in HooksConfiguration.xml"
-        ExitWithSuccess
-    }
-
-    if ($mergedBranchName -like "*^*")
-    {
-        Write-Debug "Unresolved merged branch '$mergedBranchName'"
         ExitWithSuccess
     }
 

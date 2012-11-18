@@ -252,3 +252,60 @@ Test-Fixture "post-merge hooks tests for allowed and unallowed non-conflict merg
             $Assert::IsFalse((Test-MergeCommit))
         }
     )
+
+Test-Fixture "post-commit hooks for already pushed commits" `
+    -SetUp `
+    {
+        $tempPath = Get-TempTestPath
+        $localRepoPath = Prepare-LocalGitRepo $tempPath
+
+        $remoteRepoPath = "$tempPath\RemoteGitRepo"
+        New-Item -Path $remoteRepoPath -ItemType Directory
+        Push-Location $remoteRepoPath
+        git init --bare
+        Pop-Location
+
+        Push-Location $localRepoPath
+        git remote add origin $remoteRepoPath
+        git push origin master --set-upstream
+        Pop-Location
+
+        $anotherLocalRepoPath = "$tempPath\AnotherLocalGitRepo"
+        New-Item -Path $anotherLocalRepoPath -ItemType Directory
+
+        Push-Location $anotherLocalRepoPath
+        git clone $remoteRepoPath .
+        New-Item -Path "SomeFile.txt" -ItemType File
+        git add "SomeFile.txt"
+        git commit -m "Change"
+        git push origin master --set-upstream
+        Pop-Location
+
+        Push-Location $localRepoPath
+        New-Item -Path "SomeOtherFile.txt" -ItemType File
+        git add "SomeOtherFile.txt"
+        git commit -m "Change that will cause non-conflict merge"
+        git pull
+        git push origin master
+        Pop-Location
+
+        Push-Location $anotherLocalRepoPath
+
+        tools\GitHooks\Install-GitHooks.ps1 post-merge, post-commit
+        Init-UIAutomation
+        $externalProcess = $null
+    } `
+    -TearDown `
+    {
+            Pop-Location
+            Stop-ProcessTree $externalProcess
+            Remove-Item -Path $tempPath -Recurse -Force
+    } `
+    -Tests `
+    (
+        Test "When pull merge commits appear in a remote repository the hook dialog is not shown" `
+        {
+            $externalProcess = Start-PowerShell { git pull }
+            $Assert::That((Test-Delegate { Get-UIAWindow -Name "Unallowed merge" -ErrorAction SilentlyContinue -Timeout 10000 }), $Throws::TypeOf([NullReferenceException]))
+        }
+    )
