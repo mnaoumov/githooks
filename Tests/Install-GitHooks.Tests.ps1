@@ -71,7 +71,7 @@ Test-Fixture "Install-GitHooks Tests" `
         }
     ),
     (
-        Test "Install-GitHooks -ServerSide installs pre-receive hoook" `
+        Test "Install-GitHooks -ServerSide installs pre-receive,post-receive hooks and common files" `
         {
             $remoteRepoPath = "$tempPath\RemoteGitRepo"
             New-Item -Path $remoteRepoPath -ItemType Directory
@@ -84,6 +84,6 @@ Test-Fixture "Install-GitHooks Tests" `
             $installedHookFiles = [string[]] (Get-ChildItem -Path "$remoteRepoPath\hooks" -Exclude "*.sample" | `
                 Select-Object -ExpandProperty Name)
 
-            $Assert::That($installedHookFiles, $Is::EquivalentTo([string[]] @("pre-receive", "pre-receive.ps1", "Common.ps1")))
+            $Assert::That($installedHookFiles, $Is::EquivalentTo([string[]] @("pre-receive", "pre-receive.ps1", "post-receive", "post-receive.ps1", "Common.ps1", "HooksConfiguration.xml")))
         }
     )
