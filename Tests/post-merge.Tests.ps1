@@ -52,7 +52,7 @@ Test-Fixture "post-merge hooks tests for non-conflict pull merge" `
         New-Item -Path "SomeFile.txt" -ItemType File
         git add "SomeFile.txt"
         git commit -m "Change"
-        git push
+        git push origin master
         Pop-Location
 
         Push-Location $localRepoPath

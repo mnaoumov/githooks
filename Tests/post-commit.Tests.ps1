@@ -52,7 +52,7 @@ Test-Fixture "post-commit hooks tests for conflict pull merge" `
         New-Item -Path "SomeFile.txt" -ItemType File -Value "Change that will cause conflict pull merge"
         git add "SomeFile.txt"
         git commit -m "Change that will cause conflict pull merge"
-        git push
+        git push origin master
         Pop-Location
 
         Push-Location $localRepoPath
