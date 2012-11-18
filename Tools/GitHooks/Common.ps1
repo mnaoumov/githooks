@@ -224,3 +224,13 @@ function Wrap-Text
         }
     }
 }
+
+function Test-CommitPushed
+{
+    $fetchHeadRef = Resolve-RefSafe FETCH_HEAD
+    if (-not $fetchHeadRef)
+    {
+        return $false;
+    }
+    Test-FastForward -From HEAD -To $fetchHeadRef
+}

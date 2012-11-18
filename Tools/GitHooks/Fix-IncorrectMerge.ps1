@@ -19,7 +19,7 @@ function Main
 
     $hooksConfiguration = Get-HooksConfiguration
 
-    if (Test-FastForward -From HEAD -To FETCH_HEAD)
+    if (Test-CommitPushed)
     {
         Write-Debug "`nCurrent commit was already pushed"
         ExitWithSuccess
