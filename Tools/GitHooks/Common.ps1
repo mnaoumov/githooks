@@ -212,10 +212,20 @@ function Wrap-Text
             continue
         }
 
-        while ($line.Length -ge $MaxLength)
+        while ($line.Length -gt $MaxLength)
         {
-            Write-Output ($line.Substring(0, $MaxLength))
-            $line = $line.Substring($MaxLength)
+            $trim = $line.Substring(0, $MaxLength + 1)
+            $lastSpaceIndex = $trim.LastIndexOf(" ")
+            $currentLine = $line.Substring(0, $lastSpaceIndex)
+            Write-Output $currentLine
+            if ($line.Length -le $lastSpaceIndex)
+            {
+                $line = ""
+            }
+            else
+            {
+                $line = $line.Substring($lastSpaceIndex + 1)
+            }
         }
 
         if ($line -ne "")
