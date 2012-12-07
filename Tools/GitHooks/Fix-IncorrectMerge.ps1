@@ -101,7 +101,8 @@ function Fix-PullMerge
     $yesButton.add_Click(
         {
             $form.Close()
-            RevertAndRebase
+            Write-Host "`nExecuting 'git git pull --rebase'"
+            git pull --rebase | Write-Host
         })
 
     $yesPermanentlyButton.add_Click(
@@ -111,7 +112,8 @@ function Fix-PullMerge
             Write-Host "`nExecuting 'git config branch.$currentBranchName.rebase true'"
             git config "branch.$currentBranchName.rebase" true | Write-Host
 
-            RevertAndRebase
+            Write-Host "`nExecuting 'git git pull --rebase'"
+            git pull --rebase | Write-Host
         })
 
     $noButton.add_Click(
@@ -122,14 +124,6 @@ function Fix-PullMerge
 
     $form.WindowStartupLocation = "CenterScreen"
     [void] $form.ShowDialog();
-}
-
-function RevertAndRebase
-{
-    Write-Host "`nReverting pull merge commit by 'git reset --hard HEAD^1'"
-    git reset --hard HEAD^1 | Write-Host
-    Write-Host "`nExecuting 'git git pull --rebase'"
-    git pull --rebase | Write-Host
 }
 
 function Fix-UnallowedMerge
