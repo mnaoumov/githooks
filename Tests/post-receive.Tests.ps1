@@ -109,7 +109,7 @@ Test-Fixture "post-receive hooks" `
             Invoke-NativeWithFullRedirect "git push origin release.1.0 --set-upstream" -OutputVariable output
 
             $output = $output -replace "remote: WARNING: "
-            $output = $output -replace "`n"
+            $output = $output -replace "`n", " "
 
             $Assert::That($output, $Is::StringContaining("You pushed branch 'release.1.0'. Please merge it to the branch 'master' and push it as well ASAP"))
         }
