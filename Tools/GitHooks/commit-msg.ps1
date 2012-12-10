@@ -30,8 +30,8 @@ function Main
     $mergeHeadFile = Join-Path $workingCopyRoot ".git\MERGE_HEAD"
     $workItemPattern = "^TFS(?<id>\d+)"
     $adhocPattern = "^ADH\s+"
-    $fixupSquashPattern = "(fixup)|(squash)[!]\s+"
-    $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
+    $fixupSquashPattern = "^(fixup)|(squash)[!]\s+"
+    $revertPattern = "^This reverts commit [0-9a-fA-F]{40}"
     $badFormatPattern = "^(?s:TFS[^\w\d]*(?<id>\d+)\s*(?<text>.*))"
     
     $commitMessage = Get-Content $CommitMessagePath | Out-String
