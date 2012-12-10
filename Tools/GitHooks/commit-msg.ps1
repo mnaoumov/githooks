@@ -32,7 +32,7 @@ function Main
     $adhocPattern = "^ADH\s+"
     $fixupSquashPattern = "(fixup)|(squash)[!]\s+"
     $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
-    $badFormatPattern = "(?s:TFS[^\w\d]*(?<id>\d+)\s*(?<text>.*))"
+    $badFormatPattern = "^(?s:TFS[^\w\d]*(?<id>\d+)\s*(?<text>.*))"
     
     $commitMessage = Get-Content $CommitMessagePath | Out-String
 
