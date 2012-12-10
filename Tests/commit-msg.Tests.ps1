@@ -83,6 +83,17 @@ Test-Fixture "commit-msg hook tests" `
         }
     ),
     (
+        Test "When branch name starts with TFSxxxx squash commit messages used as is" `
+        {
+            git checkout -b TFS1357 --quiet
+            git commit --allow-empty -m "Some message"
+            git commit --allow-empty --squash=HEAD --reuse-message=HEAD
+            $commitMessage = Get-CommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("squash! TFS1357 Some message"))
+        }
+    ),
+    (
         Test "When commit message starts with TFSxxxx with fake ID comit is cancelled" `
         {
             git commit --allow-empty -m "TFS1234 Some message"
@@ -100,6 +111,16 @@ Test-Fixture "commit-msg hook tests" `
             $commitMessage = Get-CommitMessage
 
             $Assert::That($commitMessage, $Is::EqualTo("fixup! TFS1357 Some message"))
+        }
+    ),
+    (
+        Test "Squash commit messages are preserved" `
+        {
+            git commit --allow-empty -m "TFS1357 Some message"
+            git commit --allow-empty --squash=HEAD --reuse-message=HEAD
+            $commitMessage = Get-CommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("squash! TFS1357 Some message"))
         }
     ),
     (
