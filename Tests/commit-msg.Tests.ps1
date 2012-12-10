@@ -72,6 +72,17 @@ Test-Fixture "commit-msg hook tests" `
         }
     ),
     (
+        Test "When branch name starts with TFSxxxx fixup commit messages used as is" `
+        {
+            git checkout -b TFS1357 --quiet
+            git commit --allow-empty -m "Some message"
+            git commit --allow-empty --fixup=HEAD
+            $commitMessage = Get-CommitMessage
+
+            $Assert::That($commitMessage, $Is::EqualTo("fixup! TFS1357 Some message"))
+        }
+    ),
+    (
         Test "When commit message starts with TFSxxxx with fake ID comit is cancelled" `
         {
             git commit --allow-empty -m "TFS1234 Some message"

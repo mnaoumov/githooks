@@ -36,6 +36,13 @@ function Main
     
     $commitMessage = Get-Content $CommitMessagePath | Out-String
 
+    # Allow fixup/squash commits
+    if ($commitMessage -match $fixupSquashPattern)
+    {
+        Write-Debug "Commit was a fixup/squash"
+        ExitWithSuccess
+    }
+
     # Clean up similar, but wrong, formats
     if ($commitMessage -match $badFormatPattern)
     {
@@ -66,13 +73,6 @@ function Main
     if (Test-Path $mergeHeadFile)
     {
         Write-Debug "Commit was a merge"
-        ExitWithSuccess
-    }
-
-    # Allow fixup/squash commits
-    if ($commitMessage -match $fixupSquashPattern)
-    {
-        Write-Debug "Commit was a fixup/squash"
         ExitWithSuccess
     }
 
