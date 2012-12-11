@@ -31,7 +31,7 @@ function Main
     $workItemPattern = "^TFS(?<id>\d+)"
     $adhocPattern = "^ADH\s+"
     $fixupSquashPattern = "^(fixup)|(squash)[!]\s+"
-    $revertPattern = "^This reverts commit [0-9a-fA-F]{40}"
+    $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
     $badFormatPattern = "^(?s:TFS[^\w\d]*(?<id>\d+)\s*(?<text>.*))"
     
     $commitMessage = Get-Content $CommitMessagePath | Out-String
@@ -40,6 +40,29 @@ function Main
     if ($commitMessage -match $fixupSquashPattern)
     {
         Write-Debug "Commit was a fixup/squash"
+        ExitWithSuccess
+    }
+
+    # Allow merge commits
+    if (Test-Path $mergeHeadFile)
+    {
+        Write-Debug "Commit was a merge"
+        ExitWithSuccess
+    }
+
+    # Allow revert commits
+    if ($commitMessage -match $revertPattern)
+    {
+        Write-Debug "Commit was a revert"
+        ExitWithSuccess
+    }
+
+    # Allow Adhoc commits
+    if ($commitMessage -match $adhocPattern)
+    {
+        Write-Debug "Commit was an ad-hoc"
+        # Strip out the "ADH"
+        Update-CommitMessage ($commitMessage -replace $adhocPattern)
         ExitWithSuccess
     }
 
@@ -68,30 +91,6 @@ function Main
         Update-CommitMessage "$WorkItem $commitMessage"
         ExitWithSuccess
     }
-
-    # Allow merge commits
-    if (Test-Path $mergeHeadFile)
-    {
-        Write-Debug "Commit was a merge"
-        ExitWithSuccess
-    }
-
-    # Allow revert commits
-    if ($commitMessage -match $revertPattern)
-    {
-        Write-Debug "Commit was a revert"
-        ExitWithSuccess
-    }
-
-    # Allow Adhoc commits
-    if ($commitMessage -match $adhocPattern)
-    {
-        Write-Debug "Commit was an ad-hoc"
-        # Strip out the "ADH"
-        Update-CommitMessage ($commitMessage -replace $adhocPattern)
-        ExitWithSuccess
-    }
-
 
     if (Test-ShouldShowDialog)
     {
