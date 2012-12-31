@@ -10,6 +10,7 @@ Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 Trap { throw $_ }
 
+. "$(PSScriptRoot)\GoogleSpreadsheetHelper\GoogleSpreadSheetHelper.ps1"
 
 function Main
 {
@@ -36,27 +37,6 @@ function Main
 function Get-CurrentBranchName
 {
     git rev-parse --abbrev-ref HEAD
-}
-
-function Enable-ForcePush
-{
-    param
-    (
-        [string] $UserName,
-        [string] $Reason
-    )
-
-    Write-Host "Force push is temporary enabled for '$UserName' because of the reason '$Reason'"
-}
-
-function Disable-ForcePush
-{
-    param
-    (
-        [string] $UserName
-    )
-
-    Write-Host "Force push is disabled for '$UserName'"
 }
 
 Main

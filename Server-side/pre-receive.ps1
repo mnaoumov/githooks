@@ -14,6 +14,7 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 Trap { throw $_ }
 
 . "$(PSScriptRoot)\Common.ps1"
+. "$(PSScriptRoot)\GoogleSpreadsheetHelper\GoogleSpreadSheetHelper.ps1"
 
 function Main
 {
@@ -61,20 +62,6 @@ function Test-PushAllowed
 
     Write-HooksWarning "Push should be declined because it is bad."
     return $false
-}
-
-function Test-ForcePushAllowed
-{
-    param
-    (
-        [string] $UserName
-    )
-
-    return New-Object PSObject -Property `
-    @{
-        IsAllowed = $false;
-        Reason = "N/A"
-    }
 }
 
 Main
