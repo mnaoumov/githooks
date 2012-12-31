@@ -70,7 +70,34 @@ function Test-ForcePushAllowed
     InitHelpers $UserName
 
     $listFeed = $service.Query($filteredQuery);
-    $listFeed.Entries.Count -ne 0;
+
+    if ($listFeed.Entries.Count -eq 0)
+    {
+        New-Object PSObject -Property `
+        @{
+            IsAllowed = $false;
+            Reason = ""
+        }
+    }
+    else
+    {
+        $reason = ""
+        $row = $listFeed.Entries[0];
+
+        foreach ($element in $row.Elements)
+        {
+            if ($element.LocalName -eq "reason")
+            {
+                $reason = $element.Value
+            }
+        }
+
+        New-Object PSObject -Property `
+        @{
+            IsAllowed = $true;
+            Reason = $reason
+        }
+    }
 }
 
 function InitHelpers

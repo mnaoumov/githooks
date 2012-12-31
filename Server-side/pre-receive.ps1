@@ -32,7 +32,7 @@ function Main
 
         if ($result.IsAllowed)
         {
-            Write-HooksWarning "Allowing to push because of the reason '$result.Reason'"
+            Write-HooksWarning "Allowing to push because of the reason '$($result.Reason)'"
             ExitWithSuccess
         }
         else
