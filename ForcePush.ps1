@@ -11,8 +11,6 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 Trap { throw $_ }
 
 
-. "$(PSScriptRoot)\Common.ps1"
-
 function Main
 {
     $branchName = Get-CurrentBranchName
