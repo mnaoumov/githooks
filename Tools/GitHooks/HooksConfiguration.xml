@@ -13,10 +13,7 @@
   <Rebases allowRebasePushedBranches="true" />
   <Pushes allowForcePushes="false" allowUnparsableMergeCommitMessages="false">
     <RemotesMap>
-      <Map url="203.29.132.158:otp" remoteName="origin" />
-      <Map url="192.168.0.100:otp" remoteName="origin" />
-      <Map url="git.f-dev.net:otp" remoteName="origin" />
-      <Map url="git@192.168.0.100:otp.git" remoteName="origin" />
+      <Map url="some-url" remoteName="origin" />
     </RemotesMap>
   </Pushes>
 </HooksConfiguration>
