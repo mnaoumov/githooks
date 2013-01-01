@@ -16,4 +16,5 @@
       <Map url="some-url" remoteName="origin" />
     </RemotesMap>
   </Pushes>
+  <TeamCity mockBuildStatus="true" userName="build_light" password="build_light" url="https://ci.f-dev.net" buildTypeNam="Build &amp; Test"/>
 </HooksConfiguration>
