@@ -18,10 +18,37 @@ Trap { throw $_ }
 
 function Main
 {
+    if ($RefName -notlike "refs/heads/*")
+    {
+        Write-Debug "$RefName is not a branch commit."
+        return $true
+    }
+
+    $branchName = $RefName -replace "refs/heads/"
+
+    $missingRef = "0000000000000000000000000000000000000000"
+
+    if ($NewRef -eq $missingRef)
+    {
+        Write-Debug "This push deletes branch $branchName"
+        ExitWithSuccess
+    }
+
+    if ($OldRef -ne $missingRef)
+    {
+        $refQuery = @("$OldRef..$NewRef")
+    }
+    else
+    {
+        $refQuery = @(git for-each-ref --format="%(refname)" "refs/heads/*" | `
+            ForEach-Object { "^$_" }) + $NewRef
+    }
+
     $success = Test-PushAllowed
 
     if ($success)
     {
+
         ExitWithSuccess
     }
     else
@@ -50,26 +77,7 @@ function Main
 
 function Test-PushAllowed
 {
-    if ($RefName -notlike "refs/heads/*")
     {
-        Write-Debug "$RefName is not a branch commit."
-        return $true
-    }
-
-    $branchName = $RefName -replace "refs/heads/"
-
-    $missingRef = "0000000000000000000000000000000000000000"
-
-    if ($OldRef -eq $missingRef)
-    {
-        Write-Debug "$branchName is a new branch"
-        return $true
-    }
-
-    if ($NewRef -eq $missingRef)
-    {
-        Write-Debug "This push deletes branch $branchName"
-        return $true
     }
 
     if (-not (Test-Merges))
@@ -82,7 +90,7 @@ function Test-PushAllowed
 
 function Test-Merges
 {
-    $merges = @(git log "$OldRef..$NewRef" --merges --first-parent --format=%H --reverse)
+    $merges = @(git log $refQuery --merges --first-parent --format=%H --reverse)
 
     foreach ($merge in $merges)
     {
