@@ -48,6 +48,8 @@ function Main
 
     if ($success)
     {
+        Write-HooksWarning "manual hack"
+ExitWithFailure
 
         ExitWithSuccess
     }
@@ -77,20 +79,10 @@ function Main
 
 function Test-PushAllowed
 {
-    if (-not (Test-BrokenBuild))
-    {
-        return $false
-    }
-
-    if (-not (Test-Merges))
-    {
-        return $false
-    }
-
-    return $true
+    return (Test-BrokenBuild) -and (Test-UnmergedBranch) -and (Test-IncorrectMerges)
 }
 
-function Test-Merges
+function Test-IncorrectMerges
 {
     $merges = @(git log $refQuery --merges --first-parent --format=%H --reverse)
 
@@ -198,6 +190,21 @@ function Test-BuildStatus
 
     $status = $client.DownloadString("$restUrl/buildTypes/id:$buildId/builds/canceled:false/status")
     $status -ne "FAILURE"
+}
+
+function Test-UnmergedBranch
+{
+    if (Test-BranchMerged $branchName)
+    {
+        return $true
+    }
+
+    $nextBranchName = Get-NextBranchName $branchName
+    $committerName = git log -1 $OldRef --format=%an
+    $commitInfo = git log -1 $OldRef --format=oneline
+    $relativeCommitDate = git log -1 $OldRef --format=%ar
+    Write-HooksWarning "Cannot push to '$branchName' because it has unmerged commits to branch '$nextBranchName'. Wait for $committerName to merge the following commit into 'master':`n$commitInfo`nChanges to be merged were made $relativeCommitDate"
+    return $false
 }
 
 Main

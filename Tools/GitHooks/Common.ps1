@@ -361,3 +361,31 @@ function Test-MergeAllowed
 
     $mergeAllowed
 }
+
+function Test-BranchMerged
+{
+    param
+    (
+        [string] $BranchName
+    )
+
+    $nextBranchName = Get-NextBranchName $BranchName
+    if ($nextBranchName -eq $null)
+    {
+        return $true
+    }
+
+    Test-FastForward -From $BranchName -To $nextBranchName
+}
+
+function Get-NextBranchName
+{
+    param
+    (
+        [string] $BranchName
+    )
+    
+    (Get-HooksConfiguration).Merges.Merge | `
+        Where-Object { ($_.branch -eq $BranchName) -and [Convert]::ToBoolean($_.required) } | `
+        Select-Object -First 1 -ExpandProperty into
+}

@@ -8,7 +8,7 @@
     </FakeWorkItems>
   </CommitMessages>
   <Merges fixPullMerges="true" allowAllMerges="false">
-    <Merge from="release.1.0" into="master" />
+    <Merge from="release.1.0" into="master" required="true" />
   </Merges>
   <Rebases allowRebasePushedBranches="true" />
   <Pushes allowForcePushes="false" allowUnparsableMergeCommitMessages="false" allowMergePulls="false">
@@ -16,5 +16,5 @@
       <Map url="some-url" remoteName="origin" />
     </RemotesMap>
   </Pushes>
-  <TeamCity mockBuildStatus="false" userName="" password="" url="" buildTypeName="" allowUnknownBuildStatus="false" />
+  <TeamCity mockBuildStatus="true" userName="" password="" url="" buildTypeName="" allowUnknownBuildStatus="false" />
 </HooksConfiguration>
