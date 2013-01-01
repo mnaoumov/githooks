@@ -11,4 +11,5 @@
     <Merge branch="release.1.0" into="master" />
   </Merges>
   <Rebases allowRebasePushedBranches="false" />
+  <Pushes allowForcePushes="false" />
 </HooksConfiguration>

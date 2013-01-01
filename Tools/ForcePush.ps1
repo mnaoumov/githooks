@@ -10,7 +10,7 @@ Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 Trap { throw $_ }
 
-. "$(PSScriptRoot)\GoogleSpreadsheetHelper\GoogleSpreadSheetHelper.ps1"
+. "$(PSScriptRoot)\GitHooks\GoogleSpreadsheetHelper\GoogleSpreadsheetHelper.ps1"
 
 function Main
 {
