@@ -244,3 +244,88 @@ function Test-CommitPushed
     }
     Test-FastForward -From HEAD -To $fetchHeadRef
 }
+
+function Parse-MergeCommitMessage
+{
+    param
+    (
+        [string] $CommitMessage
+    )
+
+    $result = New-Object PSObject -Property `
+    @{
+        Parsed = $false;
+        From = "N/A";
+        Into = "N/A";
+    }
+
+    $patterns = `
+    @(
+        "^Merge branch '(?<from>\S*)'$",
+        "^Merge remote branch '(?<from>\S*)'$",
+        "^Merge remote-tracking branch '(?<from>\S*)'$",
+
+        "^Merge (?<from>\S*) branch to (?<into>\S*)$",
+        "^Merge (?<from>\S*) to (?<into>\S*)$",
+
+        "^Merge branch '(?<from>\S*)' into (?<into>\S*)$",
+        "^Merge remote branch '(?<from>\S*)' into (?<into>\S*)$",
+        "^Merge remote-tracking branch '(?<from>\S*)' into (?<into>\S*)$",
+        "^Merge branch (?<from>\S*) to (?<into>\S*)$",
+
+        "^Merge branch '(?<from>\S*)' of (?<url>\S*)$",
+        "^Merge branch '(?<from>\S*)' of (?<url>\S*) into (?<into>\S*)$",
+        "^Merge branches '(?<into>\S*)' and '(?<from>\S*)'$",
+        "^Merge branches '(?<into>\S*)' and '(?<from>\S*)' of (?<url>\S*)$"
+    )
+
+    foreach ($pattern in $patterns)
+    {
+        if ($CommitMessage -match $pattern)
+        {
+            $from = $Matches["from"]
+            $into = $Matches["into"]
+            $url = $Matches["url"]
+
+            if (-not $into)
+            {
+                $into = "master"
+            }
+
+            if ($url)
+            {
+                $remote = Get-RemoteName $url
+                $from = "$remote/$from"
+            }
+
+            $result.From = $from
+            $result.Into = $into
+            $result.Parsed = $true
+
+            break
+        }
+    }
+
+    $result
+}
+
+function Get-RemoteName
+{
+    param
+    (
+        [string] $url
+    )
+
+    $map = (Get-HooksConfiguration).Pushes.RemotesMap.Map | `
+        Where-Object { $_.url -eq $url } | `
+        Select-Object -First 1
+
+    if ($map)
+    {
+        return $map.remoteName
+    }
+    else
+    {
+        return $url
+    }
+}
