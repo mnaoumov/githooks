@@ -216,15 +216,26 @@ function Wrap-Text
         {
             $trim = $line.Substring(0, $MaxLength + 1)
             $lastSpaceIndex = $trim.LastIndexOf(" ")
+            $hasSpace = $true
+            if ($lastSpaceIndex -eq -1)
+            {
+                $lastSpaceIndex = $MaxLength
+                $hasSpace = $false
+            }
+
             $currentLine = $line.Substring(0, $lastSpaceIndex)
             Write-Output $currentLine
             if ($line.Length -le $lastSpaceIndex)
             {
                 $line = ""
             }
-            else
+            elseif ($hasSpace)
             {
                 $line = $line.Substring($lastSpaceIndex + 1)
+            }
+            else
+            {
+                $line = $line.Substring($lastSpaceIndex)
             }
         }
 
