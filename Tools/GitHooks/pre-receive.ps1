@@ -140,9 +140,17 @@ function Test-BrokenBuild
 {
     $buildStatus = Test-BuildStatus $branchName
 
-    if ($buildStatus -ne $false)
+    if ($buildStatus -eq $true)
     {
         return $true
+    }
+    else if ($buildStatus -eq $null)
+    {
+        if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).TeamCity.allowUnknownBuildStatus)))
+        {
+            Write-HooksWarning "Cannot get TeamCity build status for branch '$branchName'"
+            return $false
+        }
     }
 
     $commitMessages = @(git log $refQuery --format=%s)
