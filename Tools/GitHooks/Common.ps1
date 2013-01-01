@@ -329,3 +329,24 @@ function Get-RemoteName
         return $url
     }
 }
+
+function Test-MergeAllowed
+{
+    param
+    (
+        [string] $From,
+        [string] $Into
+    )
+
+    if ([Convert]::ToBoolean((Get-HooksConfiguration).Merges.allowAllMerges))
+    {
+        Write-Debug "Merges/@allowAllMerges is enabled in HooksConfiguration.xml"
+        return $true
+    }
+
+    $mergeAllowed = ((Get-HooksConfiguration).Merges.Merge | `
+        Where-Object { ($_.from -eq $From ) -and ($_.into -eq $Into) } | `
+        Select-Object -First 1) -ne $null
+
+    $mergeAllowed
+}

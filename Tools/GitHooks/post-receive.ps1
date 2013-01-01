@@ -24,7 +24,7 @@ if ($RefName -notlike "refs/heads/*")
 $branchName = $RefName -replace "refs/heads/"
 
 $nextBranch = (Get-HooksConfiguration).Merges.Merge | `
-    Where-Object { ($_.branch -eq $branchName) } | `
+    Where-Object { ($_.from -eq $branchName) } | `
     Select-Object -ExpandProperty into -First 1
 
 if ($nextBranch -ne $null)

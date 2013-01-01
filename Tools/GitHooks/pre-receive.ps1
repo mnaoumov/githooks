@@ -14,7 +14,7 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 Trap { throw $_ }
 
 . "$(PSScriptRoot)\Common.ps1"
-. "$(PSScriptRoot)\GoogleSpreadsheetHelper\GoogleSpreadSheetHelper.ps1"
+. "$(PSScriptRoot)\GoogleSpreadsheetHelper\GoogleSpreadsheetHelper.ps1"
 
 function Main
 {
@@ -26,14 +26,13 @@ function Main
     }
     else
     {
-        $commiterName = git log -1 $NewRef --format=%cN
-
         if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowForcePushes)))
         {
             Write-Debug "Pushes/@allowForcePushes is disabled in HooksConfiguration.xml"
             ExitWithFailure
         }
 
+        $commiterName = git log -1 $NewRef --format=%cN
         $result = Test-ForcePushAllowed -UserName $commiterName
 
         if ($result.IsAllowed)
@@ -73,26 +72,58 @@ function Test-PushAllowed
         return $true
     }
 
-    $mergeCommits = @(git log --first-parent --merges --format=%H "$OldRef..$NewRef")
-    if (-not $mergeCommits)
+    if (-not (Test-Merges))
     {
-        ExitWithSuccess
+        return $false
     }
 
-    [Array]::Reverse($mergeCommits)
+    return $true
+}
 
-    foreach ($mergeCommit in $mergeCommits)
+function Test-Merges
+{
+    $merges = @(git log "$OldRef..$NewRef" --merges --first-parent --format=%H --reverse)
+
+    foreach ($merge in $merges)
     {
-        $firstParentCommit = git rev-parse $mergeCommit^1
-        if (-not (Test-FastForward -From $OldRef -To $firstParentCommit))
+        $mergeCommitMessage = git log -1 $merge --format=%s
+
+        $result = Parse-MergeCommitMessage $mergeCommitMessage
+
+        $commitInfo = git log -1 $merge --format=oneline
+
+        if (-not $result.Parsed)
         {
-            $commitMessage = git log -1 $mergeCommit --format=oneline
-            Write-HooksWarning "The following commit should not exist in branch $branchName`n$commitMessage`nPlease execute 'git pull --rebase' and try to push again"
-            ExitWithFailure
+            if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowUnparsableMergeCommitMessages)))
+            {
+                Write-HooksWarning "Cannot parse merge commit message`n$commitInfo`nPlease don't modify merge commit messages"
+                return $false
+            }
+        }
+        elseif (($result.From -eq "origin/$branchName") -and ($return.Into -eq $branchName))
+        {
+            if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowMergePulls)))
+            {
+                Write-HooksWarning "Pull merge commit are not allowed:`n$commitInfo"
+                return $false
+            }
+        }
+        elseif ($result.Into -eq $branchName)
+        {
+            if (-not(Test-MergeAllowed -From $result.From -Into $result.Into))
+            {
+                Write-HooksWarning "Merge from '$($result.From)' into '$($result.Into)' is not allowed:`n$commitInfo"
+                return $false
+            }
+        }
+        else
+        {
+            Write-HooksWarning "Your '$branchName' branch seems to be incorrectly reset to a wrong branch. The following commit should not exist in this branch:`n$commitInfo`nYou have to backup your '$branchName' branch, hard reset it to the 'origin/$branchName' and cherry-pick your changes"
+            return $false
         }
     }
 
-    ExitWithSuccess
+    return $true
 }
 
 Main

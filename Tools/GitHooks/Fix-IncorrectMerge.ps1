@@ -128,15 +128,7 @@ function Fix-PullMerge
 
 function Fix-UnallowedMerge
 {
-    if ([Convert]::ToBoolean($hooksConfiguration.Merges.allowAllMerges))
-    {
-        Write-Debug "Merges/@allowAllMerges is enabled in HooksConfiguration.xml"
-        ExitWithSuccess
-    }
-
-    $mergeAllowed = ($hooksConfiguration.Merges.Merge | `
-        Where-Object { ($_.branch -eq $mergedBranchName) -and ($_.into -eq $currentBranchName) } | `
-        Select-Object -First 1) -ne $null
+    $mergeAllowed = Test-MergeAllowed -From $mergedBranchName -Into $currentBranchName
 
     if ($mergeAllowed)
     {

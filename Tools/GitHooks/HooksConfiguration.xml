@@ -8,10 +8,10 @@
     </FakeWorkItems>
   </CommitMessages>
   <Merges fixPullMerges="true" allowAllMerges="false">
-    <Merge branch="release.1.0" into="master" />
+    <Merge from="release.1.0" into="master" />
   </Merges>
   <Rebases allowRebasePushedBranches="true" />
-  <Pushes allowForcePushes="false" allowUnparsableMergeCommitMessages="false">
+  <Pushes allowForcePushes="false" allowUnparsableMergeCommitMessages="false" allowMergePulls="false">
     <RemotesMap>
       <Map url="some-url" remoteName="origin" />
     </RemotesMap>
