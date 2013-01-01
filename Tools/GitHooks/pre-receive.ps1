@@ -69,7 +69,7 @@ function Main
         }
         else
         {
-            Write-Debug "Force push is not allowed for '$commiterName'"
+            Write-HooksWarning "If you really need to push your changes and bypass all these checks use 'tools\ForcePush.ps1' utility"
             ExitWithFailure
         }
     }
@@ -77,7 +77,9 @@ function Main
 
 function Test-PushAllowed
 {
+    if (-not (Test-BrokenBuild))
     {
+        return $false
     }
 
     if (-not (Test-Merges))
@@ -112,7 +114,7 @@ function Test-Merges
         {
             if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowMergePulls)))
             {
-                Write-HooksWarning "Pull merge commit are not allowed:`n$commitInfo"
+                Write-HooksWarning "Pull merge commits are not allowed:`n$commitInfo"
                 return $false
             }
         }
@@ -132,6 +134,62 @@ function Test-Merges
     }
 
     return $true
+}
+
+function Test-BrokenBuild
+{
+    $buildStatus = Test-BuildStatus $branchName
+
+    if ($buildStatus -ne $false)
+    {
+        return $true
+    }
+
+    $commitMessages = @(git log $refQuery --format=%s)
+    foreach ($commitMessage in $commitMessages)
+    {
+        if ($commitMessage -notlike "BUILDFIX*")
+        {
+            Write-HooksWarning "TeamCity build for branch '$branchName' is broken. You can only push commits that fix broken build. If it is the case, please prefix your commit messages with BUILDFIX to bypass this check.`nTo modify commit messages follow http://stackoverflow.com/questions/179123/how-do-i-edit-an-incorrect-commit-message-in-git"
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-BuildStatus
+{
+    param
+    (
+        [string] $BranchName
+    )
+
+    $mockBuildStatus = (Get-HooksConfiguration).TeamCity.mockBuildStatus
+
+    if ($mockBuildStatus -ne "")
+    {
+        return [Convert]::ToBoolean($mockBuildStatus)
+    }
+
+    $client = New-Object System.Net.WebClient
+    $client.Credentials = New-Object System.Net.NetworkCredential (Get-HooksConfiguration).TeamCity.userName, (Get-HooksConfiguration).TeamCity.password
+
+    $restUrl = "$((Get-HooksConfiguration).TeamCity.url)/httpAuth/app/rest"
+
+    [xml] $xml = $client.DownloadString("$restUrl/buildTypes")
+
+    $buildId = $xml.buildTypes.buildType | `
+        Where-Object { $_.projectName -eq $BranchName -and $_.name -eq (Get-HooksConfiguration).TeamCity.buildTypeName } | `
+        Select-Object -ExpandProperty id
+
+    if ($buildId -eq $null)
+    {
+        return $null
+    }
+
+    $status = $client.DownloadString("$restUrl/buildTypes/id:$buildId/builds/canceled:false/status")
+    $status -ne "FAILURE"
 }
 
 Main
