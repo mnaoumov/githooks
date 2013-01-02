@@ -16,7 +16,7 @@ function Main
 {
     $branchName = Get-CurrentBranchName
 
-    Write-Host "Please privide a reason why do you need to do force push of branch '$branchName' and bypass server-side hooks. Leave it blank if you want to cancel."
+    Write-Host "Please provide a reason why do you need to do force push of branch '$branchName' and bypass server-side hooks. Leave it blank if you want to cancel."
     $reason = Read-Host -Prompt "Reason"
 
     if (-not $reason)
