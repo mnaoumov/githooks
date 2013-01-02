@@ -386,6 +386,6 @@ function Get-NextBranchName
     )
     
     (Get-HooksConfiguration).Merges.Merge | `
-        Where-Object { ($_.branch -eq $BranchName) -and [Convert]::ToBoolean($_.required) } | `
+        Where-Object { ($_.from -eq $BranchName) -and [Convert]::ToBoolean($_.required) } | `
         Select-Object -First 1 -ExpandProperty into
 }
