@@ -143,6 +143,7 @@ function Test-BrokenBuild
     }
 
     $commitMessages = @(git log $refQuery --format=%s)
+    $commitMessages = @(git log $refQuery --no-merges --format=%s)
     foreach ($commitMessage in $commitMessages)
     {
         if ($commitMessage -notlike "BUILDFIX*")
