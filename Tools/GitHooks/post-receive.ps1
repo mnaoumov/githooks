@@ -27,5 +27,5 @@ $nextBranch = Get-NextBranchName $branchName
 
 if ($nextBranch -ne $null)
 {
-    Write-HooksWarning "You pushed branch '$branchName'. Please merge it to the branch '$nextBranch' and push it as well ASAP"
+    Write-HooksWarning "You pushed branch '$branchName'. Please merge it to the branch '$nextBranch' and push it as well ASAP.`nSee wiki-url/index.php?title=Git#Unmerged_changes"
 }
