@@ -133,7 +133,7 @@ function Test-BrokenBuild
     {
         return $true
     }
-    else if ($buildStatus -eq $null)
+    elseif ($buildStatus -eq $null)
     {
         if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).TeamCity.allowUnknownBuildStatus)))
         {
