@@ -48,9 +48,6 @@ function Main
 
     if ($success)
     {
-        Write-HooksWarning "manual hack"
-ExitWithFailure
-
         ExitWithSuccess
     }
     else
