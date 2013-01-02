@@ -63,12 +63,12 @@ function Main
 
         if ($result.IsAllowed)
         {
-            Write-HooksWarning "Allowing to push because of the reason '$($result.Reason)'"
+            Write-HooksWarning "ForcePush allowed because of the reason '$($result.Reason)'.`nSee wiki-url/index.php?title=Git#ForcePush"
             ExitWithSuccess
         }
         else
         {
-            Write-HooksWarning "If you really need to push your changes and bypass all these checks use 'tools\ForcePush.ps1' utility"
+            Write-HooksWarning "If you really need to push your changes`nSee wiki-url/index.php?title=Git#ForcePush"
             ExitWithFailure
         }
     }
@@ -95,7 +95,7 @@ function Test-IncorrectMerges
         {
             if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowUnparsableMergeCommitMessages)))
             {
-                Write-HooksWarning "Cannot parse merge commit message`n$commitInfo`nPlease don't modify merge commit messages"
+                Write-HooksWarning "Cannot parse merge commit message`n$commitInfo`nSee wiki-url/index.php?title=Git#Parse_merge_commit_messages"
                 return $false
             }
         }
@@ -103,7 +103,7 @@ function Test-IncorrectMerges
         {
             if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowMergePulls)))
             {
-                Write-HooksWarning "Pull merge commits are not allowed:`n$commitInfo"
+                Write-HooksWarning "Pull merge commits are not allowed:`n$commitInfo`nSee wiki-url/index.php?title=Git#Pull_merges"
                 return $false
             }
         }
@@ -111,13 +111,13 @@ function Test-IncorrectMerges
         {
             if (-not(Test-MergeAllowed -From $result.From -Into $result.Into))
             {
-                Write-HooksWarning "Merge from '$($result.From)' into '$($result.Into)' is not allowed:`n$commitInfo"
+                Write-HooksWarning "Merge from '$($result.From)' into '$($result.Into)' is not allowed:`n$commitInfo`nSee wiki-url/index.php?title=Git#Merges"
                 return $false
             }
         }
         else
         {
-            Write-HooksWarning "Your '$branchName' branch seems to be incorrectly reset to a wrong branch. The following commit should not exist in this branch:`n$commitInfo`nYou have to backup your '$branchName' branch, hard reset it to the 'origin/$branchName' and cherry-pick your changes"
+            Write-HooksWarning "The following commit should not exist in this branch:`n$commitInfo`nSee wiki-url/index.php?title=Git#Incorrect_reset"
             return $false
         }
     }
@@ -137,18 +137,17 @@ function Test-BrokenBuild
     {
         if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).TeamCity.allowUnknownBuildStatus)))
         {
-            Write-HooksWarning "Cannot get TeamCity build status for branch '$branchName'"
+            Write-HooksWarning "Cannot get TeamCity build status for branch '$branchName'.`nSee wiki-url/index.php?title=Git#TeamCity"
             return $false
         }
     }
 
-    $commitMessages = @(git log $refQuery --format=%s)
     $commitMessages = @(git log $refQuery --no-merges --format=%s)
     foreach ($commitMessage in $commitMessages)
     {
         if ($commitMessage -notlike "BUILDFIX*")
         {
-            Write-HooksWarning "TeamCity build for branch '$branchName' is broken. You can only push commits that fix broken build. If it is the case, please prefix your commit messages with BUILDFIX to bypass this check.`nTo modify commit messages follow http://stackoverflow.com/questions/179123/how-do-i-edit-an-incorrect-commit-message-in-git"
+            Write-HooksWarning "TeamCity build for branch '$branchName' is broken.`nSee wiki-url/index.php?title=Git#Broken_build"
             return $false
         }
     }
@@ -167,7 +166,7 @@ function Test-UnmergedBranch
     $committerName = git log -1 $OldRef --format=%an
     $commitInfo = git log -1 $OldRef --format=oneline
     $relativeCommitDate = git log -1 $OldRef --format=%ar
-    Write-HooksWarning "Cannot push to '$branchName' because it has unmerged commits to branch '$nextBranchName'. Wait for $committerName to merge the following commit into 'master':`n$commitInfo`nChanges to be merged were made $relativeCommitDate"
+    Write-HooksWarning "Cannot push to '$branchName' because it has unmerged commits to branch '$nextBranchName'. Wait for $committerName to merge the following commit into '$nextBranchName':`n$commitInfo`nChanges to be merged were made $relativeCommitDate`nSee wiki-url/index.php?title=Git#Unmerged_changes"
     return $false
 }
 
