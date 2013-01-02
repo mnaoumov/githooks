@@ -11,6 +11,7 @@ param
 $script:ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+
 Trap { throw $_ }
 
 if (-not $ServerSide)
@@ -22,7 +23,7 @@ if (-not $ServerSide)
         throw "Failed to locate .git\hooks directory"
     }
 
-    Copy-Item -Path "$(PSScriptRoot)\*" -Filter "*." -Include $Hooks -Destination $gitHooksFolder
+    Copy-Item -Path "$(PSScriptRoot)\*" -Filter "*." -Include $Hooks -Destination $gitHooksFolder -Force
 
     Write-Host "Git hooks installed"
 }
@@ -46,4 +47,3 @@ else
         Copy-Item -Path "$(PSScriptRoot)\*" -Include $filesToCopy -Destination $gitHooksFolder
     }
 }
-
