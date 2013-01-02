@@ -29,6 +29,7 @@ function Main
 
     $mergeHeadFile = Join-Path $workingCopyRoot ".git\MERGE_HEAD"
     $workItemPattern = "^TFS(?<id>\d+)"
+    $qcPattern = "^QC(?<id>\d+)"
     $adhocPattern = "^ADH\s+"
     $fixupSquashPattern = "^(fixup)|(squash)[!]\s+"
     $revertPattern = "This reverts commit [0-9a-fA-F]{40}"
@@ -82,7 +83,7 @@ function Main
     }
 
     # Allow commits that contain a work item ID in the message
-    if ($commitMessage -match $workItemPattern)
+    if (($commitMessage -match $workItemPattern) -or ($commitMessage -match $qcPattern))
     {
         Write-Debug "ID in message"
         Validate-WorkItemId $matches["id"]
