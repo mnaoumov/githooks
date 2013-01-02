@@ -99,7 +99,7 @@ function Test-IncorrectMerges
                 return $false
             }
         }
-        elseif (($result.From -eq "origin/$branchName") -and ($return.Into -eq $branchName))
+        elseif (($result.From -eq "origin/$branchName") -and ($result.Into -eq $branchName))
         {
             if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowMergePulls)))
             {
