@@ -389,3 +389,42 @@ function Get-NextBranchName
         Where-Object { ($_.from -eq $BranchName) -and [Convert]::ToBoolean($_.required) } | `
         Select-Object -First 1 -ExpandProperty into
 }
+
+function Test-BuildStatus
+{
+    param
+    (
+        [string] $BranchName
+    )
+
+    $mockBuildStatus = (Get-HooksConfiguration).TeamCity.mockBuildStatus
+
+    $buildTypeId = (Get-HooksConfiguration).TeamCity.Builds.Build | `
+        Where-Object { $_.branch -eq $BranchName } | `
+        Select-Object -ExpandProperty buildTypeId
+
+    if ($buildTypeId -eq $null)
+    {
+        return $null
+    }
+
+    if ($mockBuildStatus -ne "")
+    {
+        return [Convert]::ToBoolean($mockBuildStatus)
+    }
+
+    try
+    {
+        $client = New-Object System.Net.WebClient
+        $client.Credentials = New-Object System.Net.NetworkCredential (Get-HooksConfiguration).TeamCity.userName, (Get-HooksConfiguration).TeamCity.password
+
+        $url = "$((Get-HooksConfiguration).TeamCity.url)/httpAuth/app/rest/buildTypes/id:$buildTypeId/builds/canceled:false/status"
+
+        $status = $client.DownloadString($url)
+        $status -ne "FAILURE"
+    }
+    catch
+    {
+        return $null
+    }
+}
