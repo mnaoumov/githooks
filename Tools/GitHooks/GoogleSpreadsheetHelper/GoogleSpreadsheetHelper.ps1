@@ -34,7 +34,13 @@ function Enable-ForcePush
     [void] $listEntry.Elements.Add((New-Object Google.GData.Spreadsheets.ListEntry+Custom -Property @{ LocalName = "reason"; Value = $Reason }))
     [void] $listEntry.Elements.Add((New-Object Google.GData.Spreadsheets.ListEntry+Custom -Property @{ LocalName = "enabled"; Value = "Yes" }))
 
-    [void] $service.Insert($listFeed, $listEntry)
+    $method = $service.GetType().GetMethods() | `
+        Where-Object { ($_.Name -eq "Insert") -and ($_.GetParameters()[0].ParameterType -eq [Google.GData.Client.AtomFeed]) } | `
+        Select -First 1
+
+    $method = $method.MakeGenericMethod([Google.GData.Spreadsheets.ListEntry])
+
+    [void] $method.Invoke($service, @([Google.GData.Client.AtomFeed] $listFeed, [Google.GData.Spreadsheets.ListEntry] $listEntry))
 }
 
 function Disable-ForcePush
