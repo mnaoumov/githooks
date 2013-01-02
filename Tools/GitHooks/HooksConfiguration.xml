@@ -16,5 +16,9 @@
       <Map url="some-url" remoteName="origin" />
     </RemotesMap>
   </Pushes>
-  <TeamCity mockBuildStatus="true" userName="" password="" url="" buildTypeName="" allowUnknownBuildStatus="false" />
+  <TeamCity mockBuildStatus="true" userName="user1" password="password1" url="some-url" allowUnknownBuildStatus="false">
+    <Builds>
+      <Build branch="master" buildTypeId="bt11" />
+    </Builds>
+  </TeamCity>
 </HooksConfiguration>
