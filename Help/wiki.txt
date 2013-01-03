@@ -1,0 +1,85 @@
+== Hooks ==
+
+To keep things consistent, and prevent some silly mistakes, we have a number of both client and server-side hooks. These hooks are little scripts that run when you commit or push changes to Git, and may prevent your commit if there's something outside our rules.
+
+All the hooks are located under '''tools\GitHooks'''
+
+Server-side hooks are located in '''c:\path\to\hooks''' on '''git server'''
+
+All configuration values for git hooks are located in '''HooksConfiguration.xml'''. This file is used for both client-side and server-side hooks
+
+=== ForcePush ===
+
+In case if you really need to push your changes that are being declined by server-side hooks, use '''tools\ForcePush.ps1''' utility.
+
+It requires you to enter a reason why you need it.
+
+The reason is being recorded and can be reviewed.
+
+Please provide real reasons.
+
+=== Commit messages ===
+
+This client-side hook makes sure that you have a proper commit message.
+
+It checks that your messages look like TFS1357 or QC1357.
+
+Messages for merge, squash, fixup and revert are not validated.
+
+If your message starts with '''ADH''' (stands for ad-hoc), the prefix is being trimmed and message is used as is.
+
+If your message starts with '''BUILDFIX''' it is used as is.
+
+=== Parse merge commit messages ===
+
+Server-side hooks rely on default merge commit messages provided by git.
+
+Please keep at least first line of such messages unchanged.
+
+=== Pull merges ===
+
+Hooks checking against pull merges. This commits look like '''Merge branch 'master' of 192.168.0.100:otp'''
+
+Usage of such commits is considered as a bad practice because it complicates git history.
+
+Usually it is better to use '''pull --rebase''' from console or similar button in Git Extensions. But use it only if you are familiar with rebases.
+
+=== Merges ===
+
+There is a hook which is executed after every merge. It checks if you merged correct branches.
+
+List of such branches is in the '''HooksConfiguration.xml'''
+
+=== Incorrect reset ===
+
+Sometime we encounter a weird situation when branches became messed up.
+
+It caused by incorrect resets, when you in 1.0 and perform something like '''git reset --hard master'''. In some circumstances default git push system does not detect this situation.
+
+So the server-side hook is checking against this situation.
+
+If you get such error, please backup your changes, reset your branch to the '''origin/branchName''' and cherry-pick your changes again.
+
+=== TeamCity ===
+
+There is a hook that checks if the build for pushed branch is broken or not.
+
+You can get an error if for some reason hook cannot access TeamCity or the branch you are checking is not configured in '''HooksConfiguration.xml'''
+
+=== Broken build ===
+
+If the build for pushed branch is broken only commits to fix build are allowed. It is detected by check that commit message starts with '''BUILDFIX'''.
+
+If you are trying to fix build but forgot to add '''BUILDFIX''' prefix your commits will be declined.
+
+Follow http://stackoverflow.com/questions/179123/how-do-i-edit-an-incorrect-commit-message-in-git to change your commit messages 
+
+=== Unmerged changes ===
+
+There is a hook that checks if you are trying to push to the branch which was not merged further by previous committer.
+
+It helps us to prevent the situation when you have to deal with merge conflicts introduced by code from other developers.
+
+If you ended up with this situation, please try to contact the developer who has to merge his changes (hook shows his name).
+
+If the developer is not available you can try to merge his changes manually.
