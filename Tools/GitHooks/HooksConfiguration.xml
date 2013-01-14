@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <HooksConfiguration>
-  <CommitMessages enforceTfsPrefix="true" showDialogFromConsole="false">
+  <CommitMessages enforceTfsPrefix="true">
     <FakeWorkItems>
       <FakeWorkItem>0</FakeWorkItem>
       <FakeWorkItem>123</FakeWorkItem>
@@ -10,8 +10,7 @@
   <Merges fixPullMerges="true" allowAllMerges="false">
     <Merge from="release.1.0" into="master" required="true" />
   </Merges>
-  <Rebases allowRebasePushedBranches="true" />
-  <Pushes allowForcePushes="false" allowUnparsableMergeCommitMessages="false" allowMergePulls="false">
+  <Pushes allowForcePushes="false" allowUnparsableMergeCommitMessages="false" allowMergePulls="false" allowedMergeIntervalInHours="24">
     <RemotesMap>
       <Map url="some-url" remoteName="origin" />
     </RemotesMap>
