@@ -124,7 +124,7 @@ function Main
 
     if ($result.Cancel)
     {
-        Write-Warning "Commit message missing TFS WorkItem ID.`nIt should appear at the start of your commit message, like: TFS1234 Add more awesome"
+        Write-HooksWarning "Commit message missing TFS WorkItem ID.`nSee wiki-url/index.php?title=Git#Commit_messages"
         ExitWithFailure
     }
     elseif ($result.AdHoc)
@@ -249,7 +249,7 @@ function Validate-WorkItemId
     $fakeWorkItems = [int[]] (Get-HooksConfiguration).CommitMessages.FakeWorkItems.FakeWorkItem
     if ($fakeWorkItems -contains $WorkItemId)
     {
-        Write-Warning "TFS WorkItem ID $WorkItemId is a fake. Please use a real one"
+        Write-HooksWarning "TFS WorkItem ID $WorkItemId is a fake. Please use a real one.`nSee wiki-url/index.php?title=Git#Commit_messages"
         ExitWithFailure
     }
 }
