@@ -415,13 +415,24 @@ function Test-BuildStatus
 
     try
     {
+        $configuration = Get-HooksConfiguration
         $client = New-Object System.Net.WebClient
-        $client.Credentials = New-Object System.Net.NetworkCredential (Get-HooksConfiguration).TeamCity.userName, (Get-HooksConfiguration).TeamCity.password
+        $client.Credentials = New-Object System.Net.NetworkCredential $configuration.TeamCity.userName, $configuration.TeamCity.password
 
-        $url = "$((Get-HooksConfiguration).TeamCity.url)/httpAuth/app/rest/buildTypes/id:$buildTypeId/builds/canceled:false/status"
+        $url = "$($configuration.TeamCity.url)/httpAuth/app/rest/buildTypes/id:$buildTypeId/builds/canceled:false/status"
 
         $status = $client.DownloadString($url)
-        $status -ne "FAILURE"
+
+        if ($status -ne "SUCCESS")
+        {
+            return $false
+        }
+        else
+        {
+            $url = "$($configuration.TeamCity.url)/httpAuth/app/rest/buildTypes/id:$buildTypeId/builds/canceled:false,running:any/status"
+            $status = $client.DownloadString($url)
+            $status -eq "SUCCESS"
+        }
     }
     catch
     {
