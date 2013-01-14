@@ -100,7 +100,7 @@ function Main
         ExitWithSuccess
     }
 
-    if (Test-ShouldShowDialog)
+    if (-not (Test-RunningFromConsole))
     {
         $result = Show-Dialog
     }
@@ -252,66 +252,6 @@ function Validate-WorkItemId
         Write-Warning "TFS WorkItem ID $WorkItemId is a fake. Please use a real one"
         ExitWithFailure
     }
-}
-
-function Get-GitParentProcess
-{
-    $process = Get-ProcessById $PID
-
-    do
-    {
-        $process = Get-ParentProcess $process
-    }
-    while (($process -ne $null) -and ($process.ProcessName -ne "git.exe"))
-
-    if ($process -eq $null)
-    {
-        return $null
-    }
-
-    while ($process.ProcessName -eq "git.exe")
-    {
-        $process = Get-ParentProcess $process
-    }
-
-    $process
-}
-
-function Get-ProcessById
-{
-    param
-    (
-        [int] $Id
-    )
-
-    Get-WmiObject Win32_Process -Filter "ProcessId = $Id"
-}
-
-function Get-ParentProcess
-{
-    param
-    (
-        $Process
-    )
-
-    Get-ProcessById $Process.ParentProcessId
-}
-
-function Test-ShouldShowDialog
-{
-    if ([Convert]::ToBoolean((Get-HooksConfiguration).CommitMessages.showDialogFromConsole))
-    {
-        return $true
-    }
-
-    $gitParentProcess = Get-GitParentProcess
-
-    if ($gitParentProcess -eq $null)
-    {
-        return $true
-    }
-
-    @("powershell.exe", "cmd.exe", "sh.exe") -notcontains (Get-GitParentProcess).ProcessName
 }
 
 Main

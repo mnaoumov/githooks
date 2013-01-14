@@ -428,3 +428,16 @@ function Test-BuildStatus
         return $null
     }
 }
+
+function Test-RunningFromConsole
+{
+    try
+    {
+        $height = [Console]::WindowHeight
+        return ($height -ne $null)
+    }
+    catch
+    {
+        return $false
+    }
+}
