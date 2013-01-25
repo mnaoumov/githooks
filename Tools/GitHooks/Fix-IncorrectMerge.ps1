@@ -25,14 +25,16 @@ function Main
         ExitWithSuccess
     }
 
-    if (-not (Test-MergeCommit))
+    $mergeInfo = Get-MergeInfo HEAD
+
+    if (-not $mergeInfo.IsMerge)
     {
         Write-Debug "`nCurrent commit is not a merge commit"
         ExitWithSuccess
     }
 
-    $currentBranchName = Get-CurrentBranchName
-    $mergedBranchName = Get-MergedBranchName
+    $currentBranchName = $mergeInfo.Into
+    $mergedBranchName = $mergeInfo.From
 
     if (Test-PullMerge)
     {
@@ -49,6 +51,12 @@ function Fix-PullMerge
     if (-not ([Convert]::ToBoolean($hooksConfiguration.Merges.fixPullMerges)))
     {
         Write-Debug "Merges/@fixPullMerges is disabled in HooksConfiguration.xml"
+        return
+    }
+
+    if (Has-UnrebaseableMerges -From $mergedBranchName -Into $currentBranchName)
+    {
+        Write-Debug "Rebase is not allowed"
         return
     }
 
@@ -119,7 +127,7 @@ function Fix-PullMerge
     $noButton.add_Click(
         {
             $form.Close()
-            Write-Warning "`nPlease avoid pushing merge pull commit `"$(Get-CommitMessage)`"."
+            Write-HooksWarning "Pull merge commits are not recommended.`nSee wiki-url/index.php?title=Git#Pull_merges"
         })
 
     $form.WindowStartupLocation = "CenterScreen"
@@ -183,7 +191,7 @@ function Fix-UnallowedMerge
     $noButton.add_Click(
         {
             $form.Close()
-            Write-Warning "Merge '$mergedBranchName' into '$currentBranchName' is unallowed."
+            Write-HooksWarning "Merge from '$mergedBranchName' into '$currentBranchName' is not allowed.`nSee wiki-url/index.php?title=Git#Merges"
         })
 
     $form.WindowStartupLocation = "CenterScreen"
