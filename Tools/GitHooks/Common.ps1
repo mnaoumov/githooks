@@ -649,4 +649,10 @@ function Get-PushDate
 
     return [DateTime] $pushDateString
 }
+
+function Fetch-PushDateNotes
+{
+    git fetch origin refs/notes/push-date:refs/notes/push-date --quiet
+}
+
 }
