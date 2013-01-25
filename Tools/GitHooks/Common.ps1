@@ -607,4 +607,18 @@ function Get-OriginatingBranch
     }
 }
 
+function Test-KnownBranch
+{
+    param
+    (
+        [string] $BranchName
+    )
+
+    $branchConfiguration = (Get-HooksConfiguration).Branches.Branch | `
+        Where-Object { $_.name -eq $BranchName } | `
+        Select-Object -First 1
+
+    $branchConfiguration -ne $null
+}
+
 }
