@@ -483,6 +483,19 @@ function Has-UnrebaseableMerges
 
     return $false
 }
+
+function Test-PullRebase
+{
+    param
+    (
+        [string] $NewBaseCommit,
+        [string] $RebasingBranchName
+    )
+
+    $trackedBranchName = Get-TrackedBranchName $RebasingBranchName
+    Test-RefEquals $NewBaseCommit $trackedBranchName
+}
+
 function Test-RunningFromConsole
 {
     try
