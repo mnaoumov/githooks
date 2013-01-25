@@ -402,9 +402,11 @@ function Get-NextBranchName
         [string] $BranchName
     )
     
-    (Get-HooksConfiguration).Merges.Merge | `
-        Where-Object { ($_.from -eq $BranchName) -and [Convert]::ToBoolean($_.required) } | `
+    $nextBranchName = Get-MergesConfiguration -From $BranchName |
+        Where-Object { [Convert]::ToBoolean($_.required) } | `
         Select-Object -First 1 -ExpandProperty into
+
+    $nextBranchName
 }
 
 function Test-BuildStatus
