@@ -268,6 +268,7 @@ function Parse-MergeCommitMessage
         Parsed = $false;
         From = "N/A";
         Into = "N/A";
+        SpecificCommit = $false
     }
 
     $patterns = `
@@ -288,6 +289,9 @@ function Parse-MergeCommitMessage
         "^Merge branch '(?<from>\S*)' of (?<url>\S*) into (?<into>\S*)$",
         "^Merge branches '(?<into>\S*)' and '(?<from>\S*)'$",
         "^Merge branches '(?<into>\S*)' and '(?<from>\S*)' of (?<url>\S*)$"
+
+        "(?<commit>^Merge commit '(?<from>\S*)'$)",
+        "(?<commit>^Merge commit '(?<from>\S*)' into (?<into>\S*)$)"
     )
 
     foreach ($pattern in $patterns)
@@ -312,6 +316,7 @@ function Parse-MergeCommitMessage
             $result.From = $from
             $result.Into = $into
             $result.Parsed = $true
+            $result.SpecificCommit = [bool] $Matches["commit"]
 
             break
         }
