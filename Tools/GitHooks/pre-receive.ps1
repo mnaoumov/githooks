@@ -26,6 +26,12 @@ function Main
 
     $branchName = $RefName -replace "refs/heads/"
 
+    if (-not (Test-KnownBranch $branchName))
+    {
+        Write-Debug "$branchName is not known branch."
+        ExitWithSuccess
+    }
+
     $missingRef = "0000000000000000000000000000000000000000"
 
     if ($NewRef -eq $missingRef)
@@ -58,6 +64,7 @@ function Main
             ExitWithFailure
         }
 
+
         $commiterName = git log -1 $NewRef --format=%cN
         $result = Test-ForcePushAllowed -UserName $commiterName
 
@@ -87,11 +94,11 @@ function Test-IncorrectMerges
     {
         $mergeCommitMessage = git log -1 $merge --format=%s
 
-        $result = Parse-MergeCommitMessage $mergeCommitMessage
+        $mergeInfo = Get-MergeInfo $merge
 
         $commitInfo = git log -1 $merge --format=oneline
 
-        if (-not $result.Parsed)
+        if (-not $mergeInfo.MessageParseable)
         {
             if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowUnparsableMergeCommitMessages)))
             {
@@ -99,7 +106,17 @@ function Test-IncorrectMerges
                 return $false
             }
         }
-        elseif (($result.From -eq "origin/$branchName") -and ($result.Into -eq $branchName))
+        elseif ($mergeInfo.SpecificCommit)
+        {
+            $originatingBranch = Get-OriginatingBranch "$merge^2"
+            if ($originatingBranch -eq $null)
+            {
+                $commitInfo = git log -1 "$merge^2" --format=oneline
+                Write-HooksWarning "Cannot detect originating branch for commit:`n$commitInfo`nPlease make sure that corresponding branch is pushed`nSee wiki-url/index.php?title=Git#Originating_branches"
+                return $false
+            }
+        }
+        elseif (($mergeInfo.From -eq "origin/$branchName") -and ($mergeInfo.Into -eq $branchName))
         {
             if (-not ([Convert]::ToBoolean((Get-HooksConfiguration).Pushes.allowMergePulls)))
             {
@@ -107,11 +124,11 @@ function Test-IncorrectMerges
                 return $false
             }
         }
-        elseif ($result.Into -eq $branchName)
+        elseif (($mergeInfo.Into -eq $branchName) -or ($mergeInfo.Into -eq "origin/$branchName"))
         {
-            if (-not(Test-MergeAllowed -From $result.From -Into $result.Into))
+            if (-not(Test-MergeAllowed -From $mergeInfo.From -Into $mergeInfo.Into))
             {
-                Write-HooksWarning "Merge from '$($result.From)' into '$($result.Into)' is not allowed:`n$commitInfo`nSee wiki-url/index.php?title=Git#Merges"
+                Write-HooksWarning "Merge from '$($mergeInfo.From)' into '$($mergeInfo.Into)' is not allowed:`n$commitInfo`nSee wiki-url/index.php?title=Git#Merges"
                 return $false
             }
         }
@@ -140,6 +157,10 @@ function Test-BrokenBuild
             Write-HooksWarning "Cannot get TeamCity build status for branch '$branchName'.`nSee wiki-url/index.php?title=Git#TeamCity"
             return $false
         }
+        else
+        {
+            return $true
+        }
     }
 
     $commitMessages = @(git log $refQuery --no-merges --format=%s)
@@ -157,16 +178,48 @@ function Test-BrokenBuild
 
 function Test-UnmergedBranch
 {
-    if (Test-BranchMerged $branchName)
+    $nextBranchName = Get-NextBranchName $BranchName
+
+    if ($nextBranchName -eq $null)
     {
+        Write-Debug "Next branch for '$BranchName' is not configured"
         return $true
     }
 
-    $nextBranchName = Get-NextBranchName $branchName
-    $committerName = git log -1 $OldRef --format=%an
-    $commitInfo = git log -1 $OldRef --format=oneline
-    $relativeCommitDate = git log -1 $OldRef --format=%ar
-    Write-HooksWarning "Cannot push to '$branchName' because it has unmerged commits to branch '$nextBranchName'. Wait for $committerName to merge the following commit into '$nextBranchName':`n$commitInfo`nChanges to be merged were made $relativeCommitDate`nSee wiki-url/index.php?title=Git#Unmerged_changes"
+    $excludePreviousBranchSelector = Get-ExcludePreviousBranchSelector $BranchName
+
+    $earliestUnmergedCommit = @(git rev-list "$nextBranchName..$BranchName" $excludePreviousBranchSelector) | `
+        Sort-ByPushDate | `
+        Select-Object -First 1
+
+    if ($earliestUnmergedCommit -eq $null)
+    {
+        Write-Debug "No unpushed changes"
+        return $true
+    }
+
+    $allowedMergeIntervalInHours = [Convert]::ToInt32((Get-HooksConfiguration).Pushes.allowedMergeIntervalInHours)
+
+    $pushDate = Get-PushDate $earliestUnmergedCommit
+    if ($pushDate -eq $null)
+    {
+        $elapsedHours = "N/A"
+    }
+    else
+    {
+        $elapsed = [DateTime]::Now - $pushDate
+        $elapsedHours = [Math]::Round($elapsed.TotalHours, 1)
+
+        if ($elapsedHours -le $allowedMergeIntervalInHours)
+        {
+            Write-Debug "Commits within configured interval"
+            return $true
+        }
+    }
+
+    $committerName = git log -1 $earliestUnmergedCommit --format=%an
+    $commitInfo = git log -1 $earliestUnmergedCommit --format=oneline
+    Write-HooksWarning "Cannot push to '$branchName' because it has unmerged commits made to branch '$nextBranchName' pushed $elapsedHours hours ago (only $allowedMergeIntervalInHours hours interval is allowed).`nWait for $committerName to merge the following commit into '$nextBranchName':`n$commitInfo`nSee wiki-url/index.php?title=Git#Unmerged_changes"
     return $false
 }
 
