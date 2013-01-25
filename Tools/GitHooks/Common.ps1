@@ -360,11 +360,23 @@ function Test-MergeAllowed
         return $true
     }
 
-    $mergeAllowed = ((Get-HooksConfiguration).Merges.Merge | `
-        Where-Object { ($_.from -eq $From ) -and ($_.into -eq $Into) } | `
-        Select-Object -First 1) -ne $null
+    $From = $From -replace "origin/"
+    $Into = $Into -replace "origin/"
 
-    $mergeAllowed
+    if (-not (Test-KnownBranch $Into))
+    {
+        return $true
+    }
+
+    if (-not (Test-KnownBranch $From))
+    {
+        return $false
+    }
+    
+    $mergeConfiguration = Get-MergesConfiguration -From $From | `
+        Where-Object { $_.into -eq $Into }
+
+    $mergeConfiguration -ne $null
 }
 
 function Test-BranchMerged
