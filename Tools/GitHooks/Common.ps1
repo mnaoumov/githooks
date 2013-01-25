@@ -633,4 +633,20 @@ function Get-MergesConfiguration
         Select-Object -ExpandProperty Merge -ErrorAction SilentlyContinue
 }
 
+function Get-PushDate
+{
+    param
+    (
+        [string] $Ref
+    )
+
+    $pushDateString = @(git log -1 $Ref --notes=push-date --format=%N)[0]
+
+    if ($pushDateString -eq "")
+    {
+        return $null;
+    }
+
+    return [DateTime] $pushDateString
+}
 }
