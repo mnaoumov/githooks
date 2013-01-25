@@ -418,9 +418,9 @@ function Test-BuildStatus
 
     $mockBuildStatus = (Get-HooksConfiguration).TeamCity.mockBuildStatus
 
-    $buildTypeId = (Get-HooksConfiguration).TeamCity.Builds.Build | `
-        Where-Object { $_.branch -eq $BranchName } | `
-        Select-Object -ExpandProperty buildTypeId
+    $buildTypeId = (Get-HooksConfiguration).Branches.Branch | `
+        Where-Object { $_.name -eq $BranchName } | `
+        Select-Object -ExpandProperty teamCityBuildTypeId
 
     if ($buildTypeId -eq $null)
     {
