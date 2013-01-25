@@ -704,4 +704,14 @@ function Sort-ByPushDate
     $input | Sort-Object { Get-PushDate $_ }, { Get-CommitDate $_ }, { Get-AuthorDate $_ }
 }
 
+function Get-CommitDate
+{
+    param
+    (
+        [string] $Ref
+    )
+
+    [DateTime] (git log -1 $Ref --format=%cD)
+}
+
 }
