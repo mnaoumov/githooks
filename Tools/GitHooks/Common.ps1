@@ -679,4 +679,24 @@ function Get-ExcludePreviousBranchSelector
     }
 }
 
+function Get-PreviousBranchName
+{
+    param
+    (
+        [string] $BranchName
+    )
+
+    $knowBranchNames = @((Get-HooksConfiguration).Branches.Branch | Select-Object -ExpandProperty name)
+
+    foreach ($knowBranchName in $knowBranchNames)
+    {
+        if ((Get-NextBranchName $knowBranchName) -eq $BranchName)
+        {
+            return $knowBranchName
+        }
+    }
+
+    $null
+}
+
 }
