@@ -621,4 +621,16 @@ function Test-KnownBranch
     $branchConfiguration -ne $null
 }
 
+function Get-MergesConfiguration
+{
+    param
+    (
+        [string] $From
+    )
+
+    (Get-HooksConfiguration).Branches.Branch | `
+        Where-Object { $_.name -eq $From } | `
+        Select-Object -ExpandProperty Merge -ErrorAction SilentlyContinue
+}
+
 }
