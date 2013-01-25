@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <HooksConfiguration>
   <CommitMessages enforceTfsPrefix="true">
     <FakeWorkItems>
@@ -7,17 +7,17 @@
       <FakeWorkItem>1234</FakeWorkItem>
     </FakeWorkItems>
   </CommitMessages>
-  <Merges fixPullMerges="true" allowAllMerges="false">
-    <Merge from="release.1.0" into="master" required="true" />
-  </Merges>
-  <Pushes allowForcePushes="false" allowUnparsableMergeCommitMessages="false" allowMergePulls="false" allowedMergeIntervalInHours="24">
+  <Branches>
+    <Branch name="release.1.0" teamCityBuildTypeId="bt11">
+      <Merge into="master" required="true" />
+    </Branch>
+    <Branch name="master" teamCityBuildTypeId="bt12" />
+  </Branches>
+  <Merges fixPullMerges="true" allowAllMerges="false" />
+  <Pushes allowForcePushes="true" allowUnparsableMergeCommitMessages="false" allowMergePulls="true" allowedMergeIntervalInHours="24">
     <RemotesMap>
       <Map url="some-url" remoteName="origin" />
     </RemotesMap>
   </Pushes>
-  <TeamCity mockBuildStatus="true" userName="user1" password="password1" url="some-url" allowUnknownBuildStatus="false">
-    <Builds>
-      <Build branch="master" buildTypeId="bt11" />
-    </Builds>
-  </TeamCity>
+  <TeamCity mockBuildStatus="true" userName="user1" password="password1" url="some-url" allowUnknownBuildStatus="false" />
 </HooksConfiguration>
