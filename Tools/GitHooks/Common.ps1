@@ -655,4 +655,28 @@ function Fetch-PushDateNotes
     git fetch origin refs/notes/push-date:refs/notes/push-date --quiet
 }
 
+function Get-ExcludePreviousBranchSelector
+{
+    param
+    (
+        [string] $BranchName,
+        [switch] $Remote
+    )
+
+    $previousBranchName = Get-PreviousBranchName $BranchName
+
+    if ($previousBranchName -eq $null)
+    {
+        return ""
+    }
+    elseif ($Remote)
+    {
+        return "^origin/$previousBranchName"
+    }
+    else
+    {
+        return "^$previousBranchName"
+    }
+}
+
 }
