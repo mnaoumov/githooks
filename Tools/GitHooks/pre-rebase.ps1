@@ -14,34 +14,55 @@ Trap { throw $_ }
 
 . "$(PSScriptRoot)\Common.ps1"
 
-$ErrorActionPreference = "Stop"
-
-if ([Convert]::ToBoolean((Get-HooksConfiguration).Rebases.allowRebasePushedBranches))
-{
-    Write-Debug "Rebases/@allowRebasePushedBranches is enabled in HooksConfiguration.xml"
-    ExitWithSuccess
-}
-
 if (-not $RebasingBranchName)
 {
     $RebasingBranchName = Get-CurrentBranchName
 }
 
-if (Test-BranchPushed)
+if (Has-UnrebaseableMerges -From $NewBaseCommit -Into $RebasingBranchName)
 {
-    $remoteBranchName = Get-TrackedBranchName $RebasingBranchName
-
-    if ((Test-FastForward -From $remoteBranchName -To $NewBaseCommit))
+    if (-not (Test-RunningFromConsole))
     {
-        Write-Debug "Rebase '$RebasingBranchName' with descendant of '$remoteBranchName' detected"
-        ExitWithSuccess
+        Write-Debug "Git Extensions already showed it is own message"
+        break
     }
 
-    Write-HooksWarning "You cannot rebase branch '$RebasingBranchName' because it was already pushed"
-    ExitWithFailure
-}
-else
-{
-    Write-Debug "Branch '$RebasingBranchName' was not pushed. Rebase allowed."
-    ExitWithSuccess
+    $isPullRebase = Test-PullRebase -NewBaseCommit $NewBaseCommit -RebasingBranchName $RebasingBranchName
+
+    if ($isPullRebase)
+    {
+        $action = "Pull rebase"
+    }
+    else
+    {
+        $action = "Rebase"
+    }
+
+    Write-HooksWarning "$action is not recommended because it affects merge commits.`nSee wiki-url/index.php?title=Git#Rebase_merges"
+
+    $result = $Host.UI.PromptForChoice("$action warning", "Do you want to continue rebase?", `
+        [System.Management.Automation.Host.ChoiceDescription[]] @(
+            (New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Yes")
+            (New-Object System.Management.Automation.Host.ChoiceDescription "&No", "No")
+        )
+        , 1)
+
+    switch ($result)
+    {
+        0 `
+        {
+            break
+        }
+
+        1 `
+        {
+            if ($isPullRebase)
+            {
+                Write-HooksWarning "You may want to use 'git pull --no-rebase' instead`nSee wiki wiki-url/index.php?title=Git#Rebase_merges"
+            }
+
+            ExitWithFailure
+            break
+        }
+    }
 }
