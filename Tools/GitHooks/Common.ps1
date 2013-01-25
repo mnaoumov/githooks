@@ -556,4 +556,17 @@ function Get-MergeInfo
     }
 }
 
+function Validate-Ref
+{
+    param
+    (
+        [string] $Ref
+    )
+
+    if (-not (Resolve-RefSafe $Ref))
+    {
+        throw "Cannot resolve ref $Ref"
+    }
+}
+
 }
