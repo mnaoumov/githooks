@@ -459,6 +459,30 @@ function Test-BuildStatus
     }
 }
 
+function Has-UnrebaseableMerges
+{
+    param
+    (
+        [string] $From,
+        [string] $Into
+    )
+
+    $From = Get-BranchName $From
+
+    $merges = @(git rev-list --merges --no-walk "$From..$Into")
+
+    foreach ($merge in $merges)
+    {
+        $mergeCommitMessage = git log -1 $merge --format=%s
+        $result = Parse-MergeCommitMessage $mergeCommitMessage
+        if (($result.From -ne $From) -or ($result.Into -ne $Into))
+        {
+            return $true;
+        }
+    }
+
+    return $false
+}
 function Test-RunningFromConsole
 {
     try
