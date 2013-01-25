@@ -714,4 +714,12 @@ function Get-CommitDate
     [DateTime] (git log -1 $Ref --format=%cD)
 }
 
+function Get-AuthorDate
+{
+    param
+    (
+        [string] $Ref
+    )
+
+    [DateTime] (git log -1 $Ref --format=%aD)
 }
