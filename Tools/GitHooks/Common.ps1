@@ -699,4 +699,9 @@ function Get-PreviousBranchName
     $null
 }
 
+function Sort-ByPushDate
+{
+    $input | Sort-Object { Get-PushDate $_ }, { Get-CommitDate $_ }, { Get-AuthorDate $_ }
+}
+
 }
