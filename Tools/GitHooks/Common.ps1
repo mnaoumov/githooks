@@ -569,4 +569,42 @@ function Validate-Ref
     }
 }
 
+function Get-OriginatingBranch
+{
+    param
+    (
+        [string] $Ref
+    )
+
+    Validate-Ref $Ref
+
+    $Ref = Resolve-RefSafe $Ref
+
+    $branches = @(git branch --all --contains $Ref) | `
+        ForEach-Object { $_ -replace "\*? +" -replace "remotes/" }
+
+    foreach ($branch in $branches)
+    {
+        if (-not (Test-KnownBranch ($branch -replace "origin/")))
+        {
+            continue
+        }
+
+        $refs = git rev-list "$Ref^..$branch" --first-parent
+        if ($refs -contains $Ref)
+        {
+            return $branch
+        }
+        else
+        {
+            $excludePreviousBranchSelector = Get-ExcludePreviousBranchSelector $branch
+            $refs = git rev-list "$Ref^..$branch" $excludePreviousBranchSelector
+            if ($refs -contains $Ref)
+            {
+                return "origin/$branch"
+            }
+        }
+    }
+}
+
 }
