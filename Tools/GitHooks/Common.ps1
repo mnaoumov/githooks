@@ -508,3 +508,52 @@ function Test-RunningFromConsole
         return $false
     }
 }
+
+function Get-MergeInfo
+{
+    param
+    (
+        [string] $Ref
+    )
+
+    Validate-Ref $Ref
+
+    $refsString = git rev-list $Ref --no-walk --parents
+    $refs = $refsString -split " "
+
+    if ($refs.Length -eq 2)
+    {
+        return New-Object PSObject -Property `
+        @{
+            IsMerge = $false
+        }
+    }
+    elseif ($refs.Length -gt 3)
+    {
+        throw "Octopus merges are not supported: $Ref"
+    }
+    else
+    {
+        $from = Get-OriginatingBranch $refs[2];
+        $into = Get-OriginatingBranch $refs[1];
+        $message = Get-CommitMessage $Ref
+        $parseResult = Parse-MergeCommitMessage $message
+
+        if (($from -eq $null) -or ($into -eq $null))
+        {
+            $from = $parseResult.From
+            $into = $parseResult.Into
+        }
+
+        return New-Object PSObject -Property `
+        @{
+            IsMerge = $true;
+            From = $from;
+            Into = $into;
+            MessageParseable = $parseResult.Parsed;
+            SpecificCommit = $parseResult.SpecificCommit
+        }
+    }
+}
+
+}
