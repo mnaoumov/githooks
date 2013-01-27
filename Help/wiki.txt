@@ -2,11 +2,11 @@
 
 To keep things consistent, and prevent some silly mistakes, we have a number of both client and server-side hooks. These hooks are little scripts that run when you commit or push changes to Git, and may prevent your commit if there's something outside our rules.
 
-All the hooks are located under '''tools\GitHooks'''
+All the hooks are located under <tt>tools\GitHooks</tt>
 
-Server-side hooks are located in '''c:\path\to\hooks''' on '''git server'''
+Server-side hooks are located in <tt>path\to\hooks</tt> on <tt>git server ip</tt>
 
-All configuration values for git hooks are located in '''HooksConfiguration.xml'''. This file is used for both client-side and server-side hooks
+All configuration values for git hooks are located in <tt>HooksConfiguration.xml</tt>. This file is used for both client-side and server-side hooks
 
 === ForcePush ===
 
@@ -16,19 +16,21 @@ It requires you to enter a reason why you need it.
 
 The reason is being recorded and can be reviewed.
 
-Please provide real reasons.
+Please provide real reasons, and not just an explanation of what you are doing. (We already know what you are doing: we want to know ''why''.)
 
 === Commit messages ===
 
 This client-side hook makes sure that you have a proper commit message.
 
-It checks that your messages look like TFS1357 or QC1357.
+It checks that your messages starts with a string like TFS1357 or QC1357.
 
 Messages for merge, squash, fixup and revert are not validated.
 
 If your message starts with '''ADH''' (stands for ad-hoc), the prefix is being trimmed and message is used as is.
 
 If your message starts with '''BUILDFIX''' it is used as is.
+
+Some people are lazy and enter fake work item numbers such as 0000, hook detects that and rejects such commits.
 
 === Parse merge commit messages ===
 
@@ -38,11 +40,13 @@ Please keep at least first line of such messages unchanged.
 
 === Pull merges ===
 
-Hooks checking against pull merges. This commits look like '''Merge branch 'master' of 192.168.0.100:otp'''
+Hooks checking against pull merges. This commits look like '''Merge branch 'master' of git-server-url'''
 
 Usage of such commits is considered as a bad practice because it complicates git history.
 
 Usually it is better to use '''pull --rebase''' from console or similar button in Git Extensions. But use it only if you are familiar with rebases.
+
+In case if you need to enforce pull merge, use <code>pull --no-rebase</code>
 
 === Merges ===
 
@@ -70,9 +74,11 @@ You can get an error if for some reason hook cannot access TeamCity or the branc
 
 If the build for pushed branch is broken only commits to fix build are allowed. It is detected by check that commit message starts with '''BUILDFIX'''.
 
+Merge commits are not validated.
+
 If you are trying to fix build but forgot to add '''BUILDFIX''' prefix your commits will be declined.
 
-Follow http://stackoverflow.com/questions/179123/how-do-i-edit-an-incorrect-commit-message-in-git to change your commit messages 
+Follow http://stackoverflow.com/questions/179123/how-do-i-edit-an-incorrect-commit-message-in-git to change your commit messages
 
 === Unmerged changes ===
 
@@ -83,3 +89,43 @@ It helps us to prevent the situation when you have to deal with merge conflicts 
 If you ended up with this situation, please try to contact the developer who has to merge his changes (hook shows his name).
 
 If the developer is not available you can try to merge his changes manually.
+
+There is a script <code>tools\Get-UnmergedChanges.ps1</code> which shows all the unmerged commits in sequential order providing details of the author and push date.
+
+=== Rebase merges ===
+
+Rebase of merge commits is not recommended because it destroys existing merges and it leads to commits to become cherry-picked and branches to become unmerged.
+
+The only merges that are ok to be rebased are pull merges.
+
+Usually it happens when you merge branches, and then you do <code>pull --rebase</code>
+
+Git Extensions shows warning message if you are trying to rebase merge commits, and you should normally stop rebase in this case. However you may continue if you have only pull merges.
+
+There is a hook which detects this situation if you rebase from console.
+
+To fix the problem you have two options
+
+(all examples assume you are merging 0.9.1 into 1.0)
+
+<ol>
+<li>If you don't have changes in 1.0 and you can repeat your merge again easily</li>
+<code><pre>
+git fetch
+git checkout 1.0
+git reset --hard origin/1.0
+git merge 0.9.1
+</pre></code>
+<li>In case if you don't want to repeat your merge, we need to compromise and allow pull merge</li>
+<code><pre>
+git pull --no-rebase
+</pre></code>
+</ol>
+
+=== Originating branches ===
+
+When you merge specific commits instead of branches, server-side hook tries to determine the originating branch for that commit to check if the merge was allowed or not.
+
+In case if that branch was not pushed, hook cannot detect the originating branch and throws an error.
+
+To fix it please push corresponding branch.
