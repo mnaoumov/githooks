@@ -14,18 +14,28 @@ Hooks controlled via configuration file **Tools\GitHooks\HooksConfiguration.xml*
 
     <?xml version="1.0" encoding="UTF-8"?>
     <HooksConfiguration>
-      <CommitMessages enforceTfsPrefix="true" showDialogFromConsole="false">
+      <CommitMessages enforceTfsPrefix="true">
         <FakeWorkItems>
           <FakeWorkItem>0</FakeWorkItem>
           <FakeWorkItem>123</FakeWorkItem>
           <FakeWorkItem>1234</FakeWorkItem>
         </FakeWorkItems>
       </CommitMessages>
-      <Merges fixPullMerges="true" allowAllMerges="false">
-        <Merge branch="release.1.0" into="master" />
-      </Merges>
-      <Rebases allowRebasePushedBranches="false" />
+      <Branches>
+        <Branch name="release.1.0" teamCityBuildTypeId="bt11">
+          <Merge into="master" required="true" />
+        </Branch>
+        <Branch name="master" teamCityBuildTypeId="bt12" />
+      </Branches>
+      <Merges fixPullMerges="true" allowAllMerges="false" />
+      <Pushes allowForcePushes="true" allowUnparsableMergeCommitMessages="false" allowMergePulls="true" allowedMergeIntervalInHours="24">
+        <RemotesMap>
+          <Map url="some-url" remoteName="origin" />
+        </RemotesMap>
+      </Pushes>
+      <TeamCity mockBuildStatus="true" userName="user1" password="password1" url="some-url" allowUnknownBuildStatus="false" />
     </HooksConfiguration>
+
 
 ## Available hooks: ##
 
@@ -65,25 +75,29 @@ If merge is not allowed it prompts the following dialog
 
 ### pre-rebase ###
 
-Executed before rebase is started. Hook checks if you are trying to rebase a branch which was already pushed and denies the whole rebase before it is started.
+Executed before rebase is started. Hook checks if you are trying to rebase a branch which has merges
 
-    The pre-rebase hook refused to rebase.
-    WARNING: *****
-    WARNING: You cannot rebase branch 'master' because it was already pushed
-    WARNING: *****
+    WARNING: **********************************************************************
+    WARNING: Pull rebase is not recommended because it affects merge commits.
+    WARNING: See wiki-url/index.php?title=Git#Rebase_merges
+    WARNING: **********************************************************************
+    
+    Pull rebase warning
+    Do you want to continue rebase?
+    [Y] Yes  [N] No  [?] Help (default is "N"):
 
 ### pre-receive ###
 
-Server-side hook, executed after push but before changes were actually applied in a remote repository. Hook checks against pull merges and another very annoying and weird case which is difficult to explain (see my [blogpost](http://mnaoumov.wordpress.com/2012/09/20/guide-how-to-easy-screw-up-your-git-repository/) which describes this case).
-
-    remote: WARNING: *****
-    remote: WARNING: The following commit should not exist in branch release.1.0
-    remote: WARNING: 72c4545c5c35587517fd9f595528b381427ab388 Merge branch 'release.1.0'
-    remote: WARNING: *****
+Server-side hook, executed after push but before changes were actually applied in a remote repository. Hook checks against broken builds, unmerged changes and incorrect merges.
 
 ### post-receive ###
-Server-side hook, executed after push after changes were actually applied. Hooks reminds the committer to merge his change in a corresponding branch if applicable
+Server-side hook, executed after push after changes were actually applied. Hooks reminds the committer to merge his change in a corresponding branch if applicable, it also uses git notes to provide access to the commits push dates.
 
-    remote: WARNING: *****
-    remote: WARNING: You pushed branch 'release.1.0'. Please merge it to the branch 'master' and push it as well ASAP
-    remote: WARNING: *****
+
+## ForcePush ##
+
+Utility provides a way to bypass all the **pre-receive** hook constraints. You have to run it and provide a reason for that, then it is being written in some GoogleSpreadsheet.
+
+## Get-UnmergedCommits ##
+
+Utility that helps to identify what commits should be made in what order.
