@@ -54,7 +54,7 @@ In all other cases it will prompt with a dialog asking for TFS WorkItem ID or if
 
 HooksConfiguration has node **FakeWorkItems** which contains some WorkItems that usually is fake. Sometime commiters are lazy to provide a WorkItem ID and put some random ones. Hook detects the situation and declines such commits.
 
-![Provide TFS WorkItem ID dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/provide-tfs-work-item-id-dialog.png)
+![Provide TFS WorkItem ID dialog](https://raw.github.com/mnaoumov/githooks/master/Help/images/provide-tfs-work-item-id-dialog.png)
 
 Interactive prompt:
 
@@ -66,12 +66,12 @@ Interactive prompt:
 
 Executed after non-conflict merge and conflict merge correspondingly. Hook handles the situation when you have pull merge and helps to use pull rebase instead.
 
-![Merge commit dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/merge-commit-dialog.png)
+![Merge commit dialog](https://raw.github.com/mnaoumov/githooks/master/Help/images/merge-commit-dialog.png)
 
 Hooks also check if merge between branches is allowed. List of allowed commits is specified under **Merges** node in a configuration file.
 If merge is not allowed it prompts the following dialog
 
-![Unallowed merge dialog](https://bitbucket.org/mnaoumov/githooks/raw/master/Help/images/unallowed-merge-dialog.png)
+![Unallowed merge dialog](https://raw.github.com/mnaoumov/githooks/master/Help/images/unallowed-merge-dialog.png)
 
 ### pre-rebase ###
 
